@@ -9,4 +9,5 @@ module bio.object {
 	
 	requires transitive org.json;
 	requires io.github.classgraph ;
+	requires lz4;
 }
