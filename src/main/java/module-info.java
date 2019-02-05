@@ -8,4 +8,5 @@ module bio.object {
 	exports com.linkedlogics.bio.parser;
 	
 	requires transitive org.json;
+	requires io.github.classgraph ;
 }

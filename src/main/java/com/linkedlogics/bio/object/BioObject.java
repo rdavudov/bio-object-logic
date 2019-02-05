@@ -163,25 +163,28 @@ public class BioObject implements BioObjectHolder {
 	/**
 	 * Puts key and object
 	 */
-	public Object put(String key, Object object) {
+	public BioObject put(String key, Object object) {
 		validateKeyAndObject(key, object) ;
-		return map.put(key, object);
+		map.put(key, object);
+		return this ;
 	}
 	
 	/**
 	 * Sets key and object
 	 */
-	public Object set(String key, Object object) {
+	public BioObject set(String key, Object object) {
 		validateKeyAndObject(key, object) ;
-		return map.put(key, object);
+		map.put(key, object);
+		return this ;
 	}
 	
 	/**
 	 * Puts key and object if key is not present
 	 */
-	public Object putIfAbsent(String key, Object object) {
+	public BioObject putIfAbsent(String key, Object object) {
 		validateKeyAndObject(key, object) ;
-		return map.putIfAbsent(key, object);
+		map.putIfAbsent(key, object);
+		return this ;
 	}
 	
 	public Stream<Entry<String, Object>> stream() {
@@ -192,25 +195,29 @@ public class BioObject implements BioObjectHolder {
 	 * Puts key and object if key is not present. If there is a single object then creates a List and appends new object.
 	 * If there is already a list then only appends
 	 */
-	public Object putOrAppend(String key, Object object) {
+	public BioObject putOrAppend(String key, Object object) {
 		validateKeyAndObject(key, object) ;
 		if (!has(key)) {
-			return map.put(key, object);
+			map.put(key, object);
 		} else if (get(key) instanceof List) {
-			return ((List) get(key)).add(object) ;
+			((List) get(key)).add(object) ;
 		} else {
 			List<Object> list = new ArrayList<Object>() ;
 			list.add(get(key)) ;
 			list.add(object) ;
-			return map.put(key, list);
+			map.put(key, list);
 		}
+		return this ;
 	}
 	
-	public void putAll(Map<? extends String, ? extends Object> arg0) {
+	public BioObject putAll(Map<? extends String, ? extends Object> map) {
 		if (isImmutable()) {
 			throw new ImmutableException();
 		}
-		map.putAll(arg0);
+		if (map != null) {
+			this.map.putAll(map);
+		}
+		return this ;
 	}
 
 	/**

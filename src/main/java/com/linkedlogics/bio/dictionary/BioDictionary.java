@@ -280,7 +280,7 @@ public class BioDictionary {
 	
 	private static HashMap<Integer, BioDictionary> dictionaryMap = new HashMap<Integer, BioDictionary>() ;
 	
-    private static BioDictionary dictionary = new BioDictionary() ;
+    private static BioDictionary dictionary ;
  
     public static BioDictionary getDictionary() {
         return dictionary ;

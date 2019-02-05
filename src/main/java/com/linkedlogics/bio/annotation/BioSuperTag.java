@@ -24,6 +24,8 @@ public @interface BioSuperTag {
 	boolean isMandatory() default false ;
 	boolean isEncodable() default true ;
 	boolean isExportable() default true ;
+	String initial() default "" ;
+	String expression() default "" ;
 	String[] trimKeys() default "" ;
 	String[] inverseTrimKeys() default "" ;
 	String useKey() default "" ;
