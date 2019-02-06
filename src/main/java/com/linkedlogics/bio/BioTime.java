@@ -1,4 +1,4 @@
-package com.linkedlogics.bio.time;
+package com.linkedlogics.bio;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;

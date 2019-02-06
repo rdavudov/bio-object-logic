@@ -2,12 +2,14 @@ package com.linkedlogics.bio.compression;
 
 import java.util.Arrays;
 
+import com.linkedlogics.bio.BioCompressor;
+
 import net.jpountz.lz4.LZ4Compressor;
 import net.jpountz.lz4.LZ4Factory;
 import net.jpountz.lz4.LZ4FastDecompressor;
 
 /**
- * LZ4 implementation of {@link com.linkedlogics.bio.compression.BioCompressor}
+ * LZ4 implementation of {@link com.linkedlogics.bio.BioCompressor}
  * @author rdavudov
  *
  */

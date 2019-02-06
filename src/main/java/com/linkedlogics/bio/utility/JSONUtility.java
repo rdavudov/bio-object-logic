@@ -9,14 +9,14 @@ import java.util.Map.Entry;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import com.linkedlogics.bio.BioEnum;
+import com.linkedlogics.bio.BioObject;
+import com.linkedlogics.bio.BioTime;
 import com.linkedlogics.bio.dictionary.BioDictionary;
 import com.linkedlogics.bio.dictionary.BioObj;
 import com.linkedlogics.bio.dictionary.BioTag;
 import com.linkedlogics.bio.dictionary.BioType;
 import com.linkedlogics.bio.expression.BioExpression;
-import com.linkedlogics.bio.object.BioEnum;
-import com.linkedlogics.bio.object.BioObject;
-import com.linkedlogics.bio.time.BioTime;
 
 /**
  * Class for all JSON related operations

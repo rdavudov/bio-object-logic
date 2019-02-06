@@ -5,9 +5,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 
+import com.linkedlogics.bio.BioObject;
 import com.linkedlogics.bio.dictionary.BioObj;
 import com.linkedlogics.bio.dictionary.BioType;
-import com.linkedlogics.bio.object.BioObject;
 import com.linkedlogics.bio.utility.ByteUtility;
 
 /**

@@ -1,4 +1,4 @@
-package com.linkedlogics.bio.object;
+package com.linkedlogics.bio;
 
 import com.linkedlogics.bio.dictionary.BioDictionary;
 import com.linkedlogics.bio.dictionary.BioEnumObj;

@@ -7,15 +7,15 @@ import java.util.Map.Entry;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import com.linkedlogics.bio.BioEnum;
+import com.linkedlogics.bio.BioObject;
+import com.linkedlogics.bio.BioTime;
 import com.linkedlogics.bio.dictionary.BioDictionary;
 import com.linkedlogics.bio.dictionary.BioEnumObj;
 import com.linkedlogics.bio.dictionary.BioObj;
 import com.linkedlogics.bio.dictionary.BioTag;
 import com.linkedlogics.bio.dictionary.BioType;
-import com.linkedlogics.bio.object.BioEnum;
-import com.linkedlogics.bio.object.BioObject;
 import com.linkedlogics.bio.parser.BioObjectXmlParser;
-import com.linkedlogics.bio.time.BioTime;
 
 /**
  * Class for all xml related operations

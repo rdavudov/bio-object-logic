@@ -3,8 +3,8 @@ package com.linkedlogics.bio.dictionary;
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 
-import com.linkedlogics.bio.object.BioEnum;
-import com.linkedlogics.bio.object.BioObject;
+import com.linkedlogics.bio.BioEnum;
+import com.linkedlogics.bio.BioObject;
 
 /**
  * Factory class for creating bio objects using dictionaru

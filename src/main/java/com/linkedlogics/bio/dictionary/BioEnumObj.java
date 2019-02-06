@@ -2,7 +2,7 @@ package com.linkedlogics.bio.dictionary;
 
 import java.util.HashMap;
 
-import com.linkedlogics.bio.object.BioEnum;
+import com.linkedlogics.bio.BioEnum;
 
 /**
  * BioEnumObj is a definition bio enum objects

@@ -1,4 +1,4 @@
-package com.linkedlogics.bio.encryption;
+package com.linkedlogics.bio;
 
 /**
  * Interface for encryption of bio objects

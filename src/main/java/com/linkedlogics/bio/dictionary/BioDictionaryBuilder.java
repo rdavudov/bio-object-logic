@@ -8,14 +8,14 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TimeZone;
 
-import com.linkedlogics.bio.compression.BioCompressor;
+import com.linkedlogics.bio.BioCompressor;
+import com.linkedlogics.bio.BioEncrypter;
+import com.linkedlogics.bio.BioInitializer;
+import com.linkedlogics.bio.BioTime;
 import com.linkedlogics.bio.dictionary.builder.AnnotationReader;
 import com.linkedlogics.bio.dictionary.builder.DictionaryReader;
 import com.linkedlogics.bio.dictionary.builder.XmlFileReader;
 import com.linkedlogics.bio.dictionary.builder.XmlResourceReader;
-import com.linkedlogics.bio.encryption.BioEncrypter;
-import com.linkedlogics.bio.object.Initializer;
-import com.linkedlogics.bio.time.BioTime;
 
 /**
  * This is dictionary builder must be called at the beginning of application in order to setup all dictionary information
@@ -94,7 +94,7 @@ public class BioDictionaryBuilder {
 	 * @param compressorInitializer
 	 * @return
 	 */
-	public BioDictionaryBuilder setCompressorInitializer(Initializer<BioCompressor> compressorInitializer) {
+	public BioDictionaryBuilder setCompressorInitializer(BioInitializer<BioCompressor> compressorInitializer) {
 		BioDictionary.setCompressorInitializer(compressorInitializer);
 		return this ;
 	}
@@ -103,7 +103,7 @@ public class BioDictionaryBuilder {
 	 * @param encrypterInitializer
 	 * @return
 	 */
-	public BioDictionaryBuilder setEncrypterInitializer(Initializer<BioEncrypter> encrypterInitializer) {
+	public BioDictionaryBuilder setEncrypterInitializer(BioInitializer<BioEncrypter> encrypterInitializer) {
 		BioDictionary.setEncrypterInitializer(encrypterInitializer);
 		return this ;
 	}

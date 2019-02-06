@@ -1,4 +1,4 @@
-package com.linkedlogics.bio.object;
+package com.linkedlogics.bio;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -13,6 +13,7 @@ import org.json.JSONObject;
 
 import com.linkedlogics.bio.dictionary.BioDictionary;
 import com.linkedlogics.bio.exception.ImmutableException;
+import com.linkedlogics.bio.object.BioObjectHolder;
 import com.linkedlogics.bio.utility.JSONUtility;
 import com.linkedlogics.bio.utility.XMLUtility;
 

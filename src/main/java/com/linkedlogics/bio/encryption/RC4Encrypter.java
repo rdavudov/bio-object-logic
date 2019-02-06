@@ -5,10 +5,11 @@ import java.util.HashMap;
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 
+import com.linkedlogics.bio.BioEncrypter;
 import com.linkedlogics.bio.exception.EncryptionException;
 
 /**
- * RC4 implementation of {@link com.linkedlogics.bio.encryption.BioEncrypter}
+ * RC4 implementation of {@link com.linkedlogics.bio.BioEncrypter}
  * @author rdavudov
  *
  */

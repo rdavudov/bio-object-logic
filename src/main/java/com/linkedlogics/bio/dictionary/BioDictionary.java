@@ -8,11 +8,11 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.linkedlogics.bio.compression.BioCompressor;
+import com.linkedlogics.bio.BioCompressor;
+import com.linkedlogics.bio.BioEncrypter;
+import com.linkedlogics.bio.BioInitializer;
 import com.linkedlogics.bio.compression.BioLZ4Compressor;
-import com.linkedlogics.bio.encryption.BioEncrypter;
 import com.linkedlogics.bio.exception.DictionaryException;
-import com.linkedlogics.bio.object.Initializer;
 
 /**
  * 
@@ -57,13 +57,13 @@ public class BioDictionary {
     
     private static Class<? extends Map> mapObjectClass = HashMap.class ;
     
-    private static Initializer<BioCompressor> compressorInitializer = new Initializer<BioCompressor>() {
+    private static BioInitializer<BioCompressor> compressorInitializer = new BioInitializer<BioCompressor>() {
 		@Override
 		public BioCompressor initialize() {
 			return new BioLZ4Compressor() ;
 		}
 	};
-    private static Initializer<BioEncrypter> encrypterInitializer = new Initializer<BioEncrypter>() {
+    private static BioInitializer<BioEncrypter> encrypterInitializer = new BioInitializer<BioEncrypter>() {
 		@Override
 		public BioEncrypter initialize() {
 			return null;
@@ -412,14 +412,14 @@ public class BioDictionary {
      * Sets compressor initializer
      * @param compressorInitializer
      */
-    static void setCompressorInitializer(Initializer<BioCompressor> compressorInitializer) {
+    static void setCompressorInitializer(BioInitializer<BioCompressor> compressorInitializer) {
     	BioDictionary.compressorInitializer = compressorInitializer ;
     }
     /**
      * Sets encrypter initializer
      * @param encrypterInitializer
      */
-    static void setEncrypterInitializer(Initializer<BioEncrypter> encrypterInitializer) {
+    static void setEncrypterInitializer(BioInitializer<BioEncrypter> encrypterInitializer) {
     	BioDictionary.encrypterInitializer = encrypterInitializer ;
     }
     /**

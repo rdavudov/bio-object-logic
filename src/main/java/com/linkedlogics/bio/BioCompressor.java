@@ -1,4 +1,4 @@
-package com.linkedlogics.bio.compression;
+package com.linkedlogics.bio;
 
 /**
  * Interface for compression of bio objects

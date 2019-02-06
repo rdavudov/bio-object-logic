@@ -16,14 +16,14 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import com.linkedlogics.bio.BioEnum;
+import com.linkedlogics.bio.BioObject;
 import com.linkedlogics.bio.dictionary.BioDictionary;
 import com.linkedlogics.bio.dictionary.BioEnumObj;
 import com.linkedlogics.bio.dictionary.BioObj;
 import com.linkedlogics.bio.dictionary.BioTag;
 import com.linkedlogics.bio.dictionary.BioType;
 import com.linkedlogics.bio.exception.ParserException;
-import com.linkedlogics.bio.object.BioEnum;
-import com.linkedlogics.bio.object.BioObject;
 import com.linkedlogics.bio.utility.ConversionUtility;
 import com.linkedlogics.bio.utility.XMLUtility;
 

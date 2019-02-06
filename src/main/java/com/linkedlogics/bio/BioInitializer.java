@@ -1,4 +1,4 @@
-package com.linkedlogics.bio.object;
+package com.linkedlogics.bio;
 
 import java.util.HashMap;
 
@@ -8,14 +8,14 @@ import java.util.HashMap;
  *
  * @param <T>
  */
-public abstract class Initializer<T> {
+public abstract class BioInitializer<T> {
 	private HashMap<String, Object> properties ;
 	
-	public Initializer() {
+	public BioInitializer() {
 		
 	}
 	
-	public Initializer(HashMap<String, Object> properties) {
+	public BioInitializer(HashMap<String, Object> properties) {
 		this.properties = properties ;
 	}
 	

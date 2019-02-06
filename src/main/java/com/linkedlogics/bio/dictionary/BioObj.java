@@ -3,8 +3,8 @@ package com.linkedlogics.bio.dictionary;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import com.linkedlogics.bio.BioObject;
 import com.linkedlogics.bio.exception.DictionaryException;
-import com.linkedlogics.bio.object.BioObject;
 
 /**
  * BioObj is a definition a bio object containing all definitions about its possible tags, parent objs

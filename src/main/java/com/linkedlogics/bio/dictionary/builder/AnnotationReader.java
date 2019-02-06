@@ -3,6 +3,8 @@ package com.linkedlogics.bio.dictionary.builder;
 import java.lang.reflect.Field;
 import java.util.List;
 
+import com.linkedlogics.bio.BioEnum;
+import com.linkedlogics.bio.BioObject;
 import com.linkedlogics.bio.annotation.BioRemoteObj;
 import com.linkedlogics.bio.annotation.BioRemoteTag;
 import com.linkedlogics.bio.annotation.BioSuperObj;
@@ -13,8 +15,6 @@ import com.linkedlogics.bio.dictionary.BioObj;
 import com.linkedlogics.bio.dictionary.BioTag;
 import com.linkedlogics.bio.dictionary.BioType;
 import com.linkedlogics.bio.exception.DictionaryException;
-import com.linkedlogics.bio.object.BioEnum;
-import com.linkedlogics.bio.object.BioObject;
 
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ClassInfo;

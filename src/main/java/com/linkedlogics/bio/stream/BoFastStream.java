@@ -5,10 +5,10 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 
+import com.linkedlogics.bio.BioObject;
 import com.linkedlogics.bio.dictionary.BioObj;
 import com.linkedlogics.bio.dictionary.BioTag;
 import com.linkedlogics.bio.dictionary.BioType;
-import com.linkedlogics.bio.object.BioObject;
 import com.linkedlogics.bio.utility.ByteUtility;
 import com.linkedlogics.bio.utility.ConversionUtility;
 

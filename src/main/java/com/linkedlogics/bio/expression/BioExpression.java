@@ -1,6 +1,6 @@
 package com.linkedlogics.bio.expression;
 
-import com.linkedlogics.bio.object.BioObject;
+import com.linkedlogics.bio.BioObject;
 
 public interface BioExpression {
 	public Object getValue(BioObject... params) ;
