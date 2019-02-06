@@ -84,7 +84,7 @@ public class ConversionUtility {
                 return value;
             case Time:
 				try {
-					return BioTime.parse(value, BioTime.DATETIME_FORMAT);
+					return BioTime.parseString(value);
 				} catch (Throwable e) {
 					return Long.parseLong(value);
 				}

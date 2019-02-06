@@ -442,7 +442,7 @@ public class BioDictionary {
 	 * Return supported date formats
 	 * @return
 	 */
-	static List<String> getSupportedDateFormats() {
+	public static List<String> getSupportedDateFormats() {
 		return supportedDateFormats.stream().collect(Collectors.toList()) ;
 	}
 }
