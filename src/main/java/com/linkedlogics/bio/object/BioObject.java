@@ -529,7 +529,7 @@ public class BioObject implements BioObjectHolder {
 				if (!bioObject.has(e.getKey())) {
 					isEquals.set(false);
 					break;
-				} else if (object.equals(bioObject.get(e.getKey()))) {
+				} else if (!e.getValue().equals(bioObject.get(e.getKey()))) {
 					isEquals.set(false);
 					break;
 				}
@@ -581,9 +581,9 @@ public class BioObject implements BioObjectHolder {
 		return null ;
 	}
 	
-	public String toString() {
-		return toXml() ;
-	}
+//	public String toString() {
+//		return toXml() ;
+//	}
 	
 	public String toJson() {
 		return JSONUtility.toJson(this) ;
