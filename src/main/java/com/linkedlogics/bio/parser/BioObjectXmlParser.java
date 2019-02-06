@@ -25,6 +25,7 @@ import com.linkedlogics.bio.exception.ParserException;
 import com.linkedlogics.bio.object.BioEnum;
 import com.linkedlogics.bio.object.BioObject;
 import com.linkedlogics.bio.utility.ConversionUtility;
+import com.linkedlogics.bio.utility.XMLUtility;
 
 /**
  * Bio xml parser parses xml into bio object
@@ -117,7 +118,7 @@ public class BioObjectXmlParser {
         	if (obj != null && obj.getBioClass() != null) {
         		object = BioDictionary.getDictionary(dictionary).getFactory().newBioObject(obj.getCode()) ;
         	} else {
-        		object = new BioObject(0) ;
+        		object = new BioObject(0, e.getNodeName()) ;
         	}
         } else {
         	try {
@@ -228,7 +229,7 @@ public class BioObjectXmlParser {
 
     		if (isArray || isList) {
     			BioEnum[] bioEnumArray = null;
-    			String[] values = e.getTextContent().trim().split(",");
+    			String[] values = e.getTextContent().trim().split(XMLUtility.SEP);
     			if (bioEnumObj != null && bioEnumObj.getBioClass() != null) {
     				bioEnumArray = (BioEnum[]) Array.newInstance(bioEnumObj.getBioClass(), values.length);
     				for (int i = 0; i < values.length; i++)
