@@ -373,13 +373,13 @@ public class AnnotationReader implements DictionaryReader {
 			while (bioClass != BioEnum.class && bioClass != null) {
 				Field[] fields = bioClass.getDeclaredFields();
 				for (int j = 0; j < fields.length; j++) {
-					if (fields[j].isAnnotationPresent(com.linkedlogics.bio.annotation.BioEnumValue.class)) {
-						try {
+					try {
+						if (fields[j].get(null).getClass().equals(bioClass)) {
 							BioEnum value = (BioEnum) fields[j].get(null);
 							bioEnum.addValue(value);
-						} catch (Throwable e) {
-							throw new DictionaryException(e) ;
 						}
+					} catch (Throwable e) {
+						throw new DictionaryException(e) ;
 					}
 				}
 
