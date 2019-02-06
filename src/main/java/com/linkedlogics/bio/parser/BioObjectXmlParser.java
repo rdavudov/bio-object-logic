@@ -12,7 +12,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -27,14 +26,19 @@ import com.linkedlogics.bio.object.BioEnum;
 import com.linkedlogics.bio.object.BioObject;
 import com.linkedlogics.bio.utility.ConversionUtility;
 
-
+/**
+ * Bio xml parser parses xml into bio object
+ * @author rajab
+ *
+ */
 public class BioObjectXmlParser {
 	private boolean isValidated ;
 	
-    public BioObjectXmlParser() {
-    	
-    }
-
+	/**
+	 * Parses bio from xml string
+	 * @param xml
+	 * @return
+	 */
     public BioObject parse(String xml) {
         try {
 			return parse(new ByteArrayInputStream(xml.getBytes("UTF-8")));
@@ -43,6 +47,11 @@ public class BioObjectXmlParser {
 		}
     }
 
+    /**
+     * Parses bio from input stream
+     * @param in
+     * @return
+     */
     public BioObject parse(InputStream in) {
     	try {
 			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
@@ -55,6 +64,12 @@ public class BioObjectXmlParser {
 		}
     }
     
+    /**
+     * Parses a bio object and it tags
+     * @param e
+     * @param bioClass
+     * @return
+     */
     protected BioObject parseBioObject(Node e, Class<? extends BioObject> bioClass) {
         NamedNodeMap atts = e.getAttributes();
 
@@ -117,6 +132,7 @@ public class BioObjectXmlParser {
         	 object.setBioVersion(version) ;
         }
         
+        // starting to parse tags
         NodeList nodes = e.getChildNodes() ;
         for (int i = 0; i < nodes.getLength(); i++) {
         	Node node = nodes.item(i);
@@ -140,6 +156,13 @@ public class BioObjectXmlParser {
         return object ;
     }
     
+    /**
+     * Parses a single tag
+     * @param e
+     * @param obj
+     * @param tag
+     * @return
+     */
     public Object parseTagValue(Node e, BioObj obj, BioTag tag) {
     	Boolean isArray = null ;
     	Boolean isList = null ;
@@ -171,7 +194,7 @@ public class BioObjectXmlParser {
     	} else if (e.hasAttributes() && e.getAttributes().getNamedItem("code") != null) {
     		elementType = BioType.BioObject ;
     	}
-    	
+    	// setting to default FALSE if not provided
     	if (isArray == null) {
 			isArray = false ;
 		}
@@ -220,16 +243,20 @@ public class BioObjectXmlParser {
     		} else
     			return bioEnumObj.getBioEnum(e.getTextContent().trim());
     	} else {
-    		Object object = ConversionUtility.convert(e.getTextContent().trim(), elementType, isArray || isList);
-    		if (isList) {
-    			Object[] array = (Object[]) object;
-    			ArrayList<Object> list = new ArrayList<Object>();
-    			for (int i = 0; i < array.length; i++) {
-    				list.add(array[i]);
-    			}
-    			return list ;
+    		if (isArray || isList) {
+    			Object[] array = ConversionUtility.convertAsArray(e.getTextContent().trim(), elementType);
+    			if (isList) {
+        			ArrayList<Object> list = new ArrayList<Object>();
+        			for (int i = 0; i < array.length; i++) {
+        				list.add(array[i]);
+        			}
+        			return list ;
+        		} else {
+        			return array ;
+        		}
+    		} else {
+    			return ConversionUtility.convert(e.getTextContent().trim(), elementType);
     		}
-    		return object ;
     	}
     }
 

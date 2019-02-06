@@ -1,7 +1,5 @@
 package com.linkedlogics.bio.utility;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.json.JSONObject;
@@ -11,15 +9,20 @@ import com.linkedlogics.bio.object.BioEnum;
 import com.linkedlogics.bio.object.BioObject;
 import com.linkedlogics.bio.time.BioTime;
 
+/**
+ * It is used to conver string values to actual types based on BioType
+ * @author rajab
+ *
+ */
 public class ConversionUtility {
+    /**
+     * Convert value to given bio type
+     * @param value
+     * @param type
+     * @param isArray
+     * @return
+     */
     public static Object convert(String value, BioType type) {
-        return convert(value, type, false);
-    }
-
-    public static Object convert(String value, BioType type, boolean isArray) {
-        if (isArray) {
-            return convertAsArray(value, type);
-        }
         value = value.trim();
         switch (type) {
             case Byte:
@@ -68,7 +71,12 @@ public class ConversionUtility {
             				property[1] = property[1].substring(0, property[1].length() - 2);
             				isPropertyArray = true;
             			}
-            			properties.put(property[0], convert(property[2].trim(), Enum.valueOf(BioType.class, property[1]), isPropertyArray));
+            			if (!isPropertyArray) {
+            				properties.put(property[0], convert(property[2].trim(), Enum.valueOf(BioType.class, property[1])));
+            			} else {
+            				properties.put(property[0], convertAsArray(property[2].trim(), Enum.valueOf(BioType.class, property[1])));
+            			}
+            			
             		}
             		return properties;
             	}
@@ -86,30 +94,13 @@ public class ConversionUtility {
         return null;
     }
 
-    public static String convertPropertiesToString(BioObject object) {
-        final StringBuilder s = new StringBuilder();
-
-        if (object.size() == 0) {
-            return s.toString();
-        }
-        
-        object.stream().forEach(e -> {
-        	 s.append(";").append(e.getKey()).append("|");
-             s.append(getType(e.getValue()));
-             if (e.getValue().getClass().isArray()) {
-                 s.append("[]|");
-                 String arrayStr = Arrays.toString((Object[]) e.getValue()).substring(1);
-                 arrayStr = arrayStr.substring(0, arrayStr.length() - 1);
-                 s.append(arrayStr);
-             } else {
-                 s.append("|").append(e.getValue().toString());
-             }
-        });
-
-        return s.toString().substring(1);
-    }
-
-    public static Object convertAsArray(String value, BioType type) {
+    /**
+     * Convert value to given bio type array
+     * @param value
+     * @param type
+     * @return
+     */
+    public static Object[] convertAsArray(String value, BioType type) {
         String[] strValues = value.split(",");
         switch (type) {
             case Byte:
@@ -165,7 +156,7 @@ public class ConversionUtility {
                 String[] propStrValues = value.split(",,");
                 BioObject[] propValues = new BioObject[propStrValues.length];
                 for (int i = 0; i < propStrValues.length; i++) {
-                    propValues[i] = (BioObject) convert(propStrValues[i], type, false);
+                    propValues[i] = (BioObject) convert(propStrValues[i], type);
                 }
                 return propValues;
             case String:
@@ -186,73 +177,11 @@ public class ConversionUtility {
         return null;
     }
 
-    public static Object convertAsList(String value, BioType type) {
-        if (type == BioType.BioObject || type == BioType.Properties) {
-            String[] strValues = value.split(",,");
-            ArrayList<BioObject> values = new ArrayList<BioObject>();
-            for (int i = 0; i < strValues.length; i++) {
-                values.add((BioObject) convert(strValues[i], type));
-            }
-            return values;
-        } else {
-            String[] strValues = value.split(",");
-            ArrayList<Object> values = new ArrayList<Object>();
-            for (int i = 0; i < strValues.length; i++) {
-                values.add(convert(strValues[i], type));
-            }
-            return values;
-        }
-    }
-    
-    public static String convertAsString(List list) {
-    	StringBuilder s = new StringBuilder() ;
-    	String sep = "" ;
-    	for (int i = 0; i < list.size(); i++) {
-			s.append(sep).append(list.get(i)) ;
-			sep = "," ;
-		}
-    	return s.toString() ;
-    }
-
-//    public static String toString(Object value) {
-//        if (value.getClass().isArray()) {
-//            Object[] array = (Object[]) value;
-//            StringBuilder builder = new StringBuilder();
-//            String sep = "";
-//            for (int i = 0; i < array.length; i++) {
-//                builder.append(sep).append(array[i].toString());
-//                sep = ParameterUtility.SEP;
-//            }
-//            return builder.toString();
-//        } else {
-//            return value.toString();
-//        }
-//    }
-
-    public static void main(String[] args) {
-//		BioObject[] value = (BioObject[]) convert("account_type|Integer|0;amount|Long|300;valid_from_str|String|0d;valid_to_str|String|=01/01/2099", BioType.Properties, true) ;
-//		System.out.printf("%s %s", value, value.getClass().getName());
-//		for (int i = 0; i < value.length; i++) {
-//			System.out.println(value[i]);
-//		}
-
-//		BioObject params = new BioObject() ;
-//		params.put("age", 32) ;
-//		params.put("city", "Baku") ;
-//		params.put("numbers", new Integer[] {1, 2, 3, 4, 5}) ;
-//		params.put("friends", new String[] {"Samir", "Vugar", "Azer"}) ;
-//		
-//		System.out.println(convertPropertiesToString(params));
-
-        BioObject params = (BioObject) ConversionUtility.convert("city|String|Baku;age|Integer|32;friends|String[]|Samir, Vugar, Azer;numbers|Integer[]|1, 2, 3, 4, 5", BioType.Properties);
-        System.out.println(params);
-
-    }
-
-    public static boolean isArray(Object value) {
-        return value.getClass().isArray();
-    }
-
+    /**
+     * Returns bio type based on value
+     * @param value
+     * @return
+     */
     public static BioType getType(Object value) {
         if (value.getClass().isArray()) {
             if (value instanceof String[]) {
