@@ -382,7 +382,10 @@ public class BioBinaryParser {
 	 */
 	private byte[] writeBio(BioObject bio) {
 		if (BioDictionary.getDictionary(bio.getBioDictionary()) == null) {
-			throw new ParserException("bio dictionary " + bio.getBioDictionary() + " is not found");
+			if (!isValidated)
+				return null ;
+			else 
+				throw new ParserException("bio dictionary " + bio.getBioDictionary() + " is not found");
 		}
 		final BioObj object = BioDictionary.getDictionary(bio.getBioDictionary()).getObjByCode(bio.getBioCode());
 		if (object == null) {
