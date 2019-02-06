@@ -1,4 +1,4 @@
-package com.linkedlogics.bio.parser;
+package com.linkedlogics.bio.expression.parser;
 
 import com.linkedlogics.bio.expression.BioExpression;
 

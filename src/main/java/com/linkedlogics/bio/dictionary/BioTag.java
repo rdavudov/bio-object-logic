@@ -2,9 +2,9 @@ package com.linkedlogics.bio.dictionary;
 
 import java.util.HashSet;
 
+import com.linkedlogics.bio.expression.parser.BioExpressionParser;
 import com.linkedlogics.bio.object.BioEnum;
 import com.linkedlogics.bio.object.BioObject;
-import com.linkedlogics.bio.parser.BioExpressionParser;
 import com.linkedlogics.bio.time.BioTime;
 import com.linkedlogics.bio.utility.ConversionUtility;
 
