@@ -3,6 +3,7 @@ package com.linkedlogics.bio.dictionary;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import com.linkedlogics.bio.exception.DictionaryException;
 import com.linkedlogics.bio.object.BioObject;
 
 /**
@@ -91,13 +92,11 @@ public class BioObj {
 		} else {
 			BioTag existingTag = codeMap.get(tag.getCode()) ;
 			if (existingTag != null && (existingTag.getCode() != tag.getCode() || !existingTag.getName().equals(tag.getName()))) {
-//				Logger.log(LoggerLevel.ERROR, "duplicate tag code %d or name %s with different code %s or name %s", existingTag.getCode(), existingTag.getName(), tag.getCode(), tag.getName());
-				throw new RuntimeException("duplicate tag with different code or name") ;
+				throw new DictionaryException(String.format("duplicate tag code %d or name %s with different code %s or name %s at %s", existingTag.getCode(), existingTag.getName(), tag.getCode(), tag.getName(), getBioClass())) ;
 			}
 			existingTag = nameMap.get(tag.getName()) ;
 			if (existingTag != null && (existingTag.getCode() != tag.getCode() || !existingTag.getName().equals(tag.getName()))) {
-//				Logger.log(LoggerLevel.ERROR, "duplicate tag code %d or name %s with different code %s or name %s", existingTag.getCode(), existingTag.getName(), tag.getCode(), tag.getName());
-				throw new RuntimeException("duplicate tag with different code or name") ;
+				throw new DictionaryException(String.format("duplicate tag code %d or name %s with different code %s or name %s at %s", existingTag.getCode(), existingTag.getName(), tag.getCode(), tag.getName(), getBioClass())) ;
 			}
 			
 //			Logger.log(LoggerLevel.WARN, "tag code %d or name %s is overwritten in %s", tag.getCode(), tag.getName(), type);

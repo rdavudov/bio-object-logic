@@ -142,21 +142,21 @@ public class BioObject implements BioObjectHolder {
 	/**
 	 * Validates key and object for being null also non primitive array
 	 * @param key
-	 * @param object
+	 * @param value
 	 */
-	protected void validateKeyAndObject(String key, Object object) {
+	protected void validateKeyAndObject(String key, Object value) {
 		if (isImmutable()) {
 			throw new ImmutableException();
 		}
 		
 		if (key == null) {
 			throw new RuntimeException("key can't be null");
-		} else if (object == null) {
-			throw new RuntimeException("object can't be null");
+		} else if (value == null) {
+			throw new RuntimeException("value can't be null");
 		}
 		
-		if (object != null && object.getClass().isArray() && !(object instanceof Object[])) {
-			throw new RuntimeException(key + "'s object can't be array of primitive type");
+		if (value != null && value.getClass().isArray() && !(value instanceof Object[])) {
+			throw new RuntimeException(key + "'s value can't be array of primitive type");
 		}
 	}
 	
@@ -581,9 +581,9 @@ public class BioObject implements BioObjectHolder {
 		return null ;
 	}
 	
-//	public String toString() {
-//		return toXml() ;
-//	}
+	public String toString() {
+		return String.format("class:%s(%s) code:%d name:%s\n", this.getClass().getName(), this.map.getClass().getName(), getBioCode(), getBioName()) ;
+	}
 	
 	public String toJson() {
 		return JSONUtility.toJson(this) ;
