@@ -71,11 +71,11 @@ public class BioDictionary {
 	
 	private static Set<String> supportedDateFormats = new HashSet<String>() ;
     
-    public BioDictionary() {
+    BioDictionary() {
 
     }
     
-    public BioDictionary(int code) {
+    BioDictionary(int code) {
     	this.code = code ;
     }
     
@@ -339,14 +339,18 @@ public class BioDictionary {
      * @return
      */
     public static BioCompressor getCompressor() {
-    	return compressorInitializer.initialize() ;
+    	if (compressorInitializer != null) 
+    		return compressorInitializer.initialize() ;
+    	return null ;
     }
     /**
      * Returns new bio encrypter
      * @return
      */
     public static BioEncrypter getEncrypter() {
-    	return encrypterInitializer.initialize() ;
+    	if (encrypterInitializer != null)
+    		return encrypterInitializer.initialize() ;
+    	return null ;
     }
 	
 	private static HashMap<Integer, BioDictionary> dictionaryMap = new HashMap<Integer, BioDictionary>() ;

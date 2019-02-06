@@ -10,13 +10,13 @@ import com.linkedlogics.bio.BioCompressor;
 import com.linkedlogics.bio.BioDictionary;
 import com.linkedlogics.bio.BioEncrypter;
 import com.linkedlogics.bio.BioEnum;
+import com.linkedlogics.bio.BioExpression;
 import com.linkedlogics.bio.BioObject;
 import com.linkedlogics.bio.dictionary.BioEnumObj;
 import com.linkedlogics.bio.dictionary.BioObj;
 import com.linkedlogics.bio.dictionary.BioTag;
 import com.linkedlogics.bio.dictionary.BioType;
 import com.linkedlogics.bio.exception.ParserException;
-import com.linkedlogics.bio.expression.BioExpression;
 import com.linkedlogics.bio.stream.BiFastStream;
 import com.linkedlogics.bio.stream.BoFastStream;
 import com.linkedlogics.bio.utility.ByteUtility;
@@ -171,12 +171,12 @@ public class BioObjectBinaryParser {
 			return null ;
 		}
 		
-		if (isEncrypted) {
+		if (isEncrypted && encrypter != null) {
 			encoded = encrypter.encrypt(encoded) ;
 			flag = flag | (isEncrypted ? FLAG_ENCRYPTED : 0) ;
 		}
 		
-		if (isCompressed) {
+		if (isCompressed && compressor != null) {
 			byte[] compressed = compressor.compress(encoded) ;
 			// we check if compressed bytes are smaller than original only then we write compressed bytes
 			if (compressed.length + 4 /* original length in 4 bytes */ < encoded.length) {
