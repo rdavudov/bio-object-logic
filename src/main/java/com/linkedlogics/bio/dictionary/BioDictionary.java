@@ -3,6 +3,11 @@ package com.linkedlogics.bio.dictionary;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.linkedlogics.bio.compression.BioCompressor;
+import com.linkedlogics.bio.compression.BioLZ4Compressor;
+import com.linkedlogics.bio.encryption.BioEncrypter;
+import com.linkedlogics.bio.exception.DictionaryException;
+import com.linkedlogics.bio.object.Initializer;
 import com.linkedlogics.bio.utility.DictionaryUtility;
 
 /**
@@ -47,6 +52,18 @@ public class BioDictionary {
     private BioFactory factory ;
     
     private static Class<? extends Map> mapObjectClass = HashMap.class ;
+    private static Initializer<BioCompressor> compressorInitializer = new Initializer<BioCompressor>() {
+		@Override
+		public BioCompressor initialize() {
+			return new BioLZ4Compressor() ;
+		}
+	};
+    private static Initializer<BioEncrypter> encrypterInitializer = new Initializer<BioEncrypter>() {
+		@Override
+		public BioEncrypter initialize() {
+			return null;
+		}
+	};
     
     public BioDictionary() {
 
@@ -80,13 +97,13 @@ public class BioDictionary {
             nameMap.put(obj.getName(), obj) ;
         } else if (objByCode != objByName) {
             if (objByCode == null) {
-                throw new RuntimeException("already existing name " + obj.getType() + " in dictionary with different code " + objByName.getCode());
+                throw new DictionaryException("already existing name " + obj.getType() + " in dictionary with different code " + objByName.getCode());
             } else if (objByName == null) {
-                throw new RuntimeException("already existing code " + obj.getCode() + " in dictionary with different name " + objByCode.getType());
+                throw new DictionaryException("already existing code " + obj.getCode() + " in dictionary with different name " + objByCode.getType());
             } else if (objByCode.getCode() != obj.getCode()) {
-                throw new RuntimeException("already existing name " + obj.getType() + " in dictionary with different code " + objByCode.getCode());
+                throw new DictionaryException("already existing name " + obj.getType() + " in dictionary with different code " + objByCode.getCode());
             } else if (!objByName.getType().equals(obj.getType())) {
-                throw new RuntimeException("already existing code " + obj.getCode() + " in dictionary with different name " + objByName.getCode());
+                throw new DictionaryException("already existing code " + obj.getCode() + " in dictionary with different name " + objByName.getCode());
             }
         } else if (objByCode.getBioClass().isAssignableFrom(obj.getBioClass())) {
             codeMap.put(obj.getCode(), obj);
@@ -138,13 +155,13 @@ public class BioDictionary {
             enumCodeMap.put(enumObj.getCode(), enumObj);
         } else if (enumByCode != enumByName) {
             if (enumByCode == null) {
-                throw new RuntimeException("already existing name " + enumObj.getName() + " in dictionary with different code " + enumByName.getCode());
+                throw new DictionaryException("already existing name " + enumObj.getName() + " in dictionary with different code " + enumByName.getCode());
             } else if (enumByName == null) {
-                throw new RuntimeException("already existing code " + enumObj.getCode() + " in dictionary with different name " + enumByCode.getCode());
+                throw new DictionaryException("already existing code " + enumObj.getCode() + " in dictionary with different name " + enumByCode.getCode());
             } else if (enumByCode.getCode() != enumObj.getCode()) {
-                throw new RuntimeException("already existing name " + enumObj.getName() + " in dictionary with different code " + enumByCode.getCode());
+                throw new DictionaryException("already existing name " + enumObj.getName() + " in dictionary with different code " + enumByCode.getCode());
             } else if (!enumByName.getName().equals(enumObj.getName())) {
-                throw new RuntimeException("already existing code " + enumObj.getCode() + " in dictionary with different name " + enumByName.getCode());
+                throw new DictionaryException("already existing code " + enumObj.getCode() + " in dictionary with different name " + enumByName.getCode());
             }
         } else if (enumByCode.getBioClass().isAssignableFrom(enumObj.getBioClass())) {
             enumCodeMap.put(enumObj.getCode(), enumObj);
@@ -173,11 +190,22 @@ public class BioDictionary {
      * @param tag
      */
     public void addSuperTag(BioTag tag) {
-        if (superTagCodeMap.containsKey(tag.getCode()) || superTagNameMap.containsKey(tag.getName())) {
-            throw new RuntimeException("already exists in dictionary " + tag.getName());
-        }
-        superTagCodeMap.put(tag.getCode(), tag);
-        superTagNameMap.put(tag.getName(), tag);
+    	BioTag tagByCode = superTagCodeMap.get(tag.getCode());
+    	BioTag tagByName = superTagNameMap.get(tag.getName());
+    	if (tagByCode == null && tagByName == null) {
+    		superTagCodeMap.put(tag.getCode(), tag);
+    		superTagNameMap.put(tag.getName(), tag);
+    	} else if (tagByCode != tagByName) {
+    		if (tagByCode == null) {
+    			throw new DictionaryException("already existing super tag name " + tag.getName() + " in dictionary with different code " + tagByName.getCode());
+    		} else if (tagByName == null) {
+    			throw new DictionaryException("already existing super tagcode " + tag.getCode() + " in dictionary with different name " + tagByCode.getCode());
+    		} else if (tagByCode.getCode() != tag.getCode()) {
+    			throw new DictionaryException("already existing super tagname " + tag.getName() + " in dictionary with different code " + tagByCode.getCode());
+    		} else if (!tagByName.getName().equals(tag.getName())) {
+    			throw new DictionaryException("already existing super tagcode " + tag.getCode() + " in dictionary with different name " + tagByName.getCode());
+    		}
+    	}
     }
     
     /**
@@ -277,6 +305,15 @@ public class BioDictionary {
     	}
     	return factory ;
     }
+    
+    public static BioCompressor getCompressor() {
+    	return compressorInitializer.initialize() ;
+    }
+    
+    public static BioEncrypter getEncrypter() {
+    	return encrypterInitializer.initialize() ;
+    }
+	
 	
 	private static HashMap<Integer, BioDictionary> dictionaryMap = new HashMap<Integer, BioDictionary>() ;
 	
@@ -312,5 +349,13 @@ public class BioDictionary {
     
     public static BioDictionary getDictionary(int dictionary) {
     	return dictionaryMap.get(dictionary) ;
+    }
+    
+    static void setCompressorInitializer(Initializer<BioCompressor> compressorInitializer) {
+    	BioDictionary.compressorInitializer = compressorInitializer ;
+    }
+    
+    static void setEncrypterInitializer(Initializer<BioEncrypter> encrypterInitializer) {
+    	BioDictionary.encrypterInitializer = encrypterInitializer ;
     }
 }

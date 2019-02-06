@@ -8,7 +8,7 @@ import java.lang.annotation.Target;
 /**
  * Annotation for defining properties of a SuperTag. SuperTag is a tag which can be serialized/deserialized without having any BioObj container
  * It is very useful when you have generate system tags for most of objects and don't want to add them as tag for each of the definition. But without
- * definition they will be ignored by {@link com.linkedlogics.bio.parser.BioFastParser} Therefore, once defined as SuperTag parser will encode it anyway.
+ * definition they will be ignored by {@link com.linkedlogics.bio.parser.BioBinaryParser} Therefore, once defined as SuperTag parser will encode it anyway.
  * 
  * SuperTag codes are minus values because in order not to be mixed with actual BioObject tags
  * @author rdavudov

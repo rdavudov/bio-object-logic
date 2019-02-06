@@ -4,10 +4,13 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
+import com.linkedlogics.bio.compression.BioCompressor;
 import com.linkedlogics.bio.dictionary.builder.AnnotationReader;
 import com.linkedlogics.bio.dictionary.builder.DictionaryReader;
 import com.linkedlogics.bio.dictionary.builder.XmlFileReader;
 import com.linkedlogics.bio.dictionary.builder.XmlResourceReader;
+import com.linkedlogics.bio.encryption.BioEncrypter;
+import com.linkedlogics.bio.object.Initializer;
 
 public class BioDictionaryBuilder {
 	private List<DictionaryReader> readers = new ArrayList<DictionaryReader>();
@@ -49,6 +52,16 @@ public class BioDictionaryBuilder {
 		return this ;
 	}
 	
+	public BioDictionaryBuilder setCompressorInitializer(Initializer<BioCompressor> compressorInitializer) {
+		BioDictionary.setCompressorInitializer(compressorInitializer);
+		return this ;
+	}
+	
+	public BioDictionaryBuilder setEncrypterInitializer(Initializer<BioEncrypter> encrypterInitializer) {
+		BioDictionary.setEncrypterInitializer(encrypterInitializer);
+		return this ;
+	}
+	
 	public HashSet<String> getProfiles() {
 		return profiles;
 	}
@@ -61,5 +74,6 @@ public class BioDictionaryBuilder {
 		for (DictionaryReader reader : readers) {
 			reader.read(this); 
 		}
+		
 	}
 }
