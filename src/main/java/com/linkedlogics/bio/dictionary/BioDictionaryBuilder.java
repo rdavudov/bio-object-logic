@@ -3,6 +3,7 @@ package com.linkedlogics.bio.dictionary;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map.Entry;
 
 import com.linkedlogics.bio.compression.BioCompressor;
 import com.linkedlogics.bio.dictionary.builder.AnnotationReader;
@@ -12,68 +13,183 @@ import com.linkedlogics.bio.dictionary.builder.XmlResourceReader;
 import com.linkedlogics.bio.encryption.BioEncrypter;
 import com.linkedlogics.bio.object.Initializer;
 
+/**
+ * This is dictionary builder must be called at the beginning of application in order to setup all dictionary information
+ * @author rdavudov
+ *
+ */
 public class BioDictionaryBuilder {
 	private List<DictionaryReader> readers = new ArrayList<DictionaryReader>();
 	private HashSet<String> profiles = new HashSet<String>();
 	private boolean isOnlyProfiles ;
 	
+	/**
+	 * Adding a package name for gathering bio obj info from annotations
+	 * @param packageName
+	 * @return
+	 */
 	public BioDictionaryBuilder addPackage(String packageName) {
 		readers.add(new AnnotationReader(packageName)) ;
 		return this ;
 	}
-	
+	/**
+	 * Adding xml file path for gathering bio obj info from xml file
+	 * @param xml
+	 * @return
+	 */
 	public BioDictionaryBuilder addFile(String xml) {
 		readers.add(new XmlFileReader(xml)) ;
 		return this ;
 	}
-	
+	/**
+	 * Adding xml resource name for gathering bio obj info from xml
+	 * @param resource
+	 * @return
+	 */
 	public BioDictionaryBuilder addResource(String resource) {
 		readers.add(new XmlResourceReader(resource)) ;
 		return this ;
 	}
-	
+	/**
+	 * Adding url resource name for gathering bio obj info from xml
+	 * @param url
+	 * @return
+	 */
 	public BioDictionaryBuilder addUrl(String url) {
 		readers.add(new XmlResourceReader(url)) ;
 		return this ;
 	}
-	
+	/**
+	 * Adding profile to be considered while parsing all bio obj definitions
+	 * @param profile
+	 * @return
+	 */
 	public BioDictionaryBuilder addProfile(String profile) {
 		profiles.add(profile) ;
 		return this ;
 	}
-	
+	/**
+	 * Setting to parse only and only provided profile bio obj definitions
+	 * @param isOnlyProfiles
+	 * @return
+	 */
 	public BioDictionaryBuilder setOnlyProfiles(boolean isOnlyProfiles) {
 		this.isOnlyProfiles = isOnlyProfiles ;
 		return this ;
 	}
-	
+	/**
+	 * Adding db resource name for gathering bio obj info from tables
+	 * @return
+	 */
 	public BioDictionaryBuilder setDbSource() {
 		//TODO: to be implemented later
 		return this ;
 	}
-	
+	/**
+	 * Setting compression initializer which should return a BioCompressor instance
+	 * @param compressorInitializer
+	 * @return
+	 */
 	public BioDictionaryBuilder setCompressorInitializer(Initializer<BioCompressor> compressorInitializer) {
 		BioDictionary.setCompressorInitializer(compressorInitializer);
 		return this ;
 	}
-	
+	/**
+	 * Setting encryption initializer which should return a BioEncrypter instance
+	 * @param encrypterInitializer
+	 * @return
+	 */
 	public BioDictionaryBuilder setEncrypterInitializer(Initializer<BioEncrypter> encrypterInitializer) {
 		BioDictionary.setEncrypterInitializer(encrypterInitializer);
 		return this ;
 	}
 	
+	/**
+	 * Returns profiles
+	 * @return
+	 */
 	public HashSet<String> getProfiles() {
 		return profiles;
 	}
 
+	/**
+	 * Returns is only profiles flag
+	 * @return
+	 */
 	public boolean isOnlyProfiles() {
 		return isOnlyProfiles;
 	}
 
+	/**
+	 * Must be called at first because it constructs all dictionary can be found in class path, URL path etc.
+	 */
 	public void build() {
 		for (DictionaryReader reader : readers) {
 			reader.read(this); 
 		}
 		
+		BioDictionary.getDictionaryMap().entrySet().stream().forEach(e -> {
+			validate(e.getValue());
+		});
 	}
+	
+	/**
+	 * Validates all dictionary and sets references to bio objs or bio enum objs in tags
+	 * @param dictionary
+	 */
+    private void validate(BioDictionary dictionary) {
+        // Checking dependency types and validating
+        for (Entry<Integer, BioObj> objEntry : dictionary.getCodeMap().entrySet()) {
+            BioObj obj = objEntry.getValue();
+            // if we have a tag with type but Obj with that type doesn't exist in dictionary we remove those tags
+            ArrayList<BioTag> missingObjectTags = new ArrayList<BioTag>() ;
+            for (Entry<Integer, BioTag> entry : obj.getCodeMap().entrySet()) {
+                BioTag tag = entry.getValue();
+                if (tag.getType() == BioType.BioObject && tag.getObjName() != null && !tag.getObjName().equals(BioType.BioObject.toString())) {
+                    BioObj bioObj = null;
+                    String objName = tag.getObjName();
+                    if (objName != null) {
+                        bioObj = dictionary.getObjByType(objName);
+                        if (bioObj == null) {
+                            BioEnumObj enumObj;
+                            enumObj = dictionary.getBioEnumObj(objName);
+                            if (enumObj == null) {
+//                            	Logger.log(LoggerLevel.WARN, "bio object %s is not found in dictionary belonging to %s for tag %s", objName, obj.getType(), tag.getName()) ;
+                            	missingObjectTags.add(tag) ;
+                            } else {
+                                tag.setType(BioType.BioEnum);
+                                tag.setEnumObj(enumObj);
+                            }
+                        } else {
+                            tag.setObj(bioObj);
+                        }
+                    }
+                }
+            }
+            
+            for (BioTag bioTag : missingObjectTags) {
+				obj.removeTag(bioTag);
+			}
+        }
+        // if we have a super tag with type but Obj with that type doesn't exist in dictionary we remove those tags
+        ArrayList<BioTag> missingObjectSuperTags = new ArrayList<BioTag>() ;
+        for (BioTag superTag : dictionary.getSuperTagCodeMap().values()) {
+            if (superTag.getType() == BioType.BioObject && superTag.getObjName() != null && !superTag.getObjName().equals(BioType.BioObject.toString())) {
+                BioObj bioObj = null;
+                String objName = superTag.getObjName();
+                if (objName != null) {
+                    bioObj = dictionary.getObjByType(objName);
+                    if (bioObj == null) {
+                    	missingObjectSuperTags.add(superTag) ;
+                    } else {
+                        superTag.setObj(bioObj);
+                    }
+                }
+            }
+        }
+        
+        for (BioTag bioTag : missingObjectSuperTags) {
+        	dictionary.removeSuperTag(bioTag);
+		}
+    }
 }

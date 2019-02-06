@@ -290,8 +290,22 @@ public class BioDictionary {
     public HashMap<String, BioObj> getNameMap() {
         return nameMap;
     }	
-    
-    public static Map<String, Object> createMapObject() {
+    /**
+     * Returns super tags code map
+     * @return
+     */
+    public HashMap<Integer, BioTag> getSuperTagCodeMap() {
+		return superTagCodeMap;
+	}
+    /**
+     * Returns super tags name map
+     * @return
+     */
+	public HashMap<String, BioTag> getSuperTagNameMap() {
+		return superTagNameMap;
+	}
+	
+	public static Map<String, Object> createMapObject() {
     	try {
 			return (Map<String, Object>) mapObjectClass.getConstructor().newInstance() ;
 		} catch (Throwable e) {
@@ -319,7 +333,11 @@ public class BioDictionary {
 	
     private static BioDictionary dictionary ;
  
-    public static BioDictionary getDictionary() {
+    static HashMap<Integer, BioDictionary> getDictionaryMap() {
+		return dictionaryMap;
+	}
+
+	public static BioDictionary getDictionary() {
         return dictionary ;
     }
     
