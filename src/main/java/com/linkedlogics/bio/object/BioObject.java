@@ -529,6 +529,34 @@ public class BioObject implements BioObjectHolder {
 				if (!bioObject.has(e.getKey())) {
 					isEquals.set(false);
 					break;
+				} else if (e.getValue() instanceof Object[] && bioObject.get(e.getKey()) instanceof Object[]) {
+					Object[] thisArray = (Object[]) e.getValue() ;
+					Object[] objectArray = (Object[]) bioObject.get(e.getKey()) ;
+					if (thisArray.length != objectArray.length) {
+						isEquals.set(false);
+						break;
+					} else {
+						for (int i = 0; i < thisArray.length; i++) {
+							if (!thisArray[i].equals(objectArray[i])) {
+								isEquals.set(false);
+								break;
+							}
+						}
+					}
+				} else if (e.getValue() instanceof List && bioObject.get(e.getKey()) instanceof List) {
+					List<Object> thisList = (List<Object>) e.getValue() ;
+					List<Object> objectList = (List<Object>) bioObject.get(e.getKey()) ;
+					if (thisList.size() != objectList.size()) {
+						isEquals.set(false);
+						break;
+					} else {
+						for (int i = 0; i < thisList.size(); i++) {
+							if (!thisList.get(i).equals(objectList.get(i))) {
+								isEquals.set(false);
+								break;
+							}
+						}
+					}
 				} else if (!e.getValue().equals(bioObject.get(e.getKey()))) {
 					isEquals.set(false);
 					break;
@@ -582,7 +610,7 @@ public class BioObject implements BioObjectHolder {
 	}
 	
 	public String toString() {
-		return String.format("class:%s(%s) code:%d name:%s\n", this.getClass().getName(), this.map.getClass().getName(), getBioCode(), getBioName()) ;
+		return String.format("class:%s(%s) code:%d name:%s", this.getClass().getName(), this.map.getClass().getName(), getBioCode(), getBioName()) ;
 	}
 	
 	public String toJson() {
@@ -601,5 +629,9 @@ public class BioObject implements BioObjectHolder {
 		BioObject object = new BioObject(0) ;
 		object.putAll(map);
 		return object ;
+	}
+	
+	public static BioObject fromXml(String xml) {
+		return XMLUtility.fromXml(xml);
 	}
 }
