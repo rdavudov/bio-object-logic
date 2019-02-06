@@ -7,6 +7,7 @@ module bio.object {
 	exports com.linkedlogics.bio.exception;
 	exports com.linkedlogics.bio.annotation;
 	exports com.linkedlogics.bio.parser;
+	exports com.linkedlogics.bio.dictionary to bio.sql ;
 	
 	requires transitive java.xml;
 	requires transitive org.json;

@@ -2,9 +2,9 @@ package com.linkedlogics.bio.dictionary.builder;
 
 import java.util.HashSet;
 
+import com.linkedlogics.bio.BioDictionaryBuilder;
 import com.linkedlogics.bio.annotation.BioProfile;
 import com.linkedlogics.bio.annotation.BioProfiles;
-import com.linkedlogics.bio.dictionary.BioDictionaryBuilder;
 
 public interface DictionaryReader {
 	public void read(BioDictionaryBuilder builder) ;

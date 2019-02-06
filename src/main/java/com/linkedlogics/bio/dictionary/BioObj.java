@@ -3,6 +3,7 @@ package com.linkedlogics.bio.dictionary;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import com.linkedlogics.bio.BioDictionary;
 import com.linkedlogics.bio.BioObject;
 import com.linkedlogics.bio.exception.DictionaryException;
 

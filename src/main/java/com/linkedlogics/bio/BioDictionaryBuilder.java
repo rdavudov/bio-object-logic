@@ -1,4 +1,4 @@
-package com.linkedlogics.bio.dictionary;
+package com.linkedlogics.bio;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -8,10 +8,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TimeZone;
 
-import com.linkedlogics.bio.BioCompressor;
-import com.linkedlogics.bio.BioEncrypter;
-import com.linkedlogics.bio.BioInitializer;
-import com.linkedlogics.bio.BioTime;
+import com.linkedlogics.bio.dictionary.BioEnumObj;
+import com.linkedlogics.bio.dictionary.BioObj;
+import com.linkedlogics.bio.dictionary.BioTag;
+import com.linkedlogics.bio.dictionary.BioType;
 import com.linkedlogics.bio.dictionary.builder.AnnotationReader;
 import com.linkedlogics.bio.dictionary.builder.DictionaryReader;
 import com.linkedlogics.bio.dictionary.builder.XmlFileReader;

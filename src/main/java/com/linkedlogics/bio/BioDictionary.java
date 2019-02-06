@@ -1,4 +1,4 @@
-package com.linkedlogics.bio.dictionary;
+package com.linkedlogics.bio;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -6,12 +6,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-import com.linkedlogics.bio.BioCompressor;
-import com.linkedlogics.bio.BioEncrypter;
-import com.linkedlogics.bio.BioInitializer;
 import com.linkedlogics.bio.compression.BioLZ4Compressor;
+import com.linkedlogics.bio.dictionary.BioEnumObj;
+import com.linkedlogics.bio.dictionary.BioObj;
+import com.linkedlogics.bio.dictionary.BioTag;
 import com.linkedlogics.bio.exception.DictionaryException;
 
 /**

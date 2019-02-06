@@ -1,6 +1,6 @@
 package com.linkedlogics.bio.dictionary.builder;
 
-import com.linkedlogics.bio.dictionary.BioDictionaryBuilder;
+import com.linkedlogics.bio.BioDictionaryBuilder;
 
 public class UrlReader implements DictionaryReader {
 	private String url ;

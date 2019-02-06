@@ -3,13 +3,13 @@ package com.linkedlogics.bio.dictionary.builder;
 import java.lang.reflect.Field;
 import java.util.List;
 
+import com.linkedlogics.bio.BioDictionary;
+import com.linkedlogics.bio.BioDictionaryBuilder;
 import com.linkedlogics.bio.BioEnum;
 import com.linkedlogics.bio.BioObject;
 import com.linkedlogics.bio.annotation.BioRemoteObj;
 import com.linkedlogics.bio.annotation.BioRemoteTag;
 import com.linkedlogics.bio.annotation.BioSuperObj;
-import com.linkedlogics.bio.dictionary.BioDictionary;
-import com.linkedlogics.bio.dictionary.BioDictionaryBuilder;
 import com.linkedlogics.bio.dictionary.BioEnumObj;
 import com.linkedlogics.bio.dictionary.BioObj;
 import com.linkedlogics.bio.dictionary.BioTag;

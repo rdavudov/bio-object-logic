@@ -4,9 +4,9 @@ import java.io.InputStream;
 import java.util.HashSet;
 import java.util.List;
 
+import com.linkedlogics.bio.BioDictionary;
 import com.linkedlogics.bio.annotation.BioProfile;
 import com.linkedlogics.bio.annotation.BioProfiles;
-import com.linkedlogics.bio.dictionary.BioDictionary;
 
 
 public class DictionaryUtility {

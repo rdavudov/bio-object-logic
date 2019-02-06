@@ -6,7 +6,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
-import com.linkedlogics.bio.dictionary.BioDictionary;
 import com.linkedlogics.bio.exception.ParserException;
 import com.linkedlogics.bio.time.expression.DayExpression;
 import com.linkedlogics.bio.time.expression.FixedExpression;

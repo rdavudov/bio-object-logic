@@ -11,7 +11,6 @@ import java.util.stream.Stream;
 
 import org.json.JSONObject;
 
-import com.linkedlogics.bio.dictionary.BioDictionary;
 import com.linkedlogics.bio.exception.ImmutableException;
 import com.linkedlogics.bio.object.BioObjectHolder;
 import com.linkedlogics.bio.utility.JSONUtility;

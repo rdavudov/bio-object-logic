@@ -7,10 +7,10 @@ import java.util.Map.Entry;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import com.linkedlogics.bio.BioDictionary;
 import com.linkedlogics.bio.BioEnum;
 import com.linkedlogics.bio.BioObject;
 import com.linkedlogics.bio.BioTime;
-import com.linkedlogics.bio.dictionary.BioDictionary;
 import com.linkedlogics.bio.dictionary.BioEnumObj;
 import com.linkedlogics.bio.dictionary.BioObj;
 import com.linkedlogics.bio.dictionary.BioTag;

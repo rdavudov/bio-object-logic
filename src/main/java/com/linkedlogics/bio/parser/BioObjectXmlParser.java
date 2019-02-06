@@ -16,9 +16,9 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import com.linkedlogics.bio.BioDictionary;
 import com.linkedlogics.bio.BioEnum;
 import com.linkedlogics.bio.BioObject;
-import com.linkedlogics.bio.dictionary.BioDictionary;
 import com.linkedlogics.bio.dictionary.BioEnumObj;
 import com.linkedlogics.bio.dictionary.BioObj;
 import com.linkedlogics.bio.dictionary.BioTag;

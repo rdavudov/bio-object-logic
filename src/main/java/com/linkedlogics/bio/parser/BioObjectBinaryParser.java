@@ -7,10 +7,10 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.linkedlogics.bio.BioCompressor;
+import com.linkedlogics.bio.BioDictionary;
 import com.linkedlogics.bio.BioEncrypter;
 import com.linkedlogics.bio.BioEnum;
 import com.linkedlogics.bio.BioObject;
-import com.linkedlogics.bio.dictionary.BioDictionary;
 import com.linkedlogics.bio.dictionary.BioEnumObj;
 import com.linkedlogics.bio.dictionary.BioObj;
 import com.linkedlogics.bio.dictionary.BioTag;
@@ -28,7 +28,7 @@ import com.linkedlogics.bio.utility.XMLUtility;
  * @author rdavudov
  *
  */
-public class BioBinaryParser {
+public class BioObjectBinaryParser {
 	/**
 	 * indicates whether binary bytes contain compressed data
 	 */
