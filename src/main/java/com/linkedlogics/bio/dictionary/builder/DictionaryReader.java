@@ -1,14 +1,10 @@
 package com.linkedlogics.bio.dictionary.builder;
 
-import java.lang.reflect.Field;
 import java.util.HashSet;
 
 import com.linkedlogics.bio.annotation.BioProfile;
 import com.linkedlogics.bio.annotation.BioProfiles;
 import com.linkedlogics.bio.dictionary.BioDictionaryBuilder;
-import com.linkedlogics.bio.dictionary.BioObj;
-import com.linkedlogics.bio.dictionary.BioTag;
-import com.linkedlogics.bio.object.BioObject;
 
 public interface DictionaryReader {
 	public void read(BioDictionaryBuilder builder) ;
@@ -35,6 +31,4 @@ public interface DictionaryReader {
 			throw new RuntimeException(e) ;
 		}
 	}
-	
-	
 }
