@@ -105,7 +105,7 @@ public class BioDictionary {
             } else if (!objByName.getType().equals(obj.getType())) {
                 throw new DictionaryException("already existing code " + obj.getCode() + " in dictionary with different name " + objByName.getCode());
             }
-        } else if (objByCode.getBioClass().isAssignableFrom(obj.getBioClass())) {
+        } else if (objByCode.getBioClass().isAssignableFrom(obj.getBioClass()) || objByCode.getBioClass() == obj.getBioClass()) {
             codeMap.put(obj.getCode(), obj);
             typeMap.put(obj.getType(), obj);
             nameMap.put(obj.getName(), obj);
@@ -163,7 +163,7 @@ public class BioDictionary {
             } else if (!enumByName.getName().equals(enumObj.getName())) {
                 throw new DictionaryException("already existing code " + enumObj.getCode() + " in dictionary with different name " + enumByName.getCode());
             }
-        } else if (enumByCode.getBioClass().isAssignableFrom(enumObj.getBioClass())) {
+        } else if (enumByCode.getBioClass().isAssignableFrom(enumObj.getBioClass()) || enumByCode.getBioClass() == enumObj.getBioClass()) {
             enumCodeMap.put(enumObj.getCode(), enumObj);
             enumTypeMap.put(enumObj.getName(), enumObj);
         }
@@ -305,6 +305,10 @@ public class BioDictionary {
 		return superTagNameMap;
 	}
 	
+	/**
+	 * Creates an empty map object for bio objects
+	 * @return
+	 */
 	public static Map<String, Object> createMapObject() {
     	try {
 			return (Map<String, Object>) mapObjectClass.getConstructor().newInstance() ;
@@ -312,7 +316,11 @@ public class BioDictionary {
 			throw new RuntimeException(e) ;
 		}
     }
-    
+	
+	/**
+	 * Returns object creation factory for bio objects
+	 * @return
+	 */
     public BioFactory getFactory() {
     	if (factory == null) {
     		factory = new BioFactory(this) ;
@@ -320,27 +328,46 @@ public class BioDictionary {
     	return factory ;
     }
     
+    /**
+     * Returns new bio compressor
+     * @return
+     */
     public static BioCompressor getCompressor() {
     	return compressorInitializer.initialize() ;
     }
-    
+    /**
+     * Returns new bio encrypter
+     * @return
+     */
     public static BioEncrypter getEncrypter() {
     	return encrypterInitializer.initialize() ;
     }
-	
 	
 	private static HashMap<Integer, BioDictionary> dictionaryMap = new HashMap<Integer, BioDictionary>() ;
 	
     private static BioDictionary dictionary ;
  
+    /**
+     * Returns all dictionaries as map
+     * @return
+     */
     static HashMap<Integer, BioDictionary> getDictionaryMap() {
 		return dictionaryMap;
 	}
 
+    /**
+     * Returns default dictionary
+     * @return
+     */
 	public static BioDictionary getDictionary() {
         return dictionary ;
     }
     
+	/**
+	 * Returns dictionary and creates an empty one if it is not found
+	 * @param dictionary
+	 * @return
+	 */
     public static BioDictionary getOrCreateDictionary(int dictionary) {
     	BioDictionary d = dictionaryMap.get(dictionary) ;
     	if (d == null) {
@@ -361,19 +388,38 @@ public class BioDictionary {
     	return d ;
     }
     
-    public static BioDictionary createDictionary() {
-        return DictionaryUtility.create() ;
-    }
-    
+    /**
+     * Returns dictionary by id
+     * @param dictionary
+     * @return
+     */
     public static BioDictionary getDictionary(int dictionary) {
-    	return dictionaryMap.get(dictionary) ;
+    	BioDictionary dict = dictionaryMap.get(dictionary) ;
+    	if (dict == null) {
+    		throw new DictionaryException(dictionary + " dictionary is not found") ;
+    	}
+    	return dict ;
     }
     
+    /**
+     * Sets compressor initializer
+     * @param compressorInitializer
+     */
     static void setCompressorInitializer(Initializer<BioCompressor> compressorInitializer) {
     	BioDictionary.compressorInitializer = compressorInitializer ;
     }
-    
+    /**
+     * Sets encrypter initializer
+     * @param encrypterInitializer
+     */
     static void setEncrypterInitializer(Initializer<BioEncrypter> encrypterInitializer) {
     	BioDictionary.encrypterInitializer = encrypterInitializer ;
     }
+    /**
+     * Sets map object class
+     * @param mapObjectClass
+     */
+	static void setMapObjectClass(Class<? extends Map> mapObjectClass) {
+		BioDictionary.mapObjectClass = mapObjectClass;
+	}
 }

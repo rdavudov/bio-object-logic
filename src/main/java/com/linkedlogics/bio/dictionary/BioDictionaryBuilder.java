@@ -3,6 +3,7 @@ package com.linkedlogics.bio.dictionary;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import com.linkedlogics.bio.compression.BioCompressor;
@@ -101,6 +102,11 @@ public class BioDictionaryBuilder {
 	 */
 	public BioDictionaryBuilder setEncrypterInitializer(Initializer<BioEncrypter> encrypterInitializer) {
 		BioDictionary.setEncrypterInitializer(encrypterInitializer);
+		return this ;
+	}
+	
+	public BioDictionaryBuilder setMapObjectClass(Class<? extends Map> mapObjectClass) {
+		BioDictionary.setMapObjectClass(mapObjectClass);
 		return this ;
 	}
 	
