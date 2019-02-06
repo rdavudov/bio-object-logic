@@ -50,8 +50,16 @@ public class BioFactory {
 		BioObj obj = dictionary.getCodeMap().get(code);
 		if (obj != null && obj.getBioClass() != null) {
 			try {
-				Constructor<BioObject> constructor = obj.getBioClass().getConstructor(BioObject.class) ;
-				BioObject object = constructor.newInstance(source) ;
+				Constructor<BioObject> constructor;
+				BioObject object = null ;
+				try {
+					constructor = obj.getBioClass().getConstructor(BioObject.class);
+					object = constructor.newInstance(source) ;
+				} catch (NoSuchMethodException e) {
+					constructor = obj.getBioClass().getConstructor();
+					object = constructor.newInstance() ;
+					object.putAll(source) ;
+				}
 				object.setBioCode(obj.getCode());
 				object.setBioName(obj.getName());
 				object.setBioDictionary(obj.getDictionary());
@@ -83,8 +91,16 @@ public class BioFactory {
 		BioObj obj = dictionary.getCodeMap().get(code);
 		if (obj != null && obj.getBioClass() != null) {
 			try {
-				Constructor<BioObject> constructor = obj.getBioClass().getConstructor(BioObject.class) ;
-				T object = (T) constructor.newInstance(source) ;
+				Constructor<BioObject> constructor;
+				T object = null ;
+				try {
+					constructor = obj.getBioClass().getConstructor(BioObject.class);
+					object = (T) constructor.newInstance(source) ;
+				} catch (NoSuchMethodException e) {
+					constructor = obj.getBioClass().getConstructor();
+					object = (T) constructor.newInstance() ;
+					object.putAll(source) ;
+				}
 				object.setBioCode(obj.getCode());
 				object.setBioName(obj.getName());
 				object.setBioDictionary(obj.getDictionary());
@@ -128,8 +144,17 @@ public class BioFactory {
 		BioObj obj = dictionary.getTypeMap().get(type);
 		if (obj != null && obj.getBioClass() != null) {
 			try {
-				Constructor<BioObject> constructor = obj.getBioClass().getConstructor(BioObject.class) ;
-				BioObject object = constructor.newInstance(source) ;
+				Constructor<BioObject> constructor;
+				BioObject object = null ;
+				try {
+					constructor = obj.getBioClass().getConstructor(BioObject.class);
+					object = constructor.newInstance(source) ;
+				} catch (NoSuchMethodException e) {
+					constructor = obj.getBioClass().getConstructor();
+					object = constructor.newInstance() ;
+					object.putAll(source) ;
+				}
+				
 				object.setBioCode(obj.getCode());
 				object.setBioName(obj.getName());
 				object.setBioDictionary(obj.getDictionary());
@@ -146,8 +171,16 @@ public class BioFactory {
 		BioObj obj = dictionary.getTypeMap().get(type);
 		if (obj != null && obj.getBioClass() != null) {
 			try {
-				Constructor<BioObject> constructor = obj.getBioClass().getConstructor(BioObject.class) ;
-				T object = (T) constructor.newInstance(source) ;
+				Constructor<BioObject> constructor;
+				T object = null ;
+				try {
+					constructor = obj.getBioClass().getConstructor(BioObject.class);
+					object = (T) constructor.newInstance(source) ;
+				} catch (NoSuchMethodException e) {
+					constructor = obj.getBioClass().getConstructor();
+					object = (T) constructor.newInstance() ;
+					object.putAll(source) ;
+				}
 				object.setBioCode(obj.getCode());
 				object.setBioName(obj.getName());
 				object.setBioDictionary(obj.getDictionary());
