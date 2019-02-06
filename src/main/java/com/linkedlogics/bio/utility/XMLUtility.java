@@ -17,13 +17,30 @@ import com.linkedlogics.bio.object.BioObject;
 import com.linkedlogics.bio.parser.BioObjectXmlParser;
 import com.linkedlogics.bio.time.BioTime;
 
+/**
+ * Class for all xml related operations
+ * @author rajab
+ *
+ */
 public class XMLUtility {
+	/**
+	 * Exports bio object to xml
+	 * @param object
+	 * @return
+	 */
 	public static String toXml(BioObject object) {
 		StringBuilder xml = new StringBuilder("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n") ;
 		toXml(xml, "", object.getBioName(), object) ;
 		return xml.toString() ;
 	}
 	
+	/**
+	 * Exportys bio object to xml
+	 * @param xml
+	 * @param tab
+	 * @param tag
+	 * @param object
+	 */
 	private static void toXml(StringBuilder xml, String tab, String tag, BioObject object) {
 		if (tag == null) {
 			tag = "bio";
@@ -74,6 +91,15 @@ public class XMLUtility {
 		xml.append(tab).append("</").append(tag.replaceAll("_", "-")).append(">\n");
 	}
 	
+	/**
+	 * Exports a tag to xml
+	 * @param xml
+	 * @param tab
+	 * @param key
+	 * @param value
+	 * @param type
+	 * @param tag
+	 */
 	public static void toXml(StringBuilder xml, String tab, String key, Object value, BioType type, BioTag tag) {
 		if (value instanceof BioObject[]) {
 			xml.append(tab).append(TAB).append("<").append(key)
@@ -174,6 +200,11 @@ public class XMLUtility {
 		}
 	}
 	
+	/**
+	 * Parses bio object from xml
+	 * @param xml
+	 * @return
+	 */
 	public static BioObject fromXml(String xml) {
 		return new BioObjectXmlParser().parse(xml) ;
 	}

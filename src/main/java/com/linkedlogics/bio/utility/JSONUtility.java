@@ -18,7 +18,17 @@ import com.linkedlogics.bio.object.BioEnum;
 import com.linkedlogics.bio.object.BioObject;
 import com.linkedlogics.bio.time.BioTime;
 
+/**
+ * Class for all JSON related operations
+ * @author rajab
+ *
+ */
 public class JSONUtility {
+	/**
+	 * Parses a JSON to bio object
+	 * @param object
+	 * @return
+	 */
 	public static BioObject fromJson(JSONObject object) {
 		BioObject bio = new BioObject(0);
 		Iterator<String> iter = object.keys();
@@ -36,6 +46,11 @@ public class JSONUtility {
 		return bio;
 	}
 	
+	/**
+	 * Parses a JSON array to bio object array
+	 * @param array
+	 * @return
+	 */
 	public static Object[] fromJson(JSONArray array) {
 		Object[] objects = new Object[array.length()];
 		for (int i = 0; i < array.length(); i++) {
@@ -59,6 +74,11 @@ public class JSONUtility {
 		return bioArray;
 	}
 	
+	/**
+	 * Exports bio object to json
+	 * @param object
+	 * @return
+	 */
 	public static JSONObject toJson(BioObject object) {
 		final JSONObject json = new JSONObject();
 		final BioObj obj = BioDictionary.getDictionary(object.getBioDictionary()).getObjByCode(object.getBioCode());

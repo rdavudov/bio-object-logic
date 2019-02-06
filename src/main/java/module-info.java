@@ -4,6 +4,7 @@
  */
 module bio.object {
 	exports com.linkedlogics.bio.object;
+	exports com.linkedlogics.bio.exception;
 	exports com.linkedlogics.bio.annotation;
 	exports com.linkedlogics.bio.dictionary;
 	exports com.linkedlogics.bio.parser;
