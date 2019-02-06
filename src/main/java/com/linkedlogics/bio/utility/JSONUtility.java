@@ -1,12 +1,22 @@
 package com.linkedlogics.bio.utility;
 
 import java.lang.reflect.Array;
+import java.util.Comparator;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map.Entry;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import com.linkedlogics.bio.dictionary.BioDictionary;
+import com.linkedlogics.bio.dictionary.BioObj;
+import com.linkedlogics.bio.dictionary.BioTag;
+import com.linkedlogics.bio.dictionary.BioType;
+import com.linkedlogics.bio.expression.BioExpression;
+import com.linkedlogics.bio.object.BioEnum;
 import com.linkedlogics.bio.object.BioObject;
+import com.linkedlogics.bio.time.BioTime;
 
 public class JSONUtility {
 	public static BioObject fromJson(JSONObject object) {
@@ -49,7 +59,62 @@ public class JSONUtility {
 		return bioArray;
 	}
 	
-	public static String toJson(BioObject object) {
-		return null ;
+	public static JSONObject toJson(BioObject object) {
+		final JSONObject json = new JSONObject();
+		final BioObj obj = BioDictionary.getDictionary(object.getBioDictionary()).getObjByCode(object.getBioCode());
+		
+		object.stream().sorted(Comparator.comparing(Entry::getKey)).forEach(e -> {
+			if (!e.getKey().startsWith("_")) {
+				if (obj != null) {
+					BioTag tag = obj.getTag(e.getKey());
+					if (tag != null && !tag.isExportable()) {
+						return ;
+					}
+				}
+
+				if (e.getValue() instanceof BioObject[]) {
+					JSONArray jsonArray = new JSONArray();
+					BioObject[] array = (BioObject[]) e.getValue();
+					for (int i = 0; i < array.length; i++) {
+						jsonArray.put(array[i].toJson());
+					}
+					json.put(e.getKey(), jsonArray);
+				} else if (e.getValue() instanceof BioEnum[]) {
+					JSONArray jsonArray = new JSONArray();
+					BioEnum[] array = (BioEnum[]) e.getValue();
+					for (int i = 0; i < array.length; i++) {
+						jsonArray.put(array[i].getName());
+					}
+					json.put(e.getKey(), jsonArray);
+				} else if (e.getValue() instanceof Object[]) {
+					json.put(e.getKey(), new JSONArray(e.getValue()));
+				} else if (e.getValue() instanceof List) {
+					JSONArray jsonArray = new JSONArray();
+					List list = (List) e.getValue();
+					for (int i = 0; i < list.size(); i++) {
+						if (list.get(i) instanceof BioObject) {
+							jsonArray.put(((BioObject) list.get(i)).toJson());
+						} else if (list.get(i) instanceof BioEnum) {
+							jsonArray.put(((BioEnum) list.get(i)).getName());
+						} else {
+							jsonArray.put(list.get(i));
+						}
+					}
+					json.put(e.getKey(), jsonArray);
+				} else if (e.getValue() instanceof BioObject) {
+					json.put(e.getKey(), ((BioObject) e.getValue()).toJson());
+				} else if (e.getValue() instanceof BioEnum) {
+					json.put(e.getKey(), ((BioEnum) e.getValue()).getName());
+				} else if (e.getValue() instanceof BioExpression) {
+
+				} else if (obj != null && obj.getTag(e.getKey()) != null && obj.getTag(e.getKey()).getType() == BioType.Time) {
+					json.put(e.getKey(), BioTime.format((Long) e.getValue(), BioTime.DATETIME_FORMAT));
+				} else {
+					json.put(e.getKey(), e.getValue());
+				}
+			}
+		});
+		
+		return json ;
 	}
 }

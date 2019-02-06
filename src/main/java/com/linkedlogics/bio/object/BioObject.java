@@ -610,10 +610,10 @@ public class BioObject implements BioObjectHolder {
 	}
 	
 	public String toString() {
-		return String.format("class:%s(%s) code:%d name:%s", this.getClass().getName(), this.map.getClass().getName(), getBioCode(), getBioName()) ;
+		return toXml() ;
 	}
 	
-	public String toJson() {
+	public JSONObject toJson() {
 		return JSONUtility.toJson(this) ;
 	}
 	
