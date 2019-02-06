@@ -1,14 +1,18 @@
 package com.linkedlogics.bio.dictionary;
 
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.linkedlogics.bio.compression.BioCompressor;
 import com.linkedlogics.bio.compression.BioLZ4Compressor;
 import com.linkedlogics.bio.encryption.BioEncrypter;
 import com.linkedlogics.bio.exception.DictionaryException;
 import com.linkedlogics.bio.object.Initializer;
-import com.linkedlogics.bio.utility.DictionaryUtility;
 
 /**
  * 
@@ -52,6 +56,7 @@ public class BioDictionary {
     private BioFactory factory ;
     
     private static Class<? extends Map> mapObjectClass = HashMap.class ;
+    
     private static Initializer<BioCompressor> compressorInitializer = new Initializer<BioCompressor>() {
 		@Override
 		public BioCompressor initialize() {
@@ -64,6 +69,8 @@ public class BioDictionary {
 			return null;
 		}
 	};
+	
+	private static Set<String> supportedDateFormats = new HashSet<String>() ;
     
     public BioDictionary() {
 
@@ -421,5 +428,21 @@ public class BioDictionary {
      */
 	static void setMapObjectClass(Class<? extends Map> mapObjectClass) {
 		BioDictionary.mapObjectClass = mapObjectClass;
+	}
+	
+	/**
+	 * Add supported date format
+	 * @param format
+	 */
+	static void addSupportedDateFormat(String format) {
+		supportedDateFormats.add(format) ;
+	}
+	
+	/**
+	 * Return supported date formats
+	 * @return
+	 */
+	static List<String> getSupportedDateFormats() {
+		return supportedDateFormats.stream().collect(Collectors.toList()) ;
 	}
 }

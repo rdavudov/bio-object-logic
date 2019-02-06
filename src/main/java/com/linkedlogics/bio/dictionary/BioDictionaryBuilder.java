@@ -1,10 +1,12 @@
 package com.linkedlogics.bio.dictionary;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.TimeZone;
 
 import com.linkedlogics.bio.compression.BioCompressor;
 import com.linkedlogics.bio.dictionary.builder.AnnotationReader;
@@ -13,6 +15,7 @@ import com.linkedlogics.bio.dictionary.builder.XmlFileReader;
 import com.linkedlogics.bio.dictionary.builder.XmlResourceReader;
 import com.linkedlogics.bio.encryption.BioEncrypter;
 import com.linkedlogics.bio.object.Initializer;
+import com.linkedlogics.bio.time.BioTime;
 
 /**
  * This is dictionary builder must be called at the beginning of application in order to setup all dictionary information
@@ -105,10 +108,63 @@ public class BioDictionaryBuilder {
 		return this ;
 	}
 	
+	/**
+	 * Sets map object class
+	 * @param mapObjectClass
+	 * @return
+	 */
 	public BioDictionaryBuilder setMapObjectClass(Class<? extends Map> mapObjectClass) {
 		BioDictionary.setMapObjectClass(mapObjectClass);
 		return this ;
 	}
+	
+	/**
+	 * This format is used while exporting time values
+	 * @param format
+	 * @return
+	 */
+	public BioDictionaryBuilder setBioDateFormat(String format) {
+		addSupportDateFormat(format) ;
+		BioTime.DATE_FORMAT = format ;
+		return this ;
+	}
+	
+	/**
+	 * This format is used while exporting time values
+	 * @param format
+	 * @return
+	 */
+	public BioDictionaryBuilder setBioDateTimeFormat(String format) {
+		addSupportDateFormat(format) ;
+		BioTime.DATETIME_FORMAT = format ;
+		return this ;
+	}
+	
+	/**
+	 * Adds supported date format used in parsing date strings
+	 * @param format
+	 * @return
+	 */
+	public BioDictionaryBuilder addSupportDateFormat(String format) {
+		try {
+			new SimpleDateFormat(format) ;
+			BioDictionary.addSupportedDateFormat(format) ;
+		} catch (IllegalArgumentException e) {
+			throw new RuntimeException(e) ;
+		}
+		return this ;
+	}
+	
+	/**
+	 * This format is used while exporting time values
+	 * @param timeZone
+	 * @return
+	 */
+	public BioDictionaryBuilder setBioTimeZone(String timeZone) {
+		TimeZone.setDefault(TimeZone.getTimeZone(timeZone)) ;
+		return this ;
+	}
+	
 	
 	/**
 	 * Returns profiles
