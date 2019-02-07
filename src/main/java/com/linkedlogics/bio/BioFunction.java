@@ -1,6 +1,4 @@
-package com.linkedlogics.bio.expression;
-
-import com.linkedlogics.bio.BioObject;
+package com.linkedlogics.bio;
 
 /**
  * BioFunction is for usage in bio expressions just implement it and thats it
@@ -8,7 +6,6 @@ import com.linkedlogics.bio.BioObject;
  *
  */
 public interface BioFunction {
-	default void setParams(BioExpression... input) { }
-	public Object getValue(Object value, BioObject... params) ;
+	public Object getValue(Object value, Object... parameters) ;
 	public String getName() ;
 }

@@ -613,24 +613,44 @@ public class BioObject implements BioObjectHolder {
 		return toXml() ;
 	}
 	
+	/**
+	 * Exports bio object to json
+	 * @return
+	 */
 	public JSONObject toJson() {
 		return JSONUtility.toJson(this) ;
 	}
-	
+	/**
+	 * Exports bio object to xml
+	 * @return
+	 */
 	public String toXml() {
 		return XMLUtility.toXml(this) ;
 	}
 	
+	/**
+	 * Parses json to bio object
+	 * @param json
+	 * @return
+	 */
 	public static BioObject fromJson(JSONObject json) {
 		return JSONUtility.fromJson(json);
 	}
-	
+	/**
+	 * Creates bio object using map entries
+	 * @param map
+	 * @return
+	 */
 	public static BioObject fromMap(Map<String, Object> map) {
 		BioObject object = new BioObject(0) ;
 		object.putAll(map);
 		return object ;
 	}
-	
+	/**
+	 * Parses xml to bio object
+	 * @param xml
+	 * @return
+	 */
 	public static BioObject fromXml(String xml) {
 		return XMLUtility.fromXml(xml);
 	}

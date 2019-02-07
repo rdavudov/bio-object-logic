@@ -6,7 +6,7 @@ import com.linkedlogics.bio.BioDictionary;
 import com.linkedlogics.bio.BioEnum;
 import com.linkedlogics.bio.BioObject;
 import com.linkedlogics.bio.BioTime;
-import com.linkedlogics.bio.parser.BioExpressionParser;
+import com.linkedlogics.bio.expression.parser.BioExpressionParser;
 import com.linkedlogics.bio.utility.ConversionUtility;
 
 /**
