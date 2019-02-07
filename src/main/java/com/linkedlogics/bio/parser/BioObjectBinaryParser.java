@@ -737,6 +737,16 @@ public class BioObjectBinaryParser {
 		}
 	}
 	
+	/**
+	 * Decodes tag value
+	 * @param obj
+	 * @param type
+	 * @param isArray
+	 * @param isList
+	 * @param tag
+	 * @param stream
+	 * @return
+	 */
 	private Object readValue(BioObj obj, BioType type, boolean isArray, boolean isList, BioTag tag, BiFastStream stream) {
 		if (isArray) {
 			switch (type) {
@@ -878,10 +888,19 @@ public class BioObjectBinaryParser {
 		return null;
 	}
 	
+	/**
+	 * Creates stream for decoding
+	 * @param data
+	 * @return
+	 */
 	private BiFastStream createInputStream(byte[] data) {
 		return new BiFastStream(data);
 	}
 
+	/**
+	 * Creates stream for encoding
+	 * @return
+	 */
 	private BoFastStream createOutputStream() {
 		return new BoFastStream();
 	}

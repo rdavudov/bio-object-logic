@@ -21,7 +21,7 @@ public interface BioExpression {
 	}
 	
 	public static BioExpression parse(String expr) {
-		// TODO: also check from chache first
+		// TODO: also check from cache first
 		return new BioExpressionParser(expr).parse() ;
 	}
 	

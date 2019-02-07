@@ -9,7 +9,7 @@ import java.util.HashMap;
  * @param <T>
  */
 public abstract class BioInitializer<T> {
-	private HashMap<String, Object> properties ;
+	protected HashMap<String, Object> properties ;
 	
 	public BioInitializer() {
 		
