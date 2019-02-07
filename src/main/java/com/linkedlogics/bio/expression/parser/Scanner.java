@@ -32,18 +32,6 @@ public class Scanner implements Operands {
 			char c = source.charAt(next);
 			if (Character.isLetterOrDigit(c) || c == '_') {
 				next++;
-			} else if (c == '{') {
-				while (c != '}') {
-					next++;
-					c = source.charAt(next);
-				}
-				next++;
-			} else if (c == '[') {
-				while (c != ']') {
-					next++;
-					c = source.charAt(next);
-				}
-				next++;
 			} else {
 				break;
 			}
