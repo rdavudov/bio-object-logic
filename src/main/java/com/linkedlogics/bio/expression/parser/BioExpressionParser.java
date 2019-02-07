@@ -6,14 +6,15 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.linkedlogics.bio.BioExpression;
+import com.linkedlogics.bio.BioObject;
 import com.linkedlogics.bio.exception.ExpressionException;
 import com.linkedlogics.bio.expression.Arithmetic;
 import com.linkedlogics.bio.expression.Comparison;
 import com.linkedlogics.bio.expression.Constant;
 import com.linkedlogics.bio.expression.Dynamic;
 import com.linkedlogics.bio.expression.Expression;
-import com.linkedlogics.bio.expression.Filter;
 import com.linkedlogics.bio.expression.Function;
+import com.linkedlogics.bio.expression.Index;
 import com.linkedlogics.bio.utility.NumberUtility;
 
 public class BioExpressionParser implements Operands {
@@ -172,15 +173,19 @@ public class BioExpressionParser implements Operands {
 		case LEFT_SQUARE:
 			expr = array() ;
 			break ;
-		case LEFT_CURLY:
-			expr = filter() ;
-			break ;
 		}
 		
-		if (expr != null && tok == DOT) {
-			match(DOT);
-			Expression next = factor() ;
-			expr.setNext(next);
+		if (expr != null) {
+			if (tok == DOT) {
+				match(DOT);
+				expr.setNext(factor());
+			} else if (tok == LEFT_SQUARE) {
+				match(LEFT_SQUARE) ;
+				Expression i = expr() ;
+				match(RIGHT_SQUARE) ;
+				Index index = new Index(i) ;
+				expr.setNext(index);
+			}
 		}
 		
 		return expr ;
@@ -202,13 +207,11 @@ public class BioExpressionParser implements Operands {
 			match(NUMBER) ;
 		}
 		expr = new Constant(NumberUtility.multiply(NumberUtility.convert(numberStr), isMinus ? -1 : 1)) ;
-		expr.setText(numberStr);
 		return expr ;
 	}
 	
 	private Constant string() throws ExpressionException {
 		Constant expr = new Constant(lex.sval) ;
-		expr.setText(lex.sval);
 		match(STRING);
 		return expr ;
 	}
@@ -222,7 +225,6 @@ public class BioExpressionParser implements Operands {
 			if (tok == RIGHT) {
 				match(RIGHT) ;
 				expr = new Function(ident) ;
-				expr.setText(ident + "()");
 			} else {
 				List<Expression> parameters = new ArrayList<Expression>() ;
 				do {
@@ -235,11 +237,14 @@ public class BioExpressionParser implements Operands {
 					}
 				} while (tok != RIGHT && tok != EOF) ;
 				expr = new Function(ident, parameters) ;
-				expr.setText(ident + "(" + parameters.stream().map(e -> {return e.getText();}).collect(Collectors.joining(",")) +")");
 			}
 		} else {
-			expr = new Dynamic(ident) ;
-			expr.setText(ident);
+			// since true or false are like idents but actually reserved words we catch them here
+			if (ident.equalsIgnoreCase("true") || ident.equalsIgnoreCase("false")) {
+				expr = new Constant(Boolean.parseBoolean(ident)) ;
+			} else {
+				expr = new Dynamic(ident) ;
+			}
 		}
 		
 		return expr ;
@@ -261,15 +266,6 @@ public class BioExpressionParser implements Operands {
 			array[i] = list.get(i).getValue(null) ;
 		}
 		Constant expr = new Constant(array) ;
-		expr.setText("[" + Arrays.stream(array).map(e -> {return e.toString();}).collect(Collectors.joining(",")) + "]");
-		return expr ;
-	}
-	
-	private Filter filter() throws ExpressionException {
-		match(LEFT_CURLY);
-		Filter expr = new Filter(lex.sval) ;
-		expr.setText("{" + lex.sval + "}");
-		match(RIGHT_CURLY) ;
 		return expr ;
 	}
 	
@@ -281,9 +277,18 @@ public class BioExpressionParser implements Operands {
 	}
 	
 	public static void main(String[] args) {
-		String expr = "2 * (1.5 + 1.2)" ;
+		BioObject person = new BioObject(0, "person") ;
+		person.set("name", "John");
+//		person.set("is_student", false) ;
+		person.set("cars", new String[] {"mercedes", "porche"}) ;
+		person.set("brother", new BioObject(0, "person") {{
+			set("name", "Jacob");
+			set("cars", new String[] {"bmw", "toyota"}) ;
+		}}) ;
+		
+		String expr = "(5 + [1,2,3])[1]" ;
 		BioExpression e = BioExpression.parse(expr) ;
-		Object o = e.getValue() ;
+		Object o = e.getValue(person) ;
 		System.out.println(e);
 	}
 }
