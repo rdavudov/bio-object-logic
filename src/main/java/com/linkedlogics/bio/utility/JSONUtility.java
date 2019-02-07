@@ -11,12 +11,12 @@ import org.json.JSONObject;
 
 import com.linkedlogics.bio.BioDictionary;
 import com.linkedlogics.bio.BioEnum;
+import com.linkedlogics.bio.BioExpression;
 import com.linkedlogics.bio.BioObject;
 import com.linkedlogics.bio.BioTime;
 import com.linkedlogics.bio.dictionary.BioObj;
 import com.linkedlogics.bio.dictionary.BioTag;
 import com.linkedlogics.bio.dictionary.BioType;
-import com.linkedlogics.bio.expression.BioExpression;
 
 /**
  * Class for all JSON related operations
