@@ -678,19 +678,50 @@ public class BioObject implements BioObjectHolder, Cloneable {
 			}
 		}
 	}
-	
-	public void fill() {
+
+	public void fill(BioObject... params) {
+		final ArrayList<String> filledKeys = new ArrayList<String>();
+		stream().forEach(e -> {
+			if (e.getValue() instanceof BioExpression) {
+				filledKeys.add(e.getKey()) ;
+			} else if (e.getValue() instanceof BioObject) {
+				((BioObject) e.getValue()).fill(params) ;
+			} else if (e.getValue() instanceof BioObject[]) {
+				BioObject[] array = (BioObject[]) e.getValue();
+				for (int i = 0; i < array.length; i++) {
+					array[i].fill(params);
+				}
+			} else if (e.getValue() instanceof List) {
+				List list = (List) e.getValue() ;
+				for (Object object : list) {
+					if (object instanceof BioObject) {
+						((BioObject) object).fill(params) ;
+					}
+				}
+			}
+		});
 		
+		filledKeys.stream().forEach(k -> {
+			BioExpression expression = (BioExpression) get(k) ;
+			Object value = expression.getValue(params) ;
+			if (value != null) {
+				// we got the actual value and lets set it
+				set(k, value) ;
+			} else {
+				// since we couldn't evaluate expression and got NULL so we remove that key because we can't put NULL values into bio
+				remove(k) ;
+			}
+		});
 	}
 	
 	public void format() {
-		
+
 	}
 	
 	/**
 	 * Trims keys which are not found in the dictionary on other first level, does not go deeper
 	 */
-	public void trim() {
+	public BioObject trim() {
 		BioObject trimmed = new BioObject(0) ;
 		BioObj obj = BioDictionary.getDictionary(dictionary).getObjByCode(code);
 		if (obj != null) {
@@ -706,12 +737,14 @@ public class BioObject implements BioObjectHolder, Cloneable {
 				trimmed.put(k, remove(k)) ;
 			});
 		}
+		
+		return trimmed ;
 	}
 	
 	/**
 	 * Trims keys which are not found in the dictionary and recursively goes deeper
 	 */
-	public void trimAll() {
+	public BioObject trimAll() {
 		BioObject trimmed = new BioObject(0) ;
 		BioObj obj = BioDictionary.getDictionary(dictionary).getObjByCode(code);
 		if (obj != null) {
@@ -743,13 +776,15 @@ public class BioObject implements BioObjectHolder, Cloneable {
 				trimmed.put(k, remove(k)) ;
 			});
 		}
+		
+		return trimmed ;
 	}
 	
 	/**
 	 * Trims keys which are defined in the dictionary by the trim key, works recursively
 	 * @param trimKey
 	 */
-	public void trim(String trimKey) {
+	public BioObject trim(String trimKey) {
 		BioObject trimmed = new BioObject(0) ;
 		BioObj obj = BioDictionary.getDictionary(dictionary).getObjByCode(code);
 		if (obj != null) {
@@ -781,13 +816,15 @@ public class BioObject implements BioObjectHolder, Cloneable {
 				trimmed.put(k, remove(k)) ;
 			});
 		}
+		
+		return trimmed ;
 	}
 	
 	/**
 	 * Trims inverted keys which are defined in the dictionary by the trim key, works recursively
 	 * @param inverseTrimKey
 	 */
-	public void inverseTrim(String inverseTrimKey) {
+	public BioObject inverseTrim(String inverseTrimKey) {
 		BioObject trimmed = new BioObject(0) ;
 		BioObj obj = BioDictionary.getDictionary(dictionary).getObjByCode(code);
 		if (obj != null) {
@@ -819,6 +856,8 @@ public class BioObject implements BioObjectHolder, Cloneable {
 				trimmed.put(k, remove(k)) ;
 			});
 		}
+		
+		return trimmed ;
 	}
 	
 	protected Map<String, Object> getMap() {
