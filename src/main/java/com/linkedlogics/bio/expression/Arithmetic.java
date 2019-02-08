@@ -58,7 +58,7 @@ public class Arithmetic extends Expression implements Operands {
 		Object rightValue = rightExpr.getValue(params) ;
 		// If any of sides is null it is not possible to determine result
 		if (leftValue == null || rightValue == null) {
-			return false ;
+			return null ;
 		}
 		
 		// bio enums can be used in expressions by their string names like normal strings
@@ -118,7 +118,7 @@ public class Arithmetic extends Expression implements Operands {
 		Object rightValue = rightExpr.getValue(params) ;
 		// If any of sides is null it is not possible to determine result
 		if (leftValue == null || rightValue == null) {
-			return false ;
+			return null ;
 		}
 		
 		// bio enums can be used in expressions by their string names like normal strings
@@ -173,7 +173,7 @@ public class Arithmetic extends Expression implements Operands {
 		Object rightValue = rightExpr.getValue(params) ;
 		// If any of sides is null it is not possible to determine result
 		if (leftValue == null || rightValue == null) {
-			return false ;
+			return null ;
 		}
 		
 		// bio enums can be used in expressions by their string names like normal strings
@@ -233,7 +233,7 @@ public class Arithmetic extends Expression implements Operands {
 		Object rightValue = rightExpr.getValue(params) ;
 		// If any of sides is null it is not possible to determine result
 		if (leftValue == null || rightValue == null) {
-			return false ;
+			return null ;
 		}
 		
 		// bio enums can be used in expressions by their string names like normal strings
@@ -288,7 +288,7 @@ public class Arithmetic extends Expression implements Operands {
 		Object rightValue = rightExpr.getValue(params) ;
 		// If any of sides is null it is not possible to determine result
 		if (leftValue == null || rightValue == null) {
-			return false ;
+			return null ;
 		}
 		
 		// bio enums can be used in expressions by their string names like normal strings
