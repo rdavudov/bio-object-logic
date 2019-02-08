@@ -237,6 +237,7 @@ public class BioExpressionParser implements Operands {
 					}
 				} while (tok != RIGHT && tok != EOF) ;
 				expr = new Function(ident, parameters) ;
+				match(RIGHT) ;
 			}
 		} else {
 			// since true or false are like idents but actually reserved words we catch them here
