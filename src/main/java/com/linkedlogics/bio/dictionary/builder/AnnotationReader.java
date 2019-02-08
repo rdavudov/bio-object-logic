@@ -20,6 +20,11 @@ import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ClassInfo;
 import io.github.classgraph.ScanResult;
 
+/**
+ * BioDictionary reader from annotations
+ * @author rajab
+ *
+ */
 public class AnnotationReader implements DictionaryReader {
 	private String packageName ;
 

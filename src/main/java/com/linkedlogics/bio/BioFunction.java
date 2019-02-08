@@ -1,5 +1,7 @@
 package com.linkedlogics.bio;
 
+import com.linkedlogics.bio.exception.ValidationException;
+
 /**
  * BioFunction is for usage in bio expressions just implement it and thats it
  * @author rajab
@@ -7,5 +9,8 @@ package com.linkedlogics.bio;
  */
 public interface BioFunction {
 	public Object getValue(Object value, Object... parameters) ;
-	public String getName() ;
+	
+	default boolean validate(Object value, Object... parameters) throws ValidationException {
+		return true ;
+	}
 }

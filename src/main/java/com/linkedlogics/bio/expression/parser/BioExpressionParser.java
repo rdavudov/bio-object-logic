@@ -279,16 +279,18 @@ public class BioExpressionParser implements Operands {
 	public static void main(String[] args) {
 		BioObject person = new BioObject(0, "person") ;
 		person.set("name", "John");
-//		person.set("is_student", false) ;
+		person.set("is_student", false) ;
+		person.set("age", 30) ;
 		person.set("cars", new String[] {"mercedes", "porche"}) ;
 		person.set("brother", new BioObject(0, "person") {{
 			set("name", "Jacob");
 			set("cars", new String[] {"bmw", "toyota"}) ;
 		}}) ;
 		
-		String expr = "(5 + [1,2,3])[1]" ;
+		String expr = "10 < person.age <= 30" ;
 		BioExpression e = BioExpression.parse(expr) ;
 		Object o = e.getValue(person) ;
+		System.out.println(o);
 		System.out.println(e);
 	}
 }
