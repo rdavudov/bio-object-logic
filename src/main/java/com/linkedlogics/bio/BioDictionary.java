@@ -274,10 +274,12 @@ public class BioDictionary {
     	if (func == null) {
     		// if couldn't find it, we look into other dictionaries
     		for (Entry<Integer, BioDictionary> d : dictionaryMap.entrySet()) {
-				func = d.getValue().getFunc(name) ;
-				if (func != null) {
-					break ;
-				}
+    			if (d.getKey() != code) {
+    				func = d.getValue().getFunc(name) ;
+    				if (func != null) {
+    					break ;
+    				}
+    			}
 			}
     	}
     	return func ;
