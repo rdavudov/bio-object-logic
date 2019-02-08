@@ -14,6 +14,8 @@ import java.util.stream.Stream;
 
 import org.json.JSONObject;
 
+import com.linkedlogics.bio.dictionary.BioObj;
+import com.linkedlogics.bio.dictionary.BioTag;
 import com.linkedlogics.bio.exception.DictionaryException;
 import com.linkedlogics.bio.exception.ImmutableException;
 import com.linkedlogics.bio.object.BioObjectHolder;
@@ -635,25 +637,138 @@ public class BioObject implements BioObjectHolder, Cloneable {
 		
 	}
 	
+	/**
+	 * Trims keys which are not found in the dictionary on other first level, does not go deeper
+	 */
 	public void trim() {
 		BioObject trimmed = new BioObject(0) ;
-		
+		BioObj obj = BioDictionary.getDictionary(dictionary).getObjByCode(code);
+		if (obj != null) {
+			final ArrayList<String> trimmedKeys = new ArrayList<String>();
+			stream().forEach(e -> {
+				BioTag tag = obj.getTag(e.getKey());
+				if (tag == null) {
+					trimmedKeys.add(e.getKey());
+				}
+			});
+			
+			trimmedKeys.stream().forEach(k -> {
+				trimmed.put(k, remove(k)) ;
+			});
+		}
 	}
 	
+	/**
+	 * Trims keys which are not found in the dictionary and recursively goes deeper
+	 */
 	public void trimAll() {
-		
+		BioObject trimmed = new BioObject(0) ;
+		BioObj obj = BioDictionary.getDictionary(dictionary).getObjByCode(code);
+		if (obj != null) {
+			final ArrayList<String> trimmedKeys = new ArrayList<String>();
+			stream().forEach(e -> {
+				BioTag tag = obj.getTag(e.getKey());
+				if (tag == null) {
+					trimmedKeys.add(e.getKey());
+				} else {
+					if (e.getValue() instanceof BioObject) {
+						((BioObject) e.getValue()).trimAll() ;
+					} else if (e.getValue() instanceof BioObject[]) {
+						BioObject[] array = (BioObject[]) e.getValue();
+						for (int i = 0; i < array.length; i++) {
+							array[i].trimAll();
+						}
+					} else if (e.getValue() instanceof List) {
+						List list = (List)  e.getValue();
+						for (int i = 0; i < list.size(); i++) {
+							if (list.get(i) instanceof BioObject) {
+								((BioObject) list.get(i)).trimAll() ;
+							}
+						}
+					}
+				}
+			});
+			
+			trimmedKeys.stream().forEach(k -> {
+				trimmed.put(k, remove(k)) ;
+			});
+		}
 	}
 	
+	/**
+	 * Trims keys which are defined in the dictionary by the trim key, works recursively
+	 * @param trimKey
+	 */
 	public void trim(String trimKey) {
-		
+		BioObject trimmed = new BioObject(0) ;
+		BioObj obj = BioDictionary.getDictionary(dictionary).getObjByCode(code);
+		if (obj != null) {
+			final ArrayList<String> trimmedKeys = new ArrayList<String>();
+			stream().forEach(e -> {
+				BioTag tag = obj.getTag(e.getKey());
+				if (tag != null && tag.isTrimKey(trimKey)) {
+					trimmedKeys.add(e.getKey());
+				} else {
+					if (e.getValue() instanceof BioObject) {
+						((BioObject) e.getValue()).trim(trimKey) ;
+					} else if (e.getValue() instanceof BioObject[]) {
+						BioObject[] array = (BioObject[]) e.getValue();
+						for (int i = 0; i < array.length; i++) {
+							array[i].trim(trimKey) ;
+						}
+					} else if (e.getValue() instanceof List) {
+						List list = (List)  e.getValue();
+						for (int i = 0; i < list.size(); i++) {
+							if (list.get(i) instanceof BioObject) {
+								((BioObject) list.get(i)).trim(trimKey) ;
+							}
+						}
+					}
+				}
+			});
+			
+			trimmedKeys.stream().forEach(k -> {
+				trimmed.put(k, remove(k)) ;
+			});
+		}
 	}
 	
-	public void inverseTrim() {
-		
-	}
-	
-	public void inverseTrim(String trimKey) {
-		
+	/**
+	 * Trims inverted keys which are defined in the dictionary by the trim key, works recursively
+	 * @param inverseTrimKey
+	 */
+	public void inverseTrim(String inverseTrimKey) {
+		BioObject trimmed = new BioObject(0) ;
+		BioObj obj = BioDictionary.getDictionary(dictionary).getObjByCode(code);
+		if (obj != null) {
+			final ArrayList<String> trimmedKeys = new ArrayList<String>();
+			stream().forEach(e -> {
+				BioTag tag = obj.getTag(e.getKey());
+				if (tag != null && tag.isInverseTrimKey(inverseTrimKey)) {
+					trimmedKeys.add(e.getKey());
+				} else {
+					if (e.getValue() instanceof BioObject) {
+						((BioObject) e.getValue()).inverseTrim(inverseTrimKey) ;
+					} else if (e.getValue() instanceof BioObject[]) {
+						BioObject[] array = (BioObject[]) e.getValue();
+						for (int i = 0; i < array.length; i++) {
+							array[i].inverseTrim(inverseTrimKey) ;
+						}
+					} else if (e.getValue() instanceof List) {
+						List list = (List)  e.getValue();
+						for (int i = 0; i < list.size(); i++) {
+							if (list.get(i) instanceof BioObject) {
+								((BioObject) list.get(i)).inverseTrim(inverseTrimKey) ;
+							}
+						}
+					}
+				}
+			});
+			
+			trimmedKeys.stream().forEach(k -> {
+				trimmed.put(k, remove(k)) ;
+			});
+		}
 	}
 	
 	protected Map<String, Object> getMap() {
