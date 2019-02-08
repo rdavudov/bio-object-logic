@@ -5,13 +5,16 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import com.linkedlogics.bio.compression.BioLZ4Compressor;
 import com.linkedlogics.bio.dictionary.BioEnumObj;
+import com.linkedlogics.bio.dictionary.BioFunc;
 import com.linkedlogics.bio.dictionary.BioObj;
 import com.linkedlogics.bio.dictionary.BioTag;
 import com.linkedlogics.bio.exception.DictionaryException;
+import com.linkedlogics.bio.utility.DictionaryUtility;
 
 /**
  * 
@@ -49,6 +52,10 @@ public class BioDictionary {
      * Map for retrieving EnumObj based on enum code
      */
     private HashMap<String, BioEnumObj> enumTypeMap = new HashMap<String, BioEnumObj>();
+    /**
+     * Map for retrieving bio func based on func name
+     */
+    private HashMap<String, BioFunc> funcNameMap = new HashMap<String, BioFunc>() ;
     /**
      * Factory class for creating bio objects;
      */
@@ -243,6 +250,38 @@ public class BioDictionary {
         return superTagCodeMap.get(code);
     }
 
+    /**
+     * Adds bio function definition
+     * @param funcObj
+     */
+    public void addFunc(BioFunc funcObj) {
+    	BioFunc funcByName = funcNameMap.get(funcObj.getName()) ;
+    	
+    	if (funcByName != null && funcByName.getVersion() > funcObj.getVersion()) {
+    		 throw new DictionaryException("already existing function " + funcObj.getName() + " in dictionary with class " + funcByName.getFuncClass().getName());
+    	}
+    	
+    	funcNameMap.put(funcObj.getName(), funcObj);
+    }
+    
+    /**
+     * Retrieves function definition
+     * @param name
+     * @return
+     */
+    public BioFunc getFunc(String name) {
+    	BioFunc func = funcNameMap.get(name) ;
+    	if (func == null) {
+    		// if couldn't find it, we look into other dictionaries
+    		for (Entry<Integer, BioDictionary> d : dictionaryMap.entrySet()) {
+				func = d.getValue().getFunc(name) ;
+				if (func != null) {
+					break ;
+				}
+			}
+    	}
+    	return func ;
+    }
     /**
      * Checks where there is an obj with this type
      * @param type
@@ -447,5 +486,13 @@ public class BioDictionary {
 	 */
 	public static List<String> getSupportedDateFormats() {
 		return supportedDateFormats.stream().collect(Collectors.toList()) ;
+	}
+	
+	/**
+	 * Exports dictionary to xml
+	 * @return
+	 */
+	public String toXml() {
+		return DictionaryUtility.toXml(this) ;
 	}
 }

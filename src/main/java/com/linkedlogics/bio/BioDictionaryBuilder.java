@@ -14,7 +14,6 @@ import com.linkedlogics.bio.dictionary.BioTag;
 import com.linkedlogics.bio.dictionary.BioType;
 import com.linkedlogics.bio.dictionary.builder.AnnotationReader;
 import com.linkedlogics.bio.dictionary.builder.DictionaryReader;
-import com.linkedlogics.bio.dictionary.builder.FunctionReader;
 import com.linkedlogics.bio.dictionary.builder.XmlFileReader;
 import com.linkedlogics.bio.dictionary.builder.XmlResourceReader;
 
@@ -35,7 +34,6 @@ public class BioDictionaryBuilder {
 	 */
 	public BioDictionaryBuilder addPackage(String packageName) {
 		readers.add(new AnnotationReader(packageName)) ;
-		readers.add(new FunctionReader(packageName)) ;
 		return this ;
 	}
 	/**

@@ -6,15 +6,18 @@ import java.util.List;
 import com.linkedlogics.bio.BioDictionary;
 import com.linkedlogics.bio.BioDictionaryBuilder;
 import com.linkedlogics.bio.BioEnum;
+import com.linkedlogics.bio.BioFunction;
 import com.linkedlogics.bio.BioObject;
 import com.linkedlogics.bio.annotation.BioRemoteObj;
 import com.linkedlogics.bio.annotation.BioRemoteTag;
 import com.linkedlogics.bio.annotation.BioSuperObj;
 import com.linkedlogics.bio.dictionary.BioEnumObj;
+import com.linkedlogics.bio.dictionary.BioFunc;
 import com.linkedlogics.bio.dictionary.BioObj;
 import com.linkedlogics.bio.dictionary.BioTag;
 import com.linkedlogics.bio.dictionary.BioType;
 import com.linkedlogics.bio.exception.DictionaryException;
+import com.linkedlogics.bio.exception.ExpressionException;
 
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ClassInfo;
@@ -125,6 +128,16 @@ public class AnnotationReader implements DictionaryReader {
 					}
 				}
 			}
+			
+			for (ClassInfo classInfo : scanResult.getClassesWithAnnotation(com.linkedlogics.bio.annotation.BioFunc.class.getName())) {
+				if (!checkProfile(classInfo.getName(), builder.getProfiles(), builder.isOnlyProfiles())) {
+					continue ;
+				}
+				BioFunc func = createFunc(classInfo.getName());
+				if (func != null) {
+					BioDictionary.getOrCreateDictionary(func.getDictionary()).addFunc(func);
+				}
+			}
 		}
 	}
 
@@ -149,9 +162,8 @@ public class AnnotationReader implements DictionaryReader {
 				}
 			}
 
-			BioObj obj = new BioObj(annotation.code(), bioClass.getSimpleName(), name, annotation.version());
+			BioObj obj = new BioObj(annotation.dictionary(), annotation.code(), bioClass.getSimpleName(), name, annotation.version());
 			obj.setBioClass(bioClass);
-			obj.setDictionary(annotation.dictionary());
 			obj.setLarge(annotation.isLarge());
 			while (bioClass != BioObject.class && bioClass != null) {
 				Field[] fields = bioClass.getDeclaredFields();
@@ -397,6 +409,41 @@ public class AnnotationReader implements DictionaryReader {
 
 			return bioEnum;
 		} catch (ClassNotFoundException e) {
+			throw new DictionaryException(e) ;
+		}
+	}
+	
+	/**
+	 * Creates bio function definition
+	 * @param funcClassName
+	 * @return
+	 */
+	private BioFunc createFunc(String funcClassName) {
+		try {
+			Class funcClass = Class.forName(funcClassName);
+			com.linkedlogics.bio.annotation.BioFunc annotation = (com.linkedlogics.bio.annotation.BioFunc) funcClass.getAnnotation(com.linkedlogics.bio.annotation.BioFunc.class);
+
+			if (!BioFunction.class.isAssignableFrom(funcClass)) {
+				throw new DictionaryException("invalid @BioFunc usage, " + funcClassName + " does not implement BioFunction") ;
+			}
+			
+			BioFunc func = new BioFunc(annotation.name(), funcClass, annotation.isCached(), annotation.dictionary(), annotation.version()) ;
+			
+			if (func.isCached()) {
+				try {
+					BioFunction cached = (BioFunction) funcClass.getConstructor().newInstance() ;
+					func.setCached(cached);
+				} catch (InstantiationException e) {
+					throw new ExpressionException("instantiation exception for " + funcClass.getName(), e) ;
+				} catch (NoSuchMethodException e) {
+					throw new ExpressionException("missing default constructor in " + funcClass.getName(), e) ;
+				} catch (Throwable e) {
+					throw new ExpressionException(e) ;
+				}
+			}
+			
+			return func ;
+		} catch (Throwable e) {
 			throw new DictionaryException(e) ;
 		}
 	}

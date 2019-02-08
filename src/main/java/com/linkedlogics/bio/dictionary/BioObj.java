@@ -68,7 +68,14 @@ public class BioObj {
 	public BioObj(int code, String type, String name, int version) {
 		this(0, code, type, name, version) ;
 	}
-	
+	/**
+	 * Creates a bio obj with code and type name and version and dictionary
+	 * @param dictionary
+	 * @param code
+	 * @param type
+	 * @param name
+	 * @param version
+	 */
 	public BioObj(int dictionary, int code, String type, String name, int version) {
 		this.dictionary = dictionary ;
 		this.code = code ;
