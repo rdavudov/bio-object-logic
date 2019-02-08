@@ -1,4 +1,4 @@
-package com.linkedlogics.bio.expression.parser;
+package com.linkedlogics.bio.expression;
 
 public class Scanner implements Operands {
 	String source;

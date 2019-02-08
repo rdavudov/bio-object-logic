@@ -1,4 +1,4 @@
-package com.linkedlogics.bio.expression.parser;
+package com.linkedlogics.bio.expression;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -8,13 +8,6 @@ import java.util.stream.Collectors;
 import com.linkedlogics.bio.BioExpression;
 import com.linkedlogics.bio.BioObject;
 import com.linkedlogics.bio.exception.ExpressionException;
-import com.linkedlogics.bio.expression.Arithmetic;
-import com.linkedlogics.bio.expression.Comparison;
-import com.linkedlogics.bio.expression.Constant;
-import com.linkedlogics.bio.expression.Dynamic;
-import com.linkedlogics.bio.expression.Expression;
-import com.linkedlogics.bio.expression.Function;
-import com.linkedlogics.bio.expression.Index;
 import com.linkedlogics.bio.utility.NumberUtility;
 
 public class BioExpressionParser implements Operands {

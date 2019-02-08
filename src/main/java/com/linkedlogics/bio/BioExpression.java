@@ -2,7 +2,7 @@ package com.linkedlogics.bio;
 
 import java.util.HashMap;
 
-import com.linkedlogics.bio.expression.parser.BioExpressionParser;
+import com.linkedlogics.bio.expression.BioExpressionParser;
 
 public interface BioExpression {
 	public Object getValue(BioObject... params) ;

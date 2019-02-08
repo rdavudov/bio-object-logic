@@ -1,4 +1,4 @@
-package com.linkedlogics.bio.expression.parser;
+package com.linkedlogics.bio.expression;
 
 /**
  * Operands used in bio expressions
