@@ -1,11 +1,11 @@
-package com.linkedlogics.bio.time.expression;
+package com.linkedlogics.bio.time;
 
 import java.time.LocalDateTime;
 
-public class MinuteExpression extends TimeExpression {
-	public static final String PERIOD = "m" ;
+public class SecondExpression extends TimeExpression {
+	public static final String PERIOD = "s" ;
 	
-	public MinuteExpression(int amount, Shift shift) {
+	public SecondExpression(int amount, Shift shift) {
 		super(amount, shift) ;
 	}
 	
@@ -14,18 +14,18 @@ public class MinuteExpression extends TimeExpression {
 		LocalDateTime time = getLocalTime(now) ;
 		int amount = this.amount ;
 		if (isModule) {
-			int module = time.getMinute() % amount ;
+			int module = time.getSecond() % amount ;
 			amount = amount - module ;
 		}
 		
 		switch (shift) {
 		case LEFT_SHIFT:
-			return getLocalTime(time.plusMinutes(amount).withSecond(0).withNano(0)) ;
+			return getLocalTime(time.plusSeconds(amount).withNano(0)) ;
 		case RIGHT_SHIFT:
-			return getLocalTime(time.plusMinutes(amount).withSecond(59).withNano(999000000)) ;
+			return getLocalTime(time.plusSeconds(amount).withNano(999000000)) ;
 		case NO_SHIFT:
 		default:
-			return getLocalTime(time.plusMinutes(amount)) ;
+			return getLocalTime(time.plusSeconds(amount)) ;
 		}
 	}
 
@@ -40,12 +40,12 @@ public class MinuteExpression extends TimeExpression {
 		
 		switch (shift) {
 		case LEFT_SHIFT:
-			return getLocalTime(time.plusMinutes(-amount).withSecond(0).withNano(0)) ;
+			return getLocalTime(time.plusSeconds(-amount).withNano(0)) ;
 		case RIGHT_SHIFT:
-			return getLocalTime(time.plusMinutes(-amount).withSecond(59).withNano(999000000)) ;
+			return getLocalTime(time.plusSeconds(-amount).withNano(999000000)) ;
 		case NO_SHIFT:
 		default:
-			return getLocalTime(time.plusMinutes(-amount)) ;
+			return getLocalTime(time.plusSeconds(-amount)) ;
 		}
 	}
 	

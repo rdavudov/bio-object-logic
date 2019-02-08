@@ -1,4 +1,4 @@
-package com.linkedlogics.bio.time.expression;
+package com.linkedlogics.bio.time;
 
 public class FixedExpression extends TimeExpression {
 	public static final String PERIOD = "=" ;

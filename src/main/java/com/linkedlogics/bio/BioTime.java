@@ -7,17 +7,17 @@ import java.util.HashMap;
 import java.util.List;
 
 import com.linkedlogics.bio.exception.ParserException;
-import com.linkedlogics.bio.time.expression.DayExpression;
-import com.linkedlogics.bio.time.expression.FixedExpression;
-import com.linkedlogics.bio.time.expression.HourExpression;
-import com.linkedlogics.bio.time.expression.MinuteExpression;
-import com.linkedlogics.bio.time.expression.MonthDayExpression;
-import com.linkedlogics.bio.time.expression.MonthExpression;
-import com.linkedlogics.bio.time.expression.MultipleExpression;
-import com.linkedlogics.bio.time.expression.SecondExpression;
-import com.linkedlogics.bio.time.expression.TimeExpression;
-import com.linkedlogics.bio.time.expression.WeekDayExpression;
-import com.linkedlogics.bio.time.expression.YearExpression;
+import com.linkedlogics.bio.time.DayExpression;
+import com.linkedlogics.bio.time.FixedExpression;
+import com.linkedlogics.bio.time.HourExpression;
+import com.linkedlogics.bio.time.MinuteExpression;
+import com.linkedlogics.bio.time.MonthDayExpression;
+import com.linkedlogics.bio.time.MonthExpression;
+import com.linkedlogics.bio.time.MultipleExpression;
+import com.linkedlogics.bio.time.SecondExpression;
+import com.linkedlogics.bio.time.TimeExpression;
+import com.linkedlogics.bio.time.WeekDayExpression;
+import com.linkedlogics.bio.time.YearExpression;
 
 /**
  * TimeUtility is a flexible static class to easily manipulate with times. For example:

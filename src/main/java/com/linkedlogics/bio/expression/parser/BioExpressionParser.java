@@ -289,6 +289,7 @@ public class BioExpressionParser implements Operands {
 		}}) ;
 		
 		String expr = "10 < person.age <= 30" ;
+//		String expr = "${person.name}$ is driving his brother ${person.brother.name}$'s car ${person.brother.cars[1]}$" ; 
 		BioExpression e = BioExpression.parse(expr) ;
 		Object o = e.getValue(person) ;
 		System.out.println(o);

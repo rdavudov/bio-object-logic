@@ -1,4 +1,4 @@
-package com.linkedlogics.bio.time.expression;
+package com.linkedlogics.bio.time;
 
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
