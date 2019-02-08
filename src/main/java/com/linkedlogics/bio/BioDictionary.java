@@ -302,6 +302,15 @@ public class BioDictionary {
     }
     
     /**
+     * Checks where there is an obj with this type
+     * @param type
+     * @return
+     */
+    public boolean isBioObj(String type) {
+        return typeMap.containsKey(type);
+    }
+    
+    /**
      * Returns enum type map
      * @return
      */

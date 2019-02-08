@@ -68,9 +68,9 @@ public class XMLUtility {
 					
 					BioTag bioTag = obj.getTag(e.getKey()) ;
 					if (bioTag == null) {
-						toXml(xml, tab, e.getKey(), value, ConversionUtility.getType(value), null);
+						toXml(xml, tab, e.getKey().replaceAll("_", "-"), value, ConversionUtility.getType(value), null);
 					} else if (bioTag.isExportable()) {
-						toXml(xml, tab, e.getKey(), value, bioTag.getType(), bioTag);
+						toXml(xml, tab, e.getKey().replaceAll("_", "-"), value, bioTag.getType(), bioTag);
 					}
 				}
 			});
@@ -84,7 +84,7 @@ public class XMLUtility {
 			object.stream().sorted(Comparator.comparing(Entry::getKey)).forEach(e -> {
 				if (!e.getKey().startsWith("_")) {
 					Object value = object.get(e.getKey());
-					toXml(xml, tab, e.getKey(), value, ConversionUtility.getType(value), null);
+					toXml(xml, tab, e.getKey().replaceAll("_", "-"), value, ConversionUtility.getType(value), null);
 				}
 			});
 		}

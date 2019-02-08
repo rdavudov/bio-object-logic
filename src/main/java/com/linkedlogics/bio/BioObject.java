@@ -75,6 +75,10 @@ public class BioObject implements BioObjectHolder {
 		this(code, name, 0, 0) ;
 	}
 	
+	public BioObject(int code, String name, BioObject object) {
+		this(code, name, object.getBioVersion(), object.getBioDictionary(), object) ;
+	}
+	
 	public BioObject(BioObject object) {
 		this(object.getBioCode(), object.getBioName(), object.getBioVersion(), object.getBioDictionary(), object) ;
 	}

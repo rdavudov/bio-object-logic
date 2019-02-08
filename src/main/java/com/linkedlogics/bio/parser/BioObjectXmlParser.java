@@ -36,7 +36,24 @@ import com.linkedlogics.bio.utility.XMLUtility;
  */
 public class BioObjectXmlParser {
 	private boolean isValidated ;
+	private boolean isImprovised ;
 	
+	public boolean isValidated() {
+		return isValidated;
+	}
+
+	public void setValidated(boolean isValidated) {
+		this.isValidated = isValidated;
+	}
+
+	public boolean isImprovised() {
+		return isImprovised;
+	}
+
+	public void setImprovised(boolean isImprovised) {
+		this.isImprovised = isImprovised;
+	}
+
 	/**
 	 * Parses bio from xml string
 	 * @param xml
@@ -197,6 +214,18 @@ public class BioObjectXmlParser {
     	} else if (e.hasAttributes() && e.getAttributes().getNamedItem("code") != null) {
     		elementType = BioType.BioObject ;
     	}
+    	
+    	if (elementType == null) {
+    		if (isImprovised) {
+    			if (e.getChildNodes().getLength() == 1) {
+    				return e.getTextContent() ;
+    			} else {
+    				elementType = BioType.BioObject ;
+    			}
+    		} else 
+    			return null ;
+    	}
+    	
     	// setting to default FALSE if not provided
     	if (isArray == null) {
 			isArray = false ;
@@ -204,7 +233,6 @@ public class BioObjectXmlParser {
 		if (isList == null) {
 			isList = false ;
 		}
-
 
     	if (elementType == BioType.BioObject || elementType == BioType.Properties) {
     		if (isArray || isList) {
@@ -243,8 +271,10 @@ public class BioObjectXmlParser {
     			} else {
     				return null ;
     			}
-    		} else
+    		} else if (bioEnumObj != null)
     			return bioEnumObj.getBioEnum(e.getTextContent().trim());
+    		
+    		return null ;
     	} else if (elementType == BioType.Expression) {
     		return BioExpression.parse(e.getTextContent().trim()) ;
     	} else if (elementType == BioType.Formatted) {
@@ -341,10 +371,12 @@ public class BioObjectXmlParser {
             } catch (IllegalArgumentException e1) {
                 if (BioDictionary.getDictionary(dictionary).isBioEnum(type)) {
                 	return BioType.BioEnum ;
+                } else if (BioDictionary.getDictionary(dictionary).isBioObj(type)) {
+                	 return BioType.BioObject;
                 }
-                return BioType.BioObject;
+                return null ;
             }
         }
-        return null;
+        return null ;
     }
 }

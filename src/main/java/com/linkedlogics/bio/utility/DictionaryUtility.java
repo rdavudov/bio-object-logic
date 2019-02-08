@@ -106,7 +106,7 @@ public class DictionaryUtility {
 			}
 		});
 		for (BioEnum bioEnum : values) {
-			xml.append("\t\t<value code=\"").append(bioEnum.getBioCode()).append("\" name=\"").append(bioEnum.getName()).append("\"/>\n") ;
+			xml.append("\t\t<value code=\"").append(bioEnum.getOrdinal()).append("\" name=\"").append(bioEnum.getName()).append("\"/>\n") ;
 		}
 		
 		xml.append("\t</enum>\n") ;
