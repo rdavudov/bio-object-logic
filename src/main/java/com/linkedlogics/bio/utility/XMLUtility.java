@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 
 import com.linkedlogics.bio.BioDictionary;
 import com.linkedlogics.bio.BioEnum;
+import com.linkedlogics.bio.BioExpression;
 import com.linkedlogics.bio.BioObject;
 import com.linkedlogics.bio.BioTime;
 import com.linkedlogics.bio.dictionary.BioEnumObj;
@@ -161,6 +162,11 @@ public class XMLUtility {
 			.append("</").append(key).append(">\n");
 		} else if (value instanceof BioObject) {
 			toXml(xml, tab + TAB, key, ((BioObject) value));
+		} else if (value instanceof BioExpression) {
+			xml.append(tab).append(TAB).append("<").append(key)
+			.append(" type=\"").append(BioType.Expression).append("\">")
+			.append(value).append("</")
+			.append(key).append(">\n");
 		} else if (type == BioType.String || type == BioType.UtfString) {
 			int bytes = value.toString().getBytes().length;
 			if (xmlForbiddenChars.matcher(value.toString()).find() || bytes > value.toString().length() || type == BioType.UtfString) {

@@ -1,17 +1,18 @@
 package com.linkedlogics.bio.expression;
 
+import com.linkedlogics.bio.BioExpression;
 import com.linkedlogics.bio.BioObject;
 
 public class Conditional extends Expression {
-	private Expression value ;
-	private Expression elseValue ;
-	private Expression condition ;
+	private Object value ;
+	private Object elseValue ;
+	private BioExpression condition ;
 	
-	public Conditional(Expression condition, Expression value) {
+	public Conditional(BioExpression condition, Object value) {
 		this(condition, value, null) ;
 	}
 	
-	public Conditional(Expression condition, Expression value, Expression elseValue) {
+	public Conditional(BioExpression condition, Object value, Object elseValue) {
 		this.condition = condition ;
 		this.value = value ;
 		this.elseValue = elseValue ;
@@ -20,9 +21,15 @@ public class Conditional extends Expression {
 	@Override
 	protected Object getValue(Object source, BioObject... params) {
 		if (condition.getBooleanValue(params)) {
-			return value.getValue(params) ;
+			if (value instanceof BioExpression) {
+				return ((BioExpression) value).getValue(params) ;
+			}
+			return value ;
 		} else if (elseValue != null) {
-			return elseValue.getValue(params) ;
+			if (elseValue instanceof BioExpression) {
+				return ((BioExpression) elseValue).getValue(params) ;
+			}
+			return elseValue ;
 		}
 		return null;
 	}

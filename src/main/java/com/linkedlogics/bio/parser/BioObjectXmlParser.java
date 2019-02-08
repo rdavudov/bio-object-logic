@@ -18,12 +18,14 @@ import org.w3c.dom.NodeList;
 
 import com.linkedlogics.bio.BioDictionary;
 import com.linkedlogics.bio.BioEnum;
+import com.linkedlogics.bio.BioExpression;
 import com.linkedlogics.bio.BioObject;
 import com.linkedlogics.bio.dictionary.BioEnumObj;
 import com.linkedlogics.bio.dictionary.BioObj;
 import com.linkedlogics.bio.dictionary.BioTag;
 import com.linkedlogics.bio.dictionary.BioType;
 import com.linkedlogics.bio.exception.ParserException;
+import com.linkedlogics.bio.expression.Conditional;
 import com.linkedlogics.bio.utility.ConversionUtility;
 import com.linkedlogics.bio.utility.XMLUtility;
 
@@ -243,6 +245,33 @@ public class BioObjectXmlParser {
     			}
     		} else
     			return bioEnumObj.getBioEnum(e.getTextContent().trim());
+    	} else if (elementType == BioType.Expression) {
+    		return BioExpression.parse(e.getTextContent().trim()) ;
+    	} else if (elementType == BioType.Formatted) {
+    		return BioExpression.parseFormatted(e.getTextContent().trim()) ;
+    	} else if (elementType == BioType.Conditional) {
+    		Object value = null;
+    		Object elseValue = null;
+    		BioExpression condition = null ;
+
+    		NodeList nodes = e.getChildNodes() ;
+    		for (int i = 0; i < nodes.getLength(); i++) {
+    			Node node = nodes.item(i);
+    			if (node.getNodeType() == Node.ELEMENT_NODE) {
+    				if (node.getNodeName().equals("condition")) {
+    					condition = BioExpression.parse(node.getTextContent()) ;
+    				} else if (node.getNodeName().equals("value")) {
+    					value = parseTagValue(node, null, null) ;
+    				} else if (node.getNodeName().equals("else-value")) {
+    					elseValue = parseTagValue(node, null, null) ;
+    				}
+    			}
+    		}
+    		
+    		if (condition != null && value != null) {
+    			return new Conditional(condition, value, elseValue) ;
+    		}
+    		return null ;
     	} else {
     		if (isArray || isList) {
     			Object[] array = ConversionUtility.convertAsArray(e.getTextContent().trim(), elementType);
