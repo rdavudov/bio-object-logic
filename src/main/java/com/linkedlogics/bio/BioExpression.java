@@ -1,5 +1,7 @@
 package com.linkedlogics.bio;
 
+import java.util.HashMap;
+
 import com.linkedlogics.bio.expression.parser.BioExpressionParser;
 
 public interface BioExpression {
@@ -21,15 +23,22 @@ public interface BioExpression {
 	}
 	
 	public static BioExpression parse(String expr) {
-		// TODO: also check from cache first
-		return new BioExpressionParser(expr).parse() ;
+		if (expressionCache.containsKey(expr)) {
+			return expressionCache.get(expr) ;
+		} else {
+			BioExpression e = new BioExpressionParser(expr).parse() ;
+			expressionCache.put(expr, e) ;
+			return e ;
+		}
 	}
 	
-	public static BioExpression parse2(String expr) {
+	public static BioExpression parseFormatted(String expr) {
 		StringBuilder unformatted = new StringBuilder();
 		unformatted.append("\"") ;
 		unformatted.append(expr.replace("${", "\" + ").replace("}$", " + \"")) ;
 		unformatted.append("\"") ;
-		return new BioExpressionParser(unformatted.toString()).parse() ;
+		return parse(unformatted.toString()) ;
 	}
+	
+	public static HashMap<String, BioExpression> expressionCache = new HashMap<String, BioExpression>() ; 
 }
