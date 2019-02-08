@@ -49,12 +49,7 @@ import com.linkedlogics.bio.time.YearExpression;
 public class BioTime {
 	public static String DATE_FORMAT = "dd/MM/yyyy" ;
 	public static String DATETIME_FORMAT = "dd/MM/yyyy HH:mm:ss.SSS" ;
-	
 	private static HashMap<String, MultipleExpression> cache = new HashMap<String, MultipleExpression>() ;
-	public static final long SECOND = 1000 ;
-	public static final long MINUTE = 60 * SECOND ;
-	public static final long HOUR = 60 * MINUTE ;
-	public static final long DAY = 24 * HOUR ;
 	
 	/**
 	 * provides you new time based on expression

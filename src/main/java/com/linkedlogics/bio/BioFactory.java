@@ -18,6 +18,11 @@ public class BioFactory {
 		this.dictionary = dictionary ;
 	}
 
+	/**
+	 * Creates bio object by code
+	 * @param code
+	 * @return
+	 */
 	public BioObject newBioObject(int code) {
 		BioObj obj = dictionary.getCodeMap().get(code);
 		if (obj != null && obj.getBioClass() != null) {
@@ -34,6 +39,12 @@ public class BioFactory {
 		return null;
 	}
 
+	/**
+	 * Creates bio object array by code
+	 * @param code
+	 * @param size
+	 * @return
+	 */
 	public BioObject[] newBioObjectArray(int code, int size) {
 		BioObj obj = dictionary.getCodeMap().get(code);
 		if (obj != null && obj.getBioClass() != null) {
@@ -46,6 +57,12 @@ public class BioFactory {
 		return null;
 	}
 
+	/**
+	 * Creates bio object by code
+	 * @param code
+	 * @param source
+	 * @return
+	 */
 	public BioObject newBioObject(int code, BioObject source) {
 		BioObj obj = dictionary.getCodeMap().get(code);
 		if (obj != null && obj.getBioClass() != null) {
@@ -71,6 +88,12 @@ public class BioFactory {
 		return null;
 	}
 
+	/**
+	 * Creates bio object by code
+	 * @param code
+	 * @param bioClass
+	 * @return
+	 */
 	public <T extends BioObject> T newBioObject(int code, Class<T> bioClass) {
 		BioObj obj = dictionary.getCodeMap().get(code);
 		if (obj != null && obj.getBioClass() != null) {
@@ -87,6 +110,13 @@ public class BioFactory {
 		return null;
 	}
 
+	/**
+	 * Creates bio object by code
+	 * @param code
+	 * @param source
+	 * @param bioClass
+	 * @return
+	 */
 	public <T extends BioObject> T newBioObject(int code, BioObject source, Class<T> bioClass) {
 		BioObj obj = dictionary.getCodeMap().get(code);
 		if (obj != null && obj.getBioClass() != null) {
@@ -112,6 +142,11 @@ public class BioFactory {
 		return null;
 	}
 
+	/**
+	 * Creates bio object by type
+	 * @param type
+	 * @return
+	 */
 	public BioObject newBioObject(String type) {
 		BioObj obj = dictionary.getTypeMap().get(type);
 		if (obj != null && obj.getBioClass() != null) {
@@ -128,6 +163,12 @@ public class BioFactory {
 		return null;
 	}
 
+	/**
+	 * Creates bio object array by type
+	 * @param type
+	 * @param size
+	 * @return
+	 */
 	public BioObject[] newBioObjectArray(String type, int size) {
 		BioObj obj = dictionary.getTypeMap().get(type);
 		if (obj != null && obj.getBioClass() != null) {
@@ -140,6 +181,12 @@ public class BioFactory {
 		return null;
 	}
 
+	/**
+	 * Creates bio object by type
+	 * @param type
+	 * @param source
+	 * @return
+	 */
 	public BioObject newBioObject(String type, BioObject source) {
 		BioObj obj = dictionary.getTypeMap().get(type);
 		if (obj != null && obj.getBioClass() != null) {
@@ -166,7 +213,13 @@ public class BioFactory {
 		return null;
 	}
 
-
+	/**
+	 * Creates bio object by type
+	 * @param type
+	 * @param source
+	 * @param bioClass
+	 * @return
+	 */
 	public <T extends BioObject> T newBioObject(String type, BioObject source, Class<T> bioClass) {
 		BioObj obj = dictionary.getTypeMap().get(type);
 		if (obj != null && obj.getBioClass() != null) {
@@ -192,6 +245,12 @@ public class BioFactory {
 		return null;
 	}
 
+	/**
+	 * Creates bio enum array by code
+	 * @param code
+	 * @param size
+	 * @return
+	 */
 	public BioEnum[] newBioEnumArray(int code, int size) {
 		BioEnumObj enumObj = dictionary.getEnumCodeMap().get(code);
 		if (enumObj != null && enumObj.getBioClass() != null) {

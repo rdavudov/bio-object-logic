@@ -19,5 +19,9 @@ public abstract class BioInitializer<T> {
 		this.properties = properties ;
 	}
 	
+	/**
+	 * Creates a new instance
+	 * @return
+	 */
 	public abstract T initialize() ;
 }
