@@ -1,5 +1,8 @@
 package com.linkedlogics.bio;
 
+import java.lang.reflect.Array;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
@@ -11,6 +14,7 @@ import java.util.stream.Stream;
 
 import org.json.JSONObject;
 
+import com.linkedlogics.bio.exception.DictionaryException;
 import com.linkedlogics.bio.exception.ImmutableException;
 import com.linkedlogics.bio.object.BioObjectHolder;
 import com.linkedlogics.bio.utility.JSONUtility;
@@ -24,7 +28,7 @@ import com.linkedlogics.bio.utility.XMLUtility;
  * @author rdavudov
  *
  */
-public class BioObject implements BioObjectHolder {
+public class BioObject implements BioObjectHolder, Cloneable {
 	/**
 	 * Bio Dictionary Id 
 	 */
@@ -571,6 +575,59 @@ public class BioObject implements BioObjectHolder {
 		}
 		return false ;
 	}
+
+	/**
+	 * Clones bio object by creating totally new instance of it
+	 */
+	public BioObject clone() {
+		try {
+			final BioObject clone = this.getClass() == BioObject.class ? new BioObject(0) : (BioObject) this.getClass().getConstructor().newInstance();
+			clone.setBioCode(code);
+			clone.setBioDictionary(dictionary);
+			clone.setBioVersion(version);
+			clone.setBioName(name);
+			clone.isImmutable = false ;
+			
+			stream().forEach(e -> {
+				if (e.getValue() instanceof BioObject) {
+					clone.put(e.getKey(), ((BioObject) e.getValue()).clone());
+				} else if (e.getValue() instanceof List) {
+					List list = (List) e.getValue() ;
+					List cloneList = new ArrayList() ;
+					for (Object object : list) {
+						if (object instanceof BioObject) {
+							cloneList.add(((BioObject) object).clone()) ;
+						} else {
+							cloneList.add(object) ;
+						}
+					}
+					clone.put(e.getKey(), cloneList);
+				} else if (e.getValue() instanceof BioObject[]) {
+					BioObject[] array = (BioObject[]) e.getValue() ;
+					BioObject[] cloneArray = (BioObject[]) Array.newInstance(array.getClass().getComponentType(), array.length) ;
+					for (int i = 0; i < cloneArray.length; i++) {
+						cloneArray[i] = array[i].clone() ;
+					}
+				} else if (e.getValue() instanceof Object[]) {
+					Object[] array = (Object[]) e.getValue();
+					Object[] cloneArray = (Object[]) Array.newInstance(array.getClass().getComponentType(), array.length) ;
+					for (int i = 0; i < array.length; i++) {
+						cloneArray[i] = array[i] ;
+					}
+					clone.put(e.getKey(), cloneArray);
+				} else {
+					clone.put(e.getKey(), e.getValue());
+				}
+			});
+			
+			return clone ;
+		} catch (NoSuchMethodException e) {
+			throw new DictionaryException("unable to clone because class " + this.getClass().getName() + " has no default constructor") ;
+		} catch (Throwable e) {
+			throw new RuntimeException(e) ;
+		}
+	}
+
 	
 	public void init() {
 		
@@ -607,10 +664,6 @@ public class BioObject implements BioObjectHolder {
 	@Override
 	public BioObject getBioObject() {
 		return this ;
-	}
-
-	public BioObject clone() {
-		return null ;
 	}
 	
 	public String toString() {
