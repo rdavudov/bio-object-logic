@@ -602,12 +602,6 @@ public class BioObject implements BioObjectHolder, Cloneable {
 						}
 					}
 					clone.put(e.getKey(), cloneList);
-				} else if (e.getValue() instanceof BioObject[]) {
-					BioObject[] array = (BioObject[]) e.getValue() ;
-					BioObject[] cloneArray = (BioObject[]) Array.newInstance(array.getClass().getComponentType(), array.length) ;
-					for (int i = 0; i < cloneArray.length; i++) {
-						cloneArray[i] = array[i].clone() ;
-					}
 				} else if (e.getValue() instanceof Object[]) {
 					Object[] array = (Object[]) e.getValue();
 					Object[] cloneArray = (Object[]) Array.newInstance(array.getClass().getComponentType(), array.length) ;
@@ -642,6 +636,11 @@ public class BioObject implements BioObjectHolder, Cloneable {
 	}
 	
 	public void trim() {
+		BioObject trimmed = new BioObject(0) ;
+		
+	}
+	
+	public void trimAll() {
 		
 	}
 	
