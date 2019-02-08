@@ -349,7 +349,14 @@ public class BioDictionary {
 	public HashMap<String, BioTag> getSuperTagNameMap() {
 		return superTagNameMap;
 	}
-	
+	/**
+	 * Returns func name map
+	 * @return
+	 */
+	public HashMap<String, BioFunc> getFuncNameMap() {
+		return funcNameMap;
+	}
+
 	/**
 	 * Creates an empty map object for bio objects
 	 * @return
