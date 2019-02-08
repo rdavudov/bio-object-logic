@@ -47,7 +47,8 @@ public interface BioExpression {
 			return expressionCache.get(expr) ;
 		} else {
 			BioExpression e = new BioExpressionParser(expr).parse() ;
-			expressionCache.put(expr, e) ;
+			if (e != null)
+				expressionCache.put(expr, e) ;
 			return e ;
 		}
 	}

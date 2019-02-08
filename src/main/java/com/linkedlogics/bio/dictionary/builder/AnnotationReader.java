@@ -129,6 +129,7 @@ public class AnnotationReader implements DictionaryReader {
 				}
 			}
 			
+			// Finds all functions
 			for (ClassInfo classInfo : scanResult.getClassesWithAnnotation(com.linkedlogics.bio.annotation.BioFunc.class.getName())) {
 				if (!checkProfile(classInfo.getName(), builder.getProfiles(), builder.isOnlyProfiles())) {
 					continue ;

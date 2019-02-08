@@ -1,9 +1,7 @@
 package com.linkedlogics.bio.expression;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import com.linkedlogics.bio.BioExpression;
 import com.linkedlogics.bio.BioObject;
