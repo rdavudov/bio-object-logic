@@ -624,9 +624,59 @@ public class BioObject implements BioObjectHolder, Cloneable {
 		}
 	}
 
-	
+	/**
+	 * After creating bio object with added source bio object values provided at constructor, init() method checks whether they are empty keys which has initial or expression value
+	 * and tries to generate values for them and add to the map
+	 */
 	public void init() {
-		
+		if (code != 0) {
+			BioObj obj = BioDictionary.getDictionary(dictionary).getObjByCode(code) ;
+			if (obj != null) {
+				// first let's populate initial values, they can also be used in expression initial values
+				obj.getNameMap().entrySet().stream().forEach(e -> {
+					// if key doesn't exist then
+					if (!has(e.getKey())) {
+						BioTag tag = e.getValue() ;
+						// if tag has an initial value
+						if (tag.getInitial() != null) {
+							if (tag.isArray()) {
+								String[] initials = e.getValue().getInitial().split(",") ;
+								Object[] array = (Object[]) Array.newInstance(tag.getJavaClass(), initials.length) ;
+								for (int i = 0; i < initials.length; i++) {
+									array[i] = tag.getInitialtValue(initials[i]) ;
+								}
+								put(e.getKey(), array) ;
+							} else if (tag.isList()) {
+								String[] initials = tag.getInitial().split(",") ;
+								List<Object> list = new ArrayList<Object>() ;
+								for (int i = 0; i < initials.length; i++) {
+									list.add(tag.getInitialtValue(initials[i])) ;
+								}
+								put(e.getKey(), list) ;
+							} else {
+								Object initialValue = tag.getInitialtValue(tag.getInitial()) ;
+								put(e.getKey(), initialValue) ;
+							}
+						}
+					}
+				});
+				
+				// lets populate expression based initial values
+				obj.getNameMap().entrySet().stream().forEach(e -> {
+					if (!has(e.getKey())) {
+						BioTag tag = e.getValue() ;
+						// if tag has an expression initial value
+						if (tag.getExpression() != null) {
+							Object value = BioExpression.parse(tag.getExpression()).getValue(this) ;
+							if (value != null) {
+								set(e.getKey(), value) ;
+								return ;
+							}
+						}
+					}
+				});
+			}
+		}
 	}
 	
 	public void fill() {

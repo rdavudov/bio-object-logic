@@ -104,40 +104,7 @@ public class BioTag {
 		this.type = type ;
 		this.javaClass = javaClass ;
 		if (javaClass == null) {
-			switch (getType()) {
-			case UtfString:
-			case String:
-				this.javaClass = String.class ;
-				break ;
-			case Boolean:
-				this.javaClass = Boolean.class ;
-				break ;
-			case Byte:
-				this.javaClass = Byte.class ;
-				break ;
-			case Short:
-				this.javaClass = Short.class ;
-				break ;
-			case Float:
-				this.javaClass = Float.class ;
-				break ;
-			case Double:
-				this.javaClass = Double.class ;
-				break ;
-			case Integer:
-				this.javaClass = Integer.class ;
-				break ;
-			case BioEnum:
-				this.javaClass = BioEnum.class ;
-				break ;
-			case BioObject:
-				this.javaClass = BioObject.class ;
-				break ;
-			case Long:
-			case Time:
-				this.javaClass = Long.class ;
-				break ;
-			}
+			javaClass = getJavaClass(getType()) ;
 		}
 	}
 	
@@ -336,10 +303,32 @@ public class BioTag {
 		return null ;
 	}
 	
-	public Object getExpressionValue(BioObject... objects) {
-		if (expression != null) {
-			return new BioExpressionParser(expression).parse().getValue(objects) ;
+	public Class getJavaClass(BioType type) {
+		switch (getType()) {
+		case UtfString:
+		case String:
+			return String.class ;
+		case Boolean:
+			return Boolean.class ;
+		case Byte:
+			return Byte.class ;
+		case Short:
+			return Short.class ;
+		case Float:
+			return Float.class ;
+		case Double:
+			return Double.class ;
+		case Integer:
+			return Integer.class ;
+		case BioEnum:
+			return BioEnum.class ;
+		case BioObject:
+			return BioObject.class ;
+		case Long:
+		case Time:
+			return Long.class ;
 		}
+		
 		return null ;
 	}
 }
