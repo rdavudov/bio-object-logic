@@ -4,11 +4,10 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.linkedlogics.bio.compression.BioLZ4Compressor;
 import com.linkedlogics.bio.dictionary.BioEnumObj;
 import com.linkedlogics.bio.dictionary.BioFunc;
 import com.linkedlogics.bio.dictionary.BioObj;
@@ -66,7 +65,7 @@ public class BioDictionary {
     private static BioInitializer<BioCompressor> compressorInitializer = new BioInitializer<BioCompressor>() {
 		@Override
 		public BioCompressor initialize() {
-			return new BioLZ4Compressor() ;
+			return null ;
 		}
 	};
     private static BioInitializer<BioEncrypter> encrypterInitializer = new BioInitializer<BioEncrypter>() {

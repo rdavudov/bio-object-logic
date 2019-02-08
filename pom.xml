@@ -33,6 +33,7 @@
 			<groupId>net.jpountz.lz4</groupId>
 			<artifactId>lz4</artifactId>
 			<version>LATEST</version>
+			<optional>true</optional>
 		</dependency>		
 	</dependencies>
 </project>
