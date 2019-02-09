@@ -65,7 +65,11 @@ public class DictionaryUtility {
 	 * @param xml
 	 */
 	private static void objToXml(BioObj obj, StringBuilder xml) {
-		xml.append("\t<obj name=\"").append(obj.getType()).append("\" code=\"").append(obj.getCode()).append("\" version=\"").append(obj.getVersion()).append("\"") ;
+		xml.append("\t<obj type=\"").append(obj.getType()).append("\"") ;
+		if (obj.getName() != null) {
+			xml.append(" name=\"").append(obj.getName()).append("\"") ;
+		}
+		xml.append(" code=\"").append(obj.getCode()).append("\" version=\"").append(obj.getVersion()).append("\"") ;
 		if (obj.getBioClass() != null) {
 			xml.append(" class=\"").append(obj.getBioClass().getName()).append("\"") ;
 		}
@@ -172,6 +176,14 @@ public class DictionaryUtility {
 		
 		if (tag.getSortKey() != null) {
 			xml.append(" sort-key=\"").append(tag.getSortKey()).append("\"") ;
+		}
+		
+		if (tag.getInitial() != null) {
+			xml.append(" initial=\"").append(tag.getInitial()).append("\"") ;
+		}
+		
+		if (tag.getExpression() != null) {
+			xml.append(" expression=\"").append(tag.getExpression()).append("\"") ;
 		}
 		
 		xml.append("/>\n") ;
