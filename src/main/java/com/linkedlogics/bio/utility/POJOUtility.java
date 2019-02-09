@@ -1,6 +1,10 @@
 package com.linkedlogics.bio.utility;
 
+import java.lang.reflect.Array;
+import java.lang.reflect.Field;
+
 import com.linkedlogics.bio.BioDictionary;
+import com.linkedlogics.bio.BioEnum;
 import com.linkedlogics.bio.BioObject;
 import com.linkedlogics.bio.dictionary.BioObj;
 import com.linkedlogics.bio.dictionary.BioTag;
@@ -31,6 +35,17 @@ public class POJOUtility {
 				if (value != null) {
 					if (t.getValue().getType() == BioType.BioObject) {
 						object.set(t.getKey(), fromPojo(value)) ;
+					} else if (t.getValue().getType() == BioType.BioEnum) {
+						if (value instanceof Object[]) {
+							Object[] array = (Object[]) value ;
+							BioEnum[] enumArray = new BioEnum[array.length] ;
+							for (int i = 0; i < enumArray.length; i++) {
+								enumArray[i] = t.getValue().getEnumObj().getBioEnum(array[i].toString()) ;
+							}
+							object.set(t.getKey(), enumArray) ;
+						} else {
+							object.set(t.getKey(), t.getValue().getEnumObj().getBioEnum(value.toString())) ;
+						}
 					} else {
 						if (value.getClass().isArray() && !(value instanceof Object[])) {
 							object.set(t.getKey(), getBoxedArray(value)) ;
@@ -62,6 +77,20 @@ public class POJOUtility {
 					if (tag != null) {
 						if (e.getValue() instanceof BioObject) {
 							setValue(tag, pojo, toPojo((BioObject) e.getValue()));
+						} else if (e.getValue() instanceof BioEnum) {
+							Field[] fields = tag.getEnumObj().getBioClass().getDeclaredFields() ;
+							try {
+								for (int i = 0; i < fields.length; i++) {
+									if (((Enum) fields[i].get(null)).name().equals(e.getValue().toString())) {
+										setValue(tag, pojo, fields[i].get(null));
+									}
+								}
+							} catch (IllegalArgumentException ex) {
+								
+							} catch (IllegalAccessException ex) {
+								
+							}
+							
 						} else {
 							setValue(tag, pojo, e.getValue());
 						}
@@ -110,6 +139,29 @@ public class POJOUtility {
 			String setter = "set" + key.substring(0, 1).toUpperCase() + key.substring(1) ;
 			if (tag.getType() == BioType.BioObject) {
 				object.getClass().getMethod(setter, tag.getObj().getBioClass()).invoke(object, value) ;
+			} else if (tag.getType() == BioType.BioEnum) {
+				if (tag.isArray()) {
+					BioEnum[] array = (BioEnum[]) value ;
+					Object[] enumArray = (Object[]) Array.newInstance(tag.getEnumObj().getBioClass(), array.length) ;
+					Field[] fields = tag.getEnumObj().getBioClass().getDeclaredFields() ;
+					for (int i = 0; i < enumArray.length; i++) {
+						try {
+							for (int j = 0; j < fields.length; j++) {
+								if (((Enum) fields[j].get(null)).name().equals(array[i].toString())) {
+									enumArray[i] = fields[j].get(null) ;
+									break;
+								}
+							}
+						} catch (IllegalArgumentException ex) {
+							
+						} catch (IllegalAccessException ex) {
+							
+						}
+					}
+					object.getClass().getMethod(setter, enumArray.getClass()).invoke(object, new Object[] {enumArray}) ;
+				} else {
+					object.getClass().getMethod(setter, tag.getEnumObj().getBioClass()).invoke(object, value) ;
+				}
 			} else if (tag.isArray()) {
 				try {
 					object.getClass().getMethod(setter, tag.getPrimitiveJavaArrayClass(tag.getType())).invoke(object, getPrimitiveArray(value)) ;
@@ -120,7 +172,7 @@ public class POJOUtility {
 				try {
 					object.getClass().getMethod(setter, tag.getPrimitiveJavaClass(tag.getType())).invoke(object, value) ;
 				} catch (NoSuchMethodException e) {
-					object.getClass().getMethod(setter, tag.getJavaClass(tag.getType())).invoke(object, value) ;
+					object.getClass().getMethod(setter, value.getClass()).invoke(object, value) ;
 				}
 			}
 		} catch (NoSuchMethodException e) {

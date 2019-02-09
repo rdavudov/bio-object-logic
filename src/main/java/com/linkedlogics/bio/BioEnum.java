@@ -7,7 +7,7 @@ import com.linkedlogics.bio.dictionary.BioEnumObj;
  * @author rajab
  *
  */
-public abstract class BioEnum extends Number {
+public class BioEnum extends Number {
 	private static final long serialVersionUID = 1L;
 	/**
 	 * Bio Dictionary Id 
@@ -33,18 +33,18 @@ public abstract class BioEnum extends Number {
 	 * @param code
 	 * @param dictionary
 	 */
-	protected BioEnum(final int ordinal, final String name, final int code, final int dictionary) {
+	public BioEnum(final int ordinal, final String name, final int code, final int dictionary) {
 		this.code = code ;
 		this.ordinal = ordinal;
 		this.name = name;
 		this.dictionary = dictionary ;
 	}
 	
-	protected BioEnum(final int ordinal, final String name, final int code) {
+	public BioEnum(final int ordinal, final String name, final int code) {
 		this(ordinal, name, code, 0) ;
 	}
 	
-	protected BioEnum(final int ordinal, final String name) {
+	public BioEnum(final int ordinal, final String name) {
 		this(ordinal, name, 0, 0) ;
 	}
 	

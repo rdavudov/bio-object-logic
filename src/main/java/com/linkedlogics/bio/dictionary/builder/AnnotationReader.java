@@ -153,9 +153,20 @@ public class AnnotationReader implements DictionaryReader {
 					BioDictionary.getOrCreateDictionary(obj.getDictionary()).addObj(obj);
 				}
 			}
+			
+			// Finding all bio enums
+			for (ClassInfo classInfo : scanResult.getClassesWithAnnotation(com.linkedlogics.bio.annotation.BioJavaEnum.class.getName())) {
+				if (!checkProfile(classInfo.getName(), builder.getProfiles(), builder.isOnlyProfiles())) {
+					continue ;
+				}
+				BioEnumObj enumObj = createJavaEnum(classInfo.getName());
+				if (enumObj != null) {
+					BioDictionary.getOrCreateDictionary(enumObj.getDictionary()).addEnumObj(enumObj);
+				}
+			}
 		}
 	}
-
+	
 	/**
 	 * Creates bio obj definition from static fields
 	 * @param objClassName
@@ -544,5 +555,45 @@ public class AnnotationReader implements DictionaryReader {
 		tag.setExportable(true);
 
 		return tag;
+	}
+	
+	/**
+	 * Converst java enum to bio enum
+	 * @param enumClassName
+	 * @return
+	 */
+	private static com.linkedlogics.bio.dictionary.BioEnumObj createJavaEnum(String enumClassName) {
+		try {
+			Class bioClass = Class.forName(enumClassName);
+			com.linkedlogics.bio.annotation.BioJavaEnum annotation = (com.linkedlogics.bio.annotation.BioJavaEnum) bioClass.getAnnotation(com.linkedlogics.bio.annotation.BioJavaEnum.class);
+
+			int code = annotation.code() ;
+			if (code == 0) {
+				code = POJOUtility.getCode(enumClassName) ;
+			}
+			String name = annotation.name() ;
+			if (name.length() == 0) {
+				name = bioClass.getSimpleName().replaceAll("([^_A-Z])([A-Z])", "$1_$2").toLowerCase() ;
+			}
+			
+			com.linkedlogics.bio.dictionary.BioEnumObj bioEnum = new com.linkedlogics.bio.dictionary.BioEnumObj(code, bioClass.getSimpleName());
+			bioEnum.setClassName(bioClass.getName());
+			bioEnum.setDictionary(annotation.dictionary());
+			
+			Field[] fields = bioClass.getDeclaredFields() ;
+			try {
+				for (int i = 0; i < fields.length; i++) {
+					BioEnum e = new BioEnum(((Enum) fields[i].get(null)).ordinal(), ((Enum) fields[i].get(null)).name(), code) ;
+					bioEnum.addValue(e) ;
+				}
+			} catch (IllegalArgumentException e) {
+				
+			} catch (IllegalAccessException e) {
+				
+			}
+			return bioEnum;
+		} catch (ClassNotFoundException e) {
+			throw new DictionaryException(e) ;
+		}
 	}
 }
