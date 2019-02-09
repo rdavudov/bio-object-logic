@@ -193,7 +193,7 @@ public class BioObj {
 		this.dictionary = dictionary;
 	}
 
-	public void setBioClass(Class<BioObject> bioClass) {
+	public void setBioClass(Class bioClass) {
 		this.bioClass = bioClass ;
 	}
 

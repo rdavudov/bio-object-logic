@@ -1,8 +1,11 @@
 package com.linkedlogics.bio.dictionary.builder;
 
-import com.linkedlogics.bio.BioDictionaryBuilder;
+import java.net.URL;
 
-public class UrlReader implements DictionaryReader {
+import com.linkedlogics.bio.BioDictionaryBuilder;
+import com.linkedlogics.bio.exception.DictionaryException;
+
+public class UrlReader extends XmlReader implements DictionaryReader {
 	private String url ;
 	
 	public UrlReader(String url) {
@@ -11,6 +14,10 @@ public class UrlReader implements DictionaryReader {
 
 	@Override
 	public void read(BioDictionaryBuilder builder) {
-		
+		try {
+			parse(new URL(url).openStream()) ;
+		} catch (Throwable e) {
+			throw new DictionaryException("invalid URL " + url, e) ;
+		}
 	}
 }
