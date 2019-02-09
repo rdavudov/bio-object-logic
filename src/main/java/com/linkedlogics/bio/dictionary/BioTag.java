@@ -328,7 +328,90 @@ public class BioTag {
 		case Time:
 			return Long.class ;
 		}
-		
+		return null ;
+	}
+	
+	public Class getJavaArrayClass(BioType type) {
+		switch (getType()) {
+		case UtfString:
+		case String:
+			return String[].class ;
+		case Boolean:
+			return Boolean[].class ;
+		case Byte:
+			return Byte[].class ;
+		case Short:
+			return Short[].class ;
+		case Float:
+			return Float[].class ;
+		case Double:
+			return Double[].class ;
+		case Integer:
+			return Integer[].class ;
+		case BioEnum:
+			return BioEnum[].class ;
+		case BioObject:
+			return BioObject[].class ;
+		case Long:
+		case Time:
+			return Long[].class ;
+		}
+		return null ;
+	}
+	
+	public Class getPrimitiveJavaClass(BioType type) {
+		switch (getType()) {
+		case UtfString:
+		case String:
+			return String.class ;
+		case Boolean:
+			return boolean.class ;
+		case Byte:
+			return byte.class ;
+		case Short:
+			return short.class ;
+		case Float:
+			return float.class ;
+		case Double:
+			return double.class ;
+		case Integer:
+			return int.class ;
+		case BioEnum:
+			return int.class ;
+		case BioObject:
+			return BioObject.class ;
+		case Long:
+		case Time:
+			return long.class ;
+		}
+		return null ;
+	}
+	
+	public Class getPrimitiveJavaArrayClass(BioType type) {
+		switch (getType()) {
+		case UtfString:
+		case String:
+			return String[].class ;
+		case Boolean:
+			return boolean[].class ;
+		case Byte:
+			return byte[].class ;
+		case Short:
+			return short[].class ;
+		case Float:
+			return float[].class ;
+		case Double:
+			return double[].class ;
+		case Integer:
+			return int[].class ;
+		case BioEnum:
+			return int[].class ;
+		case BioObject:
+			return BioObject[].class ;
+		case Long:
+		case Time:
+			return long[].class ;
+		}
 		return null ;
 	}
 }

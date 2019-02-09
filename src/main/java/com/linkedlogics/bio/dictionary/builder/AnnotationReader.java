@@ -1,6 +1,8 @@
 package com.linkedlogics.bio.dictionary.builder;
 
 import java.lang.reflect.Field;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 
 import com.linkedlogics.bio.BioDictionary;
@@ -18,6 +20,7 @@ import com.linkedlogics.bio.dictionary.BioTag;
 import com.linkedlogics.bio.dictionary.BioType;
 import com.linkedlogics.bio.exception.DictionaryException;
 import com.linkedlogics.bio.exception.ExpressionException;
+import com.linkedlogics.bio.utility.POJOUtility;
 
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ClassInfo;
@@ -137,6 +140,17 @@ public class AnnotationReader implements DictionaryReader {
 				BioFunc func = createFunc(classInfo.getName());
 				if (func != null) {
 					BioDictionary.getOrCreateDictionary(func.getDictionary()).addFunc(func);
+				}
+			}
+			
+			// Finding all bio pojo objects
+			for (ClassInfo classInfo : scanResult.getClassesWithAnnotation(com.linkedlogics.bio.annotation.BioPojo.class.getName())) {
+				if (!checkProfile(classInfo.getName(), builder.getProfiles(), builder.isOnlyProfiles())) {
+					continue ;
+				}
+				BioObj obj = createPojoObj(classInfo.getName());
+				if (obj != null) {
+					BioDictionary.getOrCreateDictionary(obj.getDictionary()).addObj(obj);
 				}
 			}
 		}
@@ -447,5 +461,88 @@ public class AnnotationReader implements DictionaryReader {
 		} catch (Throwable e) {
 			throw new DictionaryException(e) ;
 		}
+	}
+	
+	/**
+	 * Creates bio obj definition from pojo declared fields
+	 * @param objClassName
+	 * @return
+	 */
+	private BioObj createPojoObj(String objClassName) {
+		try {
+			Class bioClass = Class.forName(objClassName);
+			com.linkedlogics.bio.annotation.BioPojo annotation = (com.linkedlogics.bio.annotation.BioPojo) bioClass.getAnnotation(com.linkedlogics.bio.annotation.BioPojo.class);
+
+			int code = annotation.code() ;
+			if (code == 0) {
+				code = POJOUtility.getCode(objClassName) ;
+			}
+			String name = annotation.name() ;
+			if (name.length() == 0) {
+				name = bioClass.getSimpleName().replaceAll("([^_A-Z])([A-Z])", "$1_$2").toLowerCase() ;
+			}
+
+			BioObj obj = new BioObj(annotation.dictionary(), code, bioClass.getSimpleName(), name, annotation.version());
+			obj.setBioClass(bioClass);
+		
+			while (bioClass != null) {
+				if (bioClass.isAnnotationPresent(com.linkedlogics.bio.annotation.BioPojo.class)) {
+					Field[] fields = bioClass.getDeclaredFields();
+					for (int j = 0; j < fields.length; j++) {
+						try {
+							BioTag tag = createPojoTag(fields[j]);
+							obj.addTag(tag);
+						} catch (Throwable e) {
+							throw new DictionaryException("error in adding tag for " + bioClass.getName(), e) ;
+						}
+					}
+				}
+
+				bioClass = bioClass.getSuperclass();
+			}
+
+			return obj;
+		} catch (Throwable e) {
+			throw new DictionaryException(e) ;
+		}
+	}
+	
+	/**
+	 * Creating tag from pojo field
+	 * @param field
+	 * @return
+	 * @throws Throwable
+	 */
+	private static BioTag createPojoTag(Field field) throws Throwable {
+		String name = field.getName().replaceAll("([^_A-Z])([A-Z])", "$1_$2").toLowerCase() ;
+		int code = POJOUtility.getCode(name) ;
+		
+		String typeStr = field.getType().getName() ;
+		if (field.getType().isArray()) {
+			typeStr = field.getType().getComponentType().getName() ;
+		}
+		
+		typeStr = typeStr.substring(0, 1).toUpperCase() + typeStr.substring(1) ;
+		typeStr = typeStr.split("\\.")[typeStr.split("\\.").length - 1] ;
+		if (typeStr.equals("Int")) {
+			typeStr = "Integer" ;
+		} 
+		
+		BioType type = BioType.BioObject;
+		try {
+			type = Enum.valueOf(BioType.class, typeStr);
+		} catch (Exception e) {
+
+		}
+		BioTag tag = new BioTag(code, name, type);
+		if (tag.getType() == BioType.BioObject) {
+			tag.setObjName(typeStr);
+		}
+
+		tag.setArray(field.getType().isArray());
+		tag.setEncodable(true);
+		tag.setExportable(true);
+
+		return tag;
 	}
 }

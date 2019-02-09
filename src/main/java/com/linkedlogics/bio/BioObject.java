@@ -20,6 +20,7 @@ import com.linkedlogics.bio.exception.DictionaryException;
 import com.linkedlogics.bio.exception.ImmutableException;
 import com.linkedlogics.bio.object.BioObjectHolder;
 import com.linkedlogics.bio.utility.JSONUtility;
+import com.linkedlogics.bio.utility.POJOUtility;
 import com.linkedlogics.bio.utility.XMLUtility;
 
 /**
@@ -183,9 +184,7 @@ public class BioObject implements BioObjectHolder, Cloneable {
 	 * Sets key and object
 	 */
 	public BioObject set(String key, Object object) {
-		validateKeyAndObject(key, object) ;
-		map.put(key, object);
-		return this ;
+		return put(key, object) ;
 	}
 	
 	/**
@@ -268,18 +267,40 @@ public class BioObject implements BioObjectHolder, Cloneable {
 		return list ;
 	}
 	
+	/**
+	 * Puts only tagged values into bio object selected from source
+	 * @param object
+	 * @return
+	 */
 	public BioObject putAllByTags(BioObject object) {
-		//TODO: use dictionary and check tags
+		BioObj obj = BioDictionary.getDictionary(dictionary).getObjByCode(code);
+		if (obj != null) {
+			object.stream().forEach(e -> {
+				if (obj.getTag(e.getKey()) != null) {
+					set(e.getKey(), e.getValue()) ;
+				}
+			});
+		} else {
+			putAll(object) ;
+		}
 		return this ;
 	}
 	
-	public void merge() {
-		
+	/**
+	 * Merges values inside bio object recursively
+	 * @param object
+	 */
+	public void merge(BioObject object) {
+		object.stream().forEach(e -> {
+			if (e.getValue() instanceof BioObject && has(e.getKey()) && get(e.getKey()) instanceof BioObject) {
+				((BioObject) get(e.getKey())).merge((BioObject) e.getValue());
+			} else {
+				set(e.getKey(), e.getValue()) ;
+			}
+		});
 	}
 	
-	public void mergeDynamic() {
-		
-	}
+	/* Getter methods with castings */
 	
 	public Object get(String key) {
 		return map.get(key) ;
@@ -293,7 +314,6 @@ public class BioObject implements BioObjectHolder, Cloneable {
 		return value ;
 	}
 	
-	//*****//
 	public Object getObject(String key) {
 		return get(key);
 	}
@@ -715,7 +735,29 @@ public class BioObject implements BioObjectHolder, Cloneable {
 	}
 	
 	public void format() {
-
+		if (code != 0) {
+			BioObj obj = BioDictionary.getDictionary(dictionary).getObjByCode(code);
+			if (obj != null) {
+				final ArrayList<String> formattedKeys = new ArrayList<String>();
+				stream().forEach(e -> {
+					BioTag tag = obj.getTag(e.getKey());
+					if (tag != null) {
+						if (e.getValue() instanceof BioObject) {
+							
+						}
+						
+						
+						
+						
+						formattedKeys.add(e.getKey());
+					}
+				});
+				
+				formattedKeys.stream().forEach(k -> {
+					
+				});
+			}
+		}
 	}
 	
 	/**
@@ -889,6 +931,14 @@ public class BioObject implements BioObjectHolder, Cloneable {
 	}
 	
 	/**
+	 * Exports bio object to pojo
+	 * @return
+	 */
+	public Object toPojo() {
+		return POJOUtility.toPojo(this) ;
+	}
+	
+	/**
 	 * Parses json to bio object
 	 * @param json
 	 * @return
@@ -913,5 +963,9 @@ public class BioObject implements BioObjectHolder, Cloneable {
 	 */
 	public static BioObject fromXml(String xml) {
 		return XMLUtility.fromXml(xml);
+	}
+	
+	public static BioObject fromPojo(Object pojo) {
+		return POJOUtility.fromPojo(pojo) ;
 	}
 }
