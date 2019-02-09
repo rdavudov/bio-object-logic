@@ -186,6 +186,8 @@ public class BioDictionaryBuilder {
 	 * Must be called at first because it constructs all dictionary can be found in class path, URL path etc.
 	 */
 	public void build() {
+		BioDictionary.getOrCreateDictionary(0) ;
+		
 		for (DictionaryReader reader : readers) {
 			reader.read(this); 
 		}
