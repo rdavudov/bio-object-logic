@@ -34,20 +34,25 @@ import io.github.classgraph.ScanResult;
 public class AnnotationReader implements DictionaryReader {
 	private String packageName ;
 
+	public AnnotationReader() {
+
+	}
+	
 	public AnnotationReader(String packageName) {
 		this.packageName = packageName ;
 	}
 
 	@Override
 	public void read(BioDictionaryBuilder builder) {
-		try (ScanResult scanResult =
-				new ClassGraph()
-				.enableAnnotationInfo()
+		ClassGraph graph = new ClassGraph().enableAnnotationInfo()
 				.enableClassInfo()
-				.enableFieldInfo()
-				.whitelistPackages(packageName)
-				.scan()) {
-
+				.enableFieldInfo();
+				
+		if (packageName != null) {
+			graph.whitelistPackages(packageName) ;
+		}
+		
+		try (ScanResult scanResult = graph.scan()) {
 			// Finding all bio objects
 			for (ClassInfo classInfo : scanResult.getClassesWithAnnotation(com.linkedlogics.bio.annotation.BioObj.class.getName())) {
 				if (!checkProfile(classInfo.getName(), builder.getProfiles(), builder.isOnlyProfiles())) {
