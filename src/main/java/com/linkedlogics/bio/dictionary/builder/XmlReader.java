@@ -1,6 +1,8 @@
 package com.linkedlogics.bio.dictionary.builder;
 
 import java.io.ByteArrayInputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 
@@ -13,6 +15,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import com.linkedlogics.bio.BioDictionary;
+import com.linkedlogics.bio.BioDictionaryBuilder;
 import com.linkedlogics.bio.BioEnum;
 import com.linkedlogics.bio.BioFunction;
 import com.linkedlogics.bio.dictionary.BioEnumObj;
@@ -23,7 +26,20 @@ import com.linkedlogics.bio.dictionary.BioType;
 import com.linkedlogics.bio.exception.DictionaryException;
 import com.linkedlogics.bio.exception.ParserException;
 
-public class XmlReader {
+public class XmlReader implements DictionaryReader {
+	private InputStream in ;
+	
+	public XmlReader(InputStream in) {
+		this.in = in ;
+	}
+	
+	
+	
+	@Override
+	public void read(BioDictionaryBuilder builder) {
+		parse(in) ;
+	}
+
 	/**
 	 * Parses bio from xml string
 	 * @param xml
