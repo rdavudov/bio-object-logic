@@ -1,5 +1,8 @@
 package com.linkedlogics.bio;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -14,8 +17,8 @@ import com.linkedlogics.bio.dictionary.BioTag;
 import com.linkedlogics.bio.dictionary.BioType;
 import com.linkedlogics.bio.dictionary.builder.AnnotationReader;
 import com.linkedlogics.bio.dictionary.builder.DictionaryReader;
-import com.linkedlogics.bio.dictionary.builder.XmlFileReader;
-import com.linkedlogics.bio.dictionary.builder.XmlResourceReader;
+import com.linkedlogics.bio.dictionary.builder.XmlReader;
+import com.linkedlogics.bio.exception.DictionaryException;
 
 /**
  * This is dictionary builder must be called at the beginning of application in order to setup all dictionary information
@@ -23,9 +26,9 @@ import com.linkedlogics.bio.dictionary.builder.XmlResourceReader;
  *
  */
 public class BioDictionaryBuilder {
-	private List<DictionaryReader> readers = new ArrayList<DictionaryReader>();
-	private HashSet<String> profiles = new HashSet<String>();
-	private boolean isOnlyProfiles ;
+	protected List<DictionaryReader> readers = new ArrayList<DictionaryReader>();
+	protected HashSet<String> profiles = new HashSet<String>();
+	protected boolean isOnlyProfiles ;
 	
 	/**
 	 * Adding a package name for gathering bio obj info from annotations
@@ -41,9 +44,13 @@ public class BioDictionaryBuilder {
 	 * @param xml
 	 * @return
 	 */
-	public BioDictionaryBuilder addFile(String xml) {
-		readers.add(new XmlFileReader(xml)) ;
-		return this ;
+	public BioDictionaryBuilder addFile(String xmlFile) {
+		try {
+			readers.add(new XmlReader(new FileInputStream(xmlFile))) ;
+			return this ;
+		} catch (FileNotFoundException e) {
+			throw new DictionaryException(e) ;
+		}
 	}
 	/**
 	 * Adding xml resource name for gathering bio obj info from xml
@@ -51,7 +58,7 @@ public class BioDictionaryBuilder {
 	 * @return
 	 */
 	public BioDictionaryBuilder addResource(String resource) {
-		readers.add(new XmlResourceReader(resource)) ;
+		readers.add(new XmlReader(this.getClass().getClassLoader().getResourceAsStream(resource))) ;
 		return this ;
 	}
 	/**
@@ -60,8 +67,12 @@ public class BioDictionaryBuilder {
 	 * @return
 	 */
 	public BioDictionaryBuilder addUrl(String url) {
-		readers.add(new XmlResourceReader(url)) ;
-		return this ;
+		try {
+			readers.add(new XmlReader(new URL(url).openStream())) ;
+			return this ;
+		} catch (Throwable e) {
+			throw new DictionaryException(e) ;
+		}
 	}
 	/**
 	 * Adding profile to be considered while parsing all bio obj definitions
@@ -181,12 +192,16 @@ public class BioDictionaryBuilder {
 	public boolean isOnlyProfiles() {
 		return isOnlyProfiles;
 	}
-
+	
 	/**
 	 * Must be called at first because it constructs all dictionary can be found in class path, URL path etc.
 	 */
 	public void build() {
 		BioDictionary.getOrCreateDictionary(0) ;
+		
+		if (readers.size() == 0) {
+			readers.add(new AnnotationReader()) ;
+		}
 		
 		for (DictionaryReader reader : readers) {
 			reader.read(this); 
@@ -195,8 +210,6 @@ public class BioDictionaryBuilder {
 		BioDictionary.getDictionaryMap().entrySet().stream().forEach(e -> {
 			validate(e.getValue());
 		});
-		
-		
 	}
 	
 	/**
