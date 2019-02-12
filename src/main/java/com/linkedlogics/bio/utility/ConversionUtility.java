@@ -1,13 +1,21 @@
 package com.linkedlogics.bio.utility;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.json.JSONObject;
 
+import com.linkedlogics.bio.BioDictionary;
 import com.linkedlogics.bio.BioEnum;
 import com.linkedlogics.bio.BioObject;
 import com.linkedlogics.bio.BioTime;
+import com.linkedlogics.bio.dictionary.BioEnumObj;
 import com.linkedlogics.bio.dictionary.BioType;
+import com.linkedlogics.bio.exception.ParserException;
 
 /**
  * It is used to conver string values to actual types based on BioType
@@ -16,165 +24,36 @@ import com.linkedlogics.bio.dictionary.BioType;
  */
 public class ConversionUtility {
     /**
-     * Convert value to given bio type
-     * @param value
-     * @param type
-     * @param isArray
-     * @return
-     */
-    public static Object convert(String value, BioType type) {
-        value = value.trim();
-        switch (type) {
-            case Byte:
-            	if (value.indexOf('.') > -1) {
-            		value = value.substring(0, value.indexOf('.')) ;
-            	}
-            	return Byte.parseByte(value);
-            case Short:
-            	if (value.indexOf('.') > -1) {
-            		value = value.substring(0, value.indexOf('.')) ;
-            	}
-                return Short.parseShort(value);
-            case Boolean:
-                return Boolean.parseBoolean(value);
-            case Double:
-                return Double.parseDouble(value);
-            case Float:
-                return Float.parseFloat(value);
-            case Integer:
-            	if (value.indexOf('.') > -1) {
-            		value = value.substring(0, value.indexOf('.')) ;
-            	}
-                return Integer.parseInt(value);
-            case JavaObject:
-                return null;
-            case JavaEnum:
-                return value;
-            case BioEnum:
-                return value;
-            case Long:
-            	if (value.indexOf('.') > -1) {
-            		value = value.substring(0, value.indexOf('.')) ;
-            	}
-                return Long.parseLong(value);
-            case BioObject:
-            case Properties:
-            	if (value.startsWith("{")) {
-            		return BioObject.fromJson(new JSONObject(value)) ;
-            	} else {
-            		String[] propertiesArr = value.split(";");
-            		BioObject properties = new BioObject(0);
-            		for (int i = 0; i < propertiesArr.length; i++) {
-            			String[] property = propertiesArr[i].split("\\|");
-            			boolean isPropertyArray = false;
-            			if (property[1].endsWith("[]")) {
-            				property[1] = property[1].substring(0, property[1].length() - 2);
-            				isPropertyArray = true;
-            			}
-            			if (!isPropertyArray) {
-            				properties.put(property[0], convert(property[2].trim(), Enum.valueOf(BioType.class, property[1])));
-            			} else {
-            				properties.put(property[0], convertAsArray(property[2].trim(), Enum.valueOf(BioType.class, property[1])));
-            			}
-            			
-            		}
-            		return properties;
-            	}
-            case String:
-                return value;
-            case Time:
-				try {
-					return BioTime.parseString(value);
-				} catch (Throwable e) {
-					return Long.parseLong(value);
-				}
-            case UtfString:
-                return value;
-        }
-        return null;
-    }
-
-    /**
-     * Convert value to given bio type array
+     * Convert value to list
      * @param value
      * @param type
      * @return
      */
-    public static Object[] convertAsArray(String value, BioType type) {
-        String[] strValues = value.split(",");
-        switch (type) {
-            case Byte:
-                Byte[] byteValues = new Byte[strValues.length];
-                for (int i = 0; i < byteValues.length; i++) {
-                    byteValues[i] = (Byte) convert(strValues[i], type);
-                }
-                return byteValues;
-            case Short:
-            	Short[] shortValues = new Short[strValues.length];
-                for (int i = 0; i < shortValues.length; i++) {
-                	shortValues[i] = (Short) convert(strValues[i], type);
-                }
-                return shortValues;
-            case Boolean:
-                Boolean[] booleanValues = new Boolean[strValues.length];
-                for (int i = 0; i < booleanValues.length; i++) {
-                    booleanValues[i] = (Boolean) convert(strValues[i], type);
-                }
-                return booleanValues;
-            case Double:
-                Double[] doubleValues = new Double[strValues.length];
-                for (int i = 0; i < doubleValues.length; i++) {
-                    doubleValues[i] = (Double) convert(strValues[i], type);
-                }
-                return doubleValues;
-            case Float:
-            	Float[] floatValues = new Float[strValues.length];
-                for (int i = 0; i < floatValues.length; i++) {
-                	floatValues[i] = (Float) convert(strValues[i], type);
-                }
-                return floatValues;
-            case Integer:
-                Integer[] intValues = new Integer[strValues.length];
-                for (int i = 0; i < intValues.length; i++) {
-                    intValues[i] = (Integer) convert(strValues[i], type);
-                }
-                return intValues;
-            case JavaObject:
-                Object[] objectValues = new Object[strValues.length];
-                for (int i = 0; i < objectValues.length; i++) {
-                    objectValues[i] = convert(strValues[i], type);
-                }
-                return objectValues;
-            case Long:
-                Long[] longValues = new Long[strValues.length];
-                for (int i = 0; i < longValues.length; i++) {
-                    longValues[i] = (Long) convert(strValues[i], type);
-                }
-                return longValues;
-            case BioObject:
-            case Properties:
-                String[] propStrValues = value.split(",,");
-                BioObject[] propValues = new BioObject[propStrValues.length];
-                for (int i = 0; i < propStrValues.length; i++) {
-                    propValues[i] = (BioObject) convert(propStrValues[i], type);
-                }
-                return propValues;
-            case String:
-                return strValues;
-            case JavaEnum:
-                return strValues;
-            case BioEnum:
-                return strValues;
-            case Time:
-                Long[] timeValues = new Long[strValues.length];
-                for (int i = 0; i < timeValues.length; i++) {
-                    timeValues[i] = (Long) convert(strValues[i], type);
-                }
-                return timeValues;
-            case UtfString:
-                return strValues;
-        }
-        return null;
+    public static Object convertAsList(BioType target, Object value) {
+    	if (value instanceof List) {
+    		List list = (List) value ;
+    		return list.stream().map(s -> {
+    			return convert(target, s) ;
+    		}).collect(Collectors.toList()) ;
+    	} else if (value instanceof BioObject[]) {
+    		return Arrays.stream((BioObject[]) value).collect(Collectors.toList()) ;
+    	} else if (value instanceof BioObject[]) {
+    		return Arrays.stream((BioObject[]) value).collect(Collectors.toList()) ;
+    	} else if (target == BioType.BioObject || target == BioType.Properties) {
+    		String[] strValues = value.toString().split(",,");
+    		ArrayList<BioObject> values = new ArrayList<BioObject>();
+    		for (int i = 0; i < strValues.length; i++) {
+    			values.add((BioObject) convert(target, strValues[i]));
+    		}
+    		return values;
+    	} else {
+    		String[] strValues = value.toString().split(",");
+    		ArrayList<Object> values = new ArrayList<Object>();
+    		for (int i = 0; i < strValues.length; i++) {
+    			values.add(convert(target, strValues[i]));
+    		}
+    		return values;
+    	}
     }
 
     /**
@@ -186,9 +65,12 @@ public class ConversionUtility {
         if (value.getClass().isArray()) {
             if (value instanceof String[]) {
             	if (((String[]) value).length > 0) {
-            		if (((String[]) value)[0].length() != ((String[]) value)[0].getBytes().length) {
-            			return BioType.UtfString ;
-            		}
+            		String[] array = (String[]) value ;
+            		for (int i = 0; i < array.length; i++) {
+            			if (((String[]) value)[i].length() != ((String[]) value)[i].getBytes().length) {
+                			return BioType.UtfString ;
+                		}
+					}
             	}
                 return BioType.String;
             } else if (value instanceof Boolean[]) {
@@ -284,5 +166,372 @@ public class ConversionUtility {
                 return BioType.JavaObject;
             }
         }
+    }
+    
+    /**
+     * Converts potential value to bio enum array 
+     * @param enumObj
+     * @param value
+     * @return
+     */
+    public static Object[] convertAsArray(BioEnumObj enumObj, Object value) {
+    	Object[] array = null ;
+    	// if it is already bioenum[]
+    	if (value instanceof BioEnum[]){
+     		return (Object[]) value ;
+     	} else if (value instanceof Object[]) {
+    		// if value is an array just cast it an use it
+    		array = (Object[]) value ;
+    	} else {
+    		// rest is an object most probably comma separated values
+    		array = value.toString().split(",") ;
+    	}
+    	
+    	// if we have an integer array then we use it
+    	if (array instanceof Number[]) {
+    		return Arrays.stream((Number[]) array).map(n -> {
+    			return enumObj.getBioEnum(n.intValue()) ;
+    		}).filter(e -> {
+    			return e != null ;
+    		}).toArray(size -> BioDictionary.getDictionary(enumObj.getDictionary()).getFactory().newBioEnumArray(enumObj.getCode(), size)) ;
+    	} else {
+    		// here we try to first get enum by name, if no then we assume we have a number as string, so we parse it to integer and check again
+    		return Arrays.stream((Object[]) array).map(n -> {
+    			if (enumObj.getNameMap().containsKey(n.toString())) {
+    				return enumObj.getBioEnum(n.toString()) ;
+    			} else {
+    				try {
+						int ordinal = Integer.parseInt(n.toString()) ;
+						return enumObj.getBioEnum(ordinal) ;
+					} catch (Throwable e1) {
+						return null ;
+					}
+    			}
+    		}).filter(e -> {
+    			return e != null ;
+    		}).toArray(size -> BioDictionary.getDictionary(enumObj.getDictionary()).getFactory().newBioEnumArray(enumObj.getCode(), size)) ;
+    	}
+    }
+    
+    /**
+     * Converts potential value to bio enum list 
+     * @param enumObj
+     * @param value
+     * @return
+     */
+    public static Object convertAsList(BioEnumObj enumObj, Object value) {
+    	
+    	if (value instanceof List) {
+    		List list = (List) value ;
+    		return list.stream().map(s -> {
+    			return convert(enumObj, s) ;
+    		}).collect(Collectors.toList()) ;
+    	} else if (value instanceof BioEnum[]) {
+    		return Arrays.stream((BioEnum[]) value).collect(Collectors.toList())  ;
+    	} else if (value instanceof Object[]) {
+    		List list = new ArrayList<BioEnum>() ;
+    		Object[] array = (Object[]) value ;
+    		BioDictionary.getDictionary(enumObj.getDictionary()).getFactory().newBioEnumArray(enumObj.getCode(), array.length) ;
+    		for (int i = 0; i < array.length; i++) {
+				list.add(convert(enumObj, array[i])) ;
+			}
+    		return list ;
+    	} else {
+    		return convertAsList(enumObj, value.toString().split(","));
+    	}
+    }
+    
+    /**
+     * Converts an object into array
+     * @param target
+     * @param value
+     * @return
+     */
+    public static Object[] convertAsArray(BioType target, Object value) {
+    	Object[] array = null ;
+    	if (value instanceof BioObject[] || value instanceof BioEnum[]){
+     		return (Object[]) value ;
+     	} else if (value instanceof Object[]) {
+    		// if value is an array just cast it an use it
+    		// we still process it because may be we array of doubles but we need array of integers according to target(BioType)
+    		array = (Object[]) value ;
+    	} else if (value instanceof BioObject){
+    		// if value is a bio object we can only return an array with one element no way to convert it
+    		array = (Object[]) Array.newInstance(value.getClass(), 1) ;
+    		array[0] = value ;
+    		return array ;
+    	} else {
+    		// rest is an object most probably comma separated values
+    		array = value.toString().split(",") ;
+    	}
+    	
+    	switch (target) {
+		case String:
+		case UtfString:
+			return Arrays.stream(array).map(s -> {
+				return convert(target, s) ;
+			}).filter(s -> {
+				return s != null ;
+			}).toArray(size -> new String[size]) ;
+		case Byte:
+			return Arrays.stream(array).map(s -> {
+				return convert(target, s) ;
+			}).filter(s -> {
+				return s != null ;
+			}).toArray(size -> new Byte[size]) ;
+		case Short:
+			return Arrays.stream(array).map(s -> {
+				return convert(target, s) ;
+			}).filter(s -> {
+				return s != null ;
+			}).toArray(size -> new Short[size]) ;
+		case Integer:
+			return Arrays.stream(array).map(s -> {
+				return convert(target, s) ;
+			}).filter(s -> {
+				return s != null ;
+			}).toArray(size -> new Integer[size]) ;		
+		case Long:
+			return Arrays.stream(array).map(s -> {
+				return convert(target, s) ;
+			}).filter(s -> {
+				return s != null ;
+			}).toArray(size -> new Long[size]) ;	
+		case Float:
+			return Arrays.stream(array).map(s -> {
+				return convert(target, s) ;
+			}).filter(s -> {
+				return s != null ;
+			}).toArray(size -> new Float[size]) ;	
+		case Double:
+			return Arrays.stream(array).map(s -> {
+				return convert(target, s) ;
+			}).filter(s -> {
+				return s != null ;
+			}).toArray(size -> new Double[size]) ;
+		case Boolean:
+			return Arrays.stream(array).map(s -> {
+				return convert(target, s) ;
+			}).filter(s -> {
+				return s != null ;
+			}).toArray(size -> new Boolean[size]) ;		
+		case Time:
+			return Arrays.stream(array).map(s -> {
+				return convert(target, s) ;
+			}).filter(s -> {
+				return s != null ;
+			}).toArray(size -> new Long[size]) ;
+		case BioObject:
+		case Properties:
+			if (value instanceof String) {
+				array = value.toString().split(",,") ;
+			}
+			
+			return Arrays.stream(array).map(v -> {
+				if (value instanceof String) {
+					String s = (String) v ;
+					if (s.startsWith("{")) {
+	            		return BioObject.fromJson(new JSONObject(s)) ;
+	            	} else {
+	            		String[] propertiesArr = s.split(";");
+	            		BioObject properties = new BioObject(0);
+	            		for (int i = 0; i < propertiesArr.length; i++) {
+	            			String[] property = propertiesArr[i].split("\\|");
+	            			boolean isPropertyArray = false;
+	            			if (property[1].endsWith("[]")) {
+	            				property[1] = property[1].substring(0, property[1].length() - 2);
+	            				isPropertyArray = true;
+	            			}
+	            			if (isPropertyArray) {
+	            				properties.put(property[0], convertAsArray(Enum.valueOf(BioType.class, property[1]), property[2].trim()));
+	            			} else {
+	            				properties.put(property[0], convert(Enum.valueOf(BioType.class, property[1]), property[2].trim()));
+	            			}
+	            		}
+	            		return properties;
+	            	}
+				} else if (value instanceof BioObject) {
+					return value ;
+				}
+				return null ;
+			}).filter(s -> {
+				return s != null ;
+			}).toArray(size -> new BioObject[size]) ;
+		}
+    	return null ;
+    }
+    
+    /**
+     * Converts an object to bio enum if it is number we check code, if it is string we check name
+     * @param enumObj
+     * @param value
+     * @return
+     */
+    public static Object convert(BioEnumObj enumObj, Object value) {
+    	if (value instanceof BioEnum) {
+    		return value ;
+    	} else if (value instanceof String)
+    		if (enumObj.getNameMap().containsKey(value.toString())) {
+    			return enumObj.getBioEnum(value.toString()) ;
+    		} else {
+    			try {
+    				int ordinal = Integer.parseInt(value.toString()) ;
+    				return enumObj.getBioEnum(ordinal) ;
+    			} catch (Throwable e1) {
+    				return null ;
+    			}
+    		}
+    	else if (value instanceof Number) {
+    		return enumObj.getBioEnum(((Number) value).intValue()) ;
+    	}
+
+    	return null ;
+    } 
+    
+    /**
+     * Converts value to bio tag value
+     * @param target
+     * @param value
+     * @return
+     */
+    public static Object convert(BioType target, Object value) {
+    	if (value instanceof String)
+    		value = ((String) value).trim();
+    	
+    	switch (target) {
+		case String:
+		case UtfString:
+			return value.toString() ;
+		case Byte:
+			if (value instanceof String) {
+				String s = (String) value ;
+				if (s.indexOf('.') > -1) {
+            		s = s.substring(0, s.indexOf('.')) ;
+            	}
+				return Byte.parseByte(s) ;
+			} else if (value instanceof Number) {
+				return ((Number) value).byteValue() ;
+			} else if (value instanceof Boolean) {
+				return ((Boolean) value).booleanValue() ? (byte)1 : (byte)0 ;
+			}
+			return null;
+		case Short:
+			if (value instanceof String) {
+				String s = (String) value ;
+				if (s.indexOf('.') > -1) {
+            		s = s.substring(0, s.indexOf('.')) ;
+            	}
+				return Short.parseShort(s) ;
+			} else if (value instanceof Number) {
+				return ((Number) value).shortValue() ;
+			} else if (value instanceof Boolean) {
+				return ((Boolean) value).booleanValue() ? (short)1 : (short)0 ;
+			}
+			return null;
+		case Integer:
+			if (value instanceof String) {
+				String s = (String) value ;
+				if (s.indexOf('.') > -1) {
+            		s = s.substring(0, s.indexOf('.')) ;
+            	}
+				return Integer.parseInt(s) ;
+			} else if (value instanceof Number) {
+				return ((Number) value).intValue() ;
+			} else if (value instanceof Boolean) {
+				return ((Boolean) value).booleanValue() ? 1 : 0 ;
+			}
+			return null;			
+		case Long:
+			if (value instanceof String) {
+				String s = (String) value ;
+				if (s.indexOf('.') > -1) {
+            		s = s.substring(0, s.indexOf('.')) ;
+            	}
+				return Long.parseLong(s) ;
+			} else if (value instanceof Number) {
+				return ((Number) value).longValue() ;
+			} else if (value instanceof Boolean) {
+				return ((Boolean) value).booleanValue() ? (long)1 : (long)0 ;
+			}
+			return null;	
+		case Float:
+			if (value instanceof String) {
+				return Float.parseFloat(value.toString()) ;
+			} else if (value instanceof Number) {
+				return ((Number) value).floatValue() ;
+			} else if (value instanceof Boolean) {
+				return ((Boolean) value).booleanValue() ? (float)1.0 : (float)0.0 ;
+			}
+			return null;			
+		case Double:
+			if (value instanceof String) {
+				return Double.parseDouble(value.toString()) ;
+			} else if (value instanceof Number) {
+				return ((Number) value).doubleValue() ;
+			} else if (value instanceof Boolean) {
+				return ((Boolean) value).booleanValue() ? 1.0 : 0.0 ;
+			}
+			return null;	
+		case Boolean:
+			if (value instanceof String) {
+				return Boolean.parseBoolean(value.toString()) ;
+			} else if (value instanceof Number) {
+				return ((Number) value).intValue() > 0 ;
+			} else if (value instanceof Boolean) {
+				return ((Boolean) value).booleanValue() ;
+			}
+			return null;			
+		case Time:
+			if (value instanceof String) {
+				try {
+					return BioTime.parseString(value.toString()) ;
+				} catch (ParserException e) {
+					return Long.parseLong(value.toString()) ;
+				}
+			} else if (value instanceof Number) {
+				return ((Number) value).longValue() ;
+			} else if (value instanceof Date) {
+				return ((Date) value).getTime() ;
+			} 
+			return null;	
+		case BioObject:
+		case Properties:
+			if (value instanceof String) {
+				String s = (String) value ;
+				if (s.startsWith("{")) {
+            		return BioObject.fromJson(new JSONObject(s)) ;
+            	} else {
+            		String[] propertiesArr = s.split(";");
+            		BioObject properties = new BioObject(0);
+            		for (int i = 0; i < propertiesArr.length; i++) {
+            			String[] property = propertiesArr[i].split("\\|");
+            			boolean isPropertyArray = false;
+            			if (property[1].endsWith("[]")) {
+            				property[1] = property[1].substring(0, property[1].length() - 2);
+            				isPropertyArray = true;
+            			}
+            			if (isPropertyArray) {
+            				properties.put(property[0], convertAsArray(Enum.valueOf(BioType.class, property[1]), property[2].trim()));
+            			} else {
+            				properties.put(property[0], convert(Enum.valueOf(BioType.class, property[1]), property[2].trim()));
+            			}
+            		}
+            		return properties;
+            	}
+			} else if (value instanceof BioObject) {
+				return value ;
+			}
+			return null ;
+		}
+    	return null ;
+    }
+    
+    public static void main(String[] args) {
+    	Object source = new Integer[] {1, 1, 0} ;
+    	Object result = ConversionUtility.convertAsArray(BioType.Boolean, source) ;
+    	System.out.println(result);
+    	if (result instanceof Object[]) {
+    		System.out.println(Arrays.toString((Object[]) result));
+    	}
     }
 }

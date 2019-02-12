@@ -177,7 +177,7 @@ public class BioTag {
 	}
 
 	public Class getJavaClass() {
-		return javaClass;
+		return getJavaClass(getType());
 	}
 
 	public void setJavaClass(Class javaClass) {
@@ -297,7 +297,7 @@ public class BioTag {
 		case Time:
 			return BioTime.getTime(initial) ;
 		case Properties:
-			return ConversionUtility.convert(initial, BioType.Properties) ;
+			return ConversionUtility.convert(BioType.Properties, initial) ;
 		}
 		
 		return null ;
@@ -321,9 +321,9 @@ public class BioTag {
 		case Integer:
 			return Integer.class ;
 		case BioEnum:
-			return BioEnum.class ;
+			return enumObj != null && enumObj.getBioClass() != null ? enumObj.getBioClass() : BioEnum.class ;
 		case BioObject:
-			return BioObject.class ;
+			return obj != null && obj.getBioClass() != null ? obj.getBioClass() : BioObject.class ;
 		case Long:
 		case Time:
 			return Long.class ;

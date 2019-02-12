@@ -1,8 +1,6 @@
 package com.linkedlogics.bio;
 
 import java.lang.reflect.Array;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
@@ -16,9 +14,11 @@ import org.json.JSONObject;
 
 import com.linkedlogics.bio.dictionary.BioObj;
 import com.linkedlogics.bio.dictionary.BioTag;
+import com.linkedlogics.bio.dictionary.BioType;
 import com.linkedlogics.bio.exception.DictionaryException;
 import com.linkedlogics.bio.exception.ImmutableException;
 import com.linkedlogics.bio.object.BioObjectHolder;
+import com.linkedlogics.bio.utility.ConversionUtility;
 import com.linkedlogics.bio.utility.JSONUtility;
 import com.linkedlogics.bio.utility.POJOUtility;
 import com.linkedlogics.bio.utility.XMLUtility;
@@ -742,19 +742,44 @@ public class BioObject implements BioObjectHolder, Cloneable {
 				stream().forEach(e -> {
 					BioTag tag = obj.getTag(e.getKey());
 					if (tag != null) {
-						if (e.getValue() instanceof BioObject) {
-							
-						}
-						
-						
-						
-						
 						formattedKeys.add(e.getKey());
 					}
 				});
 				
 				formattedKeys.stream().forEach(k -> {
+					BioTag tag = obj.getTag(k) ;
+					Object value = get(k) ;
 					
+					if (value instanceof BioExpression) {
+						return ;
+					} else if (tag.isArray()) {
+						if (tag.getType() != BioType.BioEnum) {
+							value = ConversionUtility.convertAsArray(tag.getType(), value) ;
+						} else {
+							value = ConversionUtility.convertAsArray(tag.getEnumObj(), value) ;
+						}
+					} else if (tag.isList()) {
+						if (tag.getType() != BioType.BioEnum) {
+							value = ConversionUtility.convertAsList(tag.getType(), value) ;
+						} else {
+							value = ConversionUtility.convertAsList(tag.getEnumObj(), value) ;
+						}
+					} else if (value instanceof BioObject) {
+						((BioObject) value).format(); 
+						return ;
+					} else if (tag.getType() != ConversionUtility.getType(value)) {
+						if (tag.getType() != BioType.BioEnum) {
+							value = ConversionUtility.convert(tag.getType(), value) ;
+						} else {
+							value = ConversionUtility.convert(tag.getEnumObj(), value) ;
+						}
+					}
+					
+					if (value != null) {
+						put(tag.getName(), value) ;
+					} else {
+						remove(tag.getName()) ;
+					}
 				});
 			}
 		}

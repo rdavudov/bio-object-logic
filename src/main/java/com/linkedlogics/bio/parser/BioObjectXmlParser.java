@@ -304,7 +304,7 @@ public class BioObjectXmlParser {
     		return null ;
     	} else {
     		if (isArray || isList) {
-    			Object[] array = ConversionUtility.convertAsArray(e.getTextContent().trim(), elementType);
+    			Object[] array = ConversionUtility.convertAsArray(elementType, e.getTextContent().trim());
     			if (isList) {
         			ArrayList<Object> list = new ArrayList<Object>();
         			for (int i = 0; i < array.length; i++) {
@@ -315,7 +315,7 @@ public class BioObjectXmlParser {
         			return array ;
         		}
     		} else {
-    			return ConversionUtility.convert(e.getTextContent().trim(), elementType);
+    			return ConversionUtility.convert(elementType, e.getTextContent().trim());
     		}
     	}
     }
