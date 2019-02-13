@@ -184,7 +184,8 @@ public class BioObject implements BioObjectHolder, Cloneable {
 	 * Sets key and object
 	 */
 	public BioObject set(String key, Object object) {
-		return put(key, object) ;
+		put(key, object) ;
+		return this ;
 	}
 	
 	/**
@@ -648,7 +649,7 @@ public class BioObject implements BioObjectHolder, Cloneable {
 	 * After creating bio object with added source bio object values provided at constructor, init() method checks whether they are empty keys which has initial or expression value
 	 * and tries to generate values for them and add to the map
 	 */
-	public void init() {
+	public BioObject init() {
 		if (code != 0) {
 			BioObj obj = BioDictionary.getDictionary(dictionary).getObjByCode(code) ;
 			if (obj != null) {
@@ -697,9 +698,11 @@ public class BioObject implements BioObjectHolder, Cloneable {
 				});
 			}
 		}
+		
+		return this ;
 	}
 
-	public void fill(BioObject... params) {
+	public BioObject fill(BioObject... params) {
 		final ArrayList<String> filledKeys = new ArrayList<String>();
 		stream().forEach(e -> {
 			if (e.getValue() instanceof BioExpression) {
@@ -732,9 +735,11 @@ public class BioObject implements BioObjectHolder, Cloneable {
 				remove(k) ;
 			}
 		});
+		
+		return this ;
 	}
 	
-	public void format() {
+	public BioObject format() {
 		if (code != 0) {
 			BioObj obj = BioDictionary.getDictionary(dictionary).getObjByCode(code);
 			if (obj != null) {
@@ -783,6 +788,8 @@ public class BioObject implements BioObjectHolder, Cloneable {
 				});
 			}
 		}
+		
+		return this ;
 	}
 	
 	/**
@@ -805,7 +812,7 @@ public class BioObject implements BioObjectHolder, Cloneable {
 			});
 		}
 		
-		return trimmed ;
+		return this ;
 	}
 	
 	/**
@@ -844,7 +851,7 @@ public class BioObject implements BioObjectHolder, Cloneable {
 			});
 		}
 		
-		return trimmed ;
+		return this ;
 	}
 	
 	/**
@@ -925,6 +932,11 @@ public class BioObject implements BioObjectHolder, Cloneable {
 		}
 		
 		return trimmed ;
+	}
+	
+	public BioObject empty() {
+		clear();
+		return this ;
 	}
 	
 	protected Map<String, Object> getMap() {
