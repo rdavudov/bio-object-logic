@@ -108,7 +108,7 @@ public class AnnotationReader implements DictionaryReader {
 					if (fields[j].isAnnotationPresent(BioRemoteTag.class)) {
 						try {
 							BioRemoteTag annotation = fields[j].getAnnotation(BioRemoteTag.class);
-							BioTag tag = createRemoteTag(fields[j]);
+							BioTag tag = createRemoteTag(annotation, fields[j]);
 							BioObj obj = BioDictionary.getOrCreateDictionary(remoteAnnotation.dictionary()).getObjByType(annotation.obj()) ;
 							if (obj != null) {
 								obj.addTag(tag);
@@ -121,7 +121,7 @@ public class AnnotationReader implements DictionaryReader {
 						for (int k = 0; k < array.length; k++) {
 							try {
 								BioRemoteTag annotation = array[k] ;
-								BioTag tag = createRemoteTag(fields[j]);
+								BioTag tag = createRemoteTag(annotation, fields[j]);
 								BioObj obj = BioDictionary.getOrCreateDictionary(remoteAnnotation.dictionary()).getObjByType(annotation.obj()) ;
 								if (obj != null) {
 									obj.addTag(tag);
@@ -265,9 +265,7 @@ public class AnnotationReader implements DictionaryReader {
 	 * @return
 	 * @throws Throwable
 	 */
-	public static BioTag createRemoteTag(Field field) throws Throwable {
-		com.linkedlogics.bio.annotation.BioRemoteTag annotation = field.getAnnotation(com.linkedlogics.bio.annotation.BioRemoteTag.class);
-		
+	public static BioTag createRemoteTag(BioRemoteTag annotation, Field field) throws Throwable {
 		return createTag((String) field.get(null), annotation.type(), annotation.code(), 
 				annotation.isMandatory(), annotation.isEncodable(), annotation.isExportable(), 
 				annotation.isArray(), annotation.isList(), annotation.javaClass(), annotation.useKey(), 
