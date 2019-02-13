@@ -249,7 +249,7 @@ public class ConversionUtility {
      */
     public static Object[] convertAsArray(BioType target, Object value) {
     	Object[] array = null ;
-    	if (value instanceof BioObject[] || value instanceof BioEnum[]){
+    	if (value instanceof BioObject[]){
      		return (Object[]) value ;
      	} else if (value instanceof Object[]) {
     		// if value is an array just cast it an use it

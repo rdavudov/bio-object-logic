@@ -111,7 +111,7 @@ public class XMLUtility {
 				toXml(xml, tab + TAB + TAB, array[i].getBioName(), array[i]);
 			}
 			xml.append(tab).append(TAB).append("</").append(key).append(">\n");
-		} else if (value instanceof BioEnum[]) {
+		} else if (value instanceof BioEnum[] && tag.getEnumObj() != null) {
 			BioEnum[] array = (BioEnum[]) value;
 			xml.append(tab).append(TAB).append("<").append(key)
 			.append(" type=\"").append(tag.getEnumObj().getName())
