@@ -1,9 +1,6 @@
 package com.linkedlogics.bio.dictionary.builder;
 
 import java.lang.reflect.Field;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
 
 import com.linkedlogics.bio.BioDictionary;
 import com.linkedlogics.bio.BioDictionaryBuilder;
@@ -111,7 +108,7 @@ public class AnnotationReader implements DictionaryReader {
 					if (fields[j].isAnnotationPresent(BioRemoteTag.class)) {
 						try {
 							BioRemoteTag annotation = fields[j].getAnnotation(BioRemoteTag.class);
-							BioTag tag = createRemoteTag(annotation, fields[j]);
+							BioTag tag = createRemoteTag(fields[j]);
 							BioObj obj = BioDictionary.getOrCreateDictionary(remoteAnnotation.dictionary()).getObjByType(annotation.obj()) ;
 							if (obj != null) {
 								obj.addTag(tag);
@@ -124,7 +121,7 @@ public class AnnotationReader implements DictionaryReader {
 						for (int k = 0; k < array.length; k++) {
 							try {
 								BioRemoteTag annotation = array[k] ;
-								BioTag tag = createRemoteTag(annotation, fields[j]);
+								BioTag tag = createRemoteTag(fields[j]);
 								BioObj obj = BioDictionary.getOrCreateDictionary(remoteAnnotation.dictionary()).getObjByType(annotation.obj()) ;
 								if (obj != null) {
 									obj.addTag(tag);
@@ -238,55 +235,12 @@ public class AnnotationReader implements DictionaryReader {
 	 */
 	private static BioTag createTag(Field field) throws Throwable {
 		com.linkedlogics.bio.annotation.BioTag annotation = field.getAnnotation(com.linkedlogics.bio.annotation.BioTag.class);
-		BioType type = BioType.BioObject;
-		try {
-			type = Enum.valueOf(BioType.class, annotation.type());
-		} catch (Exception e) {
-
-		}
-		BioTag tag = new BioTag(annotation.code(), (String) field.get(null), type);
-		if (tag.getType() == BioType.BioObject) {
-			tag.setObjName(annotation.type());
-		}
-		tag.setMandatory(annotation.isMandatory());
-		tag.setEncodable(annotation.isEncodable());
-		tag.setExportable(annotation.isExportable());
-		tag.setArray(annotation.isArray());
-		tag.setList(annotation.isList());
-
-		if (type == BioType.JavaEnum || type == BioType.JavaObject) {
-			tag.setJavaClass(annotation.javaClass());
-		}
-
-		if (type == BioType.BioMap) {
-			tag.setUseKey(annotation.useKey());
-		}
-
-		if (type == BioType.BioList || annotation.isList()) {
-			String sortKey = annotation.sortKey();
-			if (sortKey != null) {
-				tag.setSortKey(sortKey);
-			}
-		}
-
-		String[] trimKeys = annotation.trimKeys();
-		if (trimKeys != null && trimKeys.length > 0 && trimKeys[0].length() > 0) {
-			tag.setTrimKeys(trimKeys);
-		}
-
-		String[] inverseTrimKeys = annotation.inverseTrimKeys();
-		if (inverseTrimKeys != null && inverseTrimKeys.length > 0 && inverseTrimKeys[0].length() > 0) {
-			tag.setInverseTrimKeys(inverseTrimKeys);
-		}
-
-		if (annotation.initial().length() > 0) {
-			tag.setInitial(annotation.initial());
-		} 
-		if (annotation.expression().length() > 0) {
-			tag.setExpression(annotation.expression());
-		}
-
-		return tag;
+		
+		return createTag((String) field.get(null), annotation.type(), annotation.code(), 
+				annotation.isMandatory(), annotation.isEncodable(), annotation.isExportable(), 
+				annotation.isArray(), annotation.isList(), annotation.javaClass(), annotation.useKey(), 
+				annotation.sortKey(), annotation.trimKeys(), annotation.inverseTrimKeys(), 
+				annotation.initial(), annotation.expression()) ;
 	}
 
 	/**
@@ -297,55 +251,12 @@ public class AnnotationReader implements DictionaryReader {
 	 */
 	public static BioTag createSuperTag(Field field) throws Throwable {
 		com.linkedlogics.bio.annotation.BioSuperTag annotation = field.getAnnotation(com.linkedlogics.bio.annotation.BioSuperTag.class);
-		BioType type = BioType.BioObject;
-		try {
-			type = Enum.valueOf(BioType.class, annotation.type());
-		} catch (Exception e) {
-
-		}
-		BioTag tag = new BioTag(annotation.code(), (String) field.get(null), type);
-		if (tag.getType() == BioType.BioObject) {
-			tag.setObjName(annotation.type());
-		}
-		tag.setMandatory(annotation.isMandatory());
-		tag.setEncodable(annotation.isEncodable());
-		tag.setExportable(annotation.isExportable());
-		tag.setArray(annotation.isArray());
-		tag.setList(annotation.isList());
-
-		if (type == BioType.JavaEnum || type == BioType.JavaObject) {
-			tag.setJavaClass(annotation.javaClass());
-		}
-
-		if (type == BioType.BioMap) {
-			tag.setUseKey(annotation.useKey());
-		}
-
-		if (type == BioType.BioList || annotation.isList()) {
-			String sortKey = annotation.sortKey();
-			if (sortKey != null) {
-				tag.setSortKey(sortKey);
-			}
-		}
-
-		String[] trimKeys = annotation.trimKeys();
-		if (trimKeys != null && trimKeys.length > 0 && trimKeys[0].length() > 0) {
-			tag.setTrimKeys(trimKeys);
-		}
-
-		String[] inverseTrimKeys = annotation.inverseTrimKeys();
-		if (inverseTrimKeys != null && inverseTrimKeys.length > 0 && inverseTrimKeys[0].length() > 0) {
-			tag.setInverseTrimKeys(inverseTrimKeys);
-		}
-
-		if (annotation.initial().length() > 0) {
-			tag.setInitial(annotation.initial());
-		} 
-		if (annotation.expression().length() > 0) {
-			tag.setExpression(annotation.expression());
-		}
-
-		return tag;
+		
+		return createTag((String) field.get(null), annotation.type(), annotation.code(), 
+				annotation.isMandatory(), annotation.isEncodable(), annotation.isExportable(), 
+				annotation.isArray(), annotation.isList(), annotation.javaClass(), annotation.useKey(), 
+				annotation.sortKey(), annotation.trimKeys(), annotation.inverseTrimKeys(), 
+				annotation.initial(), annotation.expression()) ;
 	}
 
 	/**
@@ -354,53 +265,80 @@ public class AnnotationReader implements DictionaryReader {
 	 * @return
 	 * @throws Throwable
 	 */
-	public static BioTag createRemoteTag(BioRemoteTag annotation, Field field) throws Throwable {
-		BioType type = BioType.BioObject;
+	public static BioTag createRemoteTag(Field field) throws Throwable {
+		com.linkedlogics.bio.annotation.BioRemoteTag annotation = field.getAnnotation(com.linkedlogics.bio.annotation.BioRemoteTag.class);
+		
+		return createTag((String) field.get(null), annotation.type(), annotation.code(), 
+				annotation.isMandatory(), annotation.isEncodable(), annotation.isExportable(), 
+				annotation.isArray(), annotation.isList(), annotation.javaClass(), annotation.useKey(), 
+				annotation.sortKey(), annotation.trimKeys(), annotation.inverseTrimKeys(), 
+				annotation.initial(), annotation.expression()) ;
+	}
+	
+	/**
+	 * Creates bio tag
+	 * @param name
+	 * @param type
+	 * @param code
+	 * @param isMandatory
+	 * @param isEncodable
+	 * @param isExportable
+	 * @param isArray
+	 * @param isList
+	 * @param javaClass
+	 * @param useKey
+	 * @param sortKey
+	 * @param trimKeys
+	 * @param inverseTrimKeys
+	 * @param initial
+	 * @param expression
+	 * @return
+	 */
+	private static BioTag createTag(String name, String type, int code, boolean isMandatory, boolean isEncodable, boolean isExportable, boolean isArray, boolean isList, 
+			Class javaClass, String useKey, String sortKey, String[] trimKeys, String[] inverseTrimKeys, String initial, String expression) {
+		BioType bioType = BioType.BioObject;
 		try {
-			type = Enum.valueOf(BioType.class, annotation.type());
+			bioType = Enum.valueOf(BioType.class, type);
 		} catch (Exception e) {
 
 		}
-		BioTag tag = new BioTag(annotation.code(), (String) field.get(null), type);
+		BioTag tag = new BioTag(code, name, bioType);
 		if (tag.getType() == BioType.BioObject) {
-			tag.setObjName(annotation.type());
+			tag.setObjName(type);
 		}
-		tag.setMandatory(annotation.isMandatory());
-		tag.setEncodable(annotation.isEncodable());
-		tag.setExportable(annotation.isExportable());
-		tag.setArray(annotation.isArray());
-		tag.setList(annotation.isList());
+		tag.setMandatory(isMandatory);
+		tag.setEncodable(isEncodable);
+		tag.setExportable(isExportable);
+		tag.setArray(isArray);
+		tag.setList(isList);
 
-		if (type == BioType.JavaEnum || type == BioType.JavaObject) {
-			tag.setJavaClass(annotation.javaClass());
-		}
-
-		if (type == BioType.BioMap) {
-			tag.setUseKey(annotation.useKey());
+		if (bioType == BioType.JavaEnum || bioType == BioType.JavaObject) {
+			tag.setJavaClass(javaClass);
 		}
 
-		if (type == BioType.BioList || annotation.isList()) {
-			String sortKey = annotation.sortKey();
-			if (sortKey != null) {
+		if (bioType == BioType.BioMap) {
+			tag.setUseKey(useKey);
+		}
+
+		if (bioType == BioType.BioList || isList) {
+			if (sortKey != null && sortKey.length() > 0) {
 				tag.setSortKey(sortKey);
 			}
 		}
 
-		String[] trimKeys = annotation.trimKeys();
 		if (trimKeys != null && trimKeys.length > 0 && trimKeys[0].length() > 0) {
 			tag.setTrimKeys(trimKeys);
 		}
 
-		String[] inverseTrimKeys = annotation.inverseTrimKeys();
 		if (inverseTrimKeys != null && inverseTrimKeys.length > 0 && inverseTrimKeys[0].length() > 0) {
 			tag.setInverseTrimKeys(inverseTrimKeys);
 		}
 
-		if (annotation.initial().length() > 0) {
-			tag.setInitial(annotation.initial());
+		if (initial != null && initial.length() > 0) {
+			tag.setInitial(initial);
 		} 
-		if (annotation.expression().length() > 0) {
-			tag.setExpression(annotation.expression());
+		if (expression != null && expression.length() > 0) {
+			tag.setExpression(expression);
 		}
 
 		return tag;
