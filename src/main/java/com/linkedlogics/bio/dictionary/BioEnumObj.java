@@ -26,6 +26,8 @@ public class BioEnumObj {
     private HashMap<Integer, BioEnum> codeMap = new HashMap<Integer, BioEnum>() ;
 
     private HashMap<String, BioEnum> nameMap = new HashMap<String, BioEnum>() ;
+    
+    private boolean isCodeGenerated ;
 
     public String getName() {
         return name;
@@ -43,7 +45,15 @@ public class BioEnumObj {
         this.code = code;
     }
     
-    public int getDictionary() {
+    public boolean isCodeGenerated() {
+		return isCodeGenerated;
+	}
+
+	public void setCodeGenerated(boolean isCodeGenerated) {
+		this.isCodeGenerated = isCodeGenerated;
+	}
+
+	public int getDictionary() {
 		return dictionary;
 	}
     
@@ -90,6 +100,10 @@ public class BioEnumObj {
 
     public void setNameMap(HashMap<String, BioEnum> nameMap) {
         this.nameMap = nameMap;
+    }
+    
+    public BioEnumObj() {
+    	
     }
 
     public BioEnumObj(int code, String name){

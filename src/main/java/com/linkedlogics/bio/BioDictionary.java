@@ -103,6 +103,8 @@ public class BioDictionary {
         BioObj objByCode = codeMap.get(obj.getCode());
         BioObj objByName = typeMap.get(obj.getType());
 
+        setBioObj(obj.getBioClass(), obj.getDictionary(), obj.getCode());
+        
         if (objByCode == null && objByName == null) {
             codeMap.put(obj.getCode(), obj);
             typeMap.put(obj.getType(), obj);
@@ -111,7 +113,7 @@ public class BioDictionary {
             if (objByCode == null) {
                 throw new DictionaryException("already existing name " + obj.getType() + " in dictionary with different code " + objByName.getCode());
             } else if (objByName == null) {
-                throw new DictionaryException("already existing code " + obj.getCode() + " in dictionary with different name " + objByCode.getType());
+                throw new DictionaryException(obj.getBioClass() + "already existing code " + obj.getCode() + " in dictionary with different name " + objByCode.getType());
             } else if (objByCode.getCode() != obj.getCode()) {
                 throw new DictionaryException("already existing name " + obj.getType() + " in dictionary with different code " + objByCode.getCode());
             } else if (!objByName.getType().equals(obj.getType())) {
@@ -122,6 +124,8 @@ public class BioDictionary {
             typeMap.put(obj.getType(), obj);
             nameMap.put(obj.getName(), obj);
         }
+        
+       
     }
     
     /**
@@ -162,6 +166,8 @@ public class BioDictionary {
         BioEnumObj enumByCode = enumCodeMap.get(enumObj.getCode());
         BioEnumObj enumByName = enumTypeMap.get(enumObj.getName());
 
+        setEnumObj(enumObj.getBioClass(), enumObj.getDictionary(), enumObj.getCode());
+        
         if (enumByCode == null && enumByName == null) {
             enumTypeMap.put(enumObj.getName(), enumObj);
             enumCodeMap.put(enumObj.getCode(), enumObj);
@@ -512,4 +518,56 @@ public class BioDictionary {
 	public String toXml() {
 		return DictionaryUtility.toXml(this) ;
 	}
+	
+	/**
+	 * All bio maps using class as key it is used inside BioObject constructor
+	 */
+	private static final HashMap<Class, Integer[]> allObjectMap = new HashMap<Class, Integer[]>() ;
+	/**
+	 * All bio enum maps using class as key
+	 */
+	private static final HashMap<Class, Integer[]> allEnumMap = new HashMap<Class, Integer[]>() ;
+	/**
+	 * Sets bio obj class to map
+	 * @param bioClass
+	 * @param dictionary
+	 * @param code
+	 */
+	public static void setBioObj(Class bioClass, int dictionary, int code) {
+		allObjectMap.put(bioClass, new Integer[] {dictionary, code}) ;
+	}
+	/**
+	 * Returns bio obj based on class
+	 * @param bioClass
+	 * @return
+	 */
+	public static BioObj findObj(Class bioClass) {
+		Integer[] link = allObjectMap.get(bioClass) ;
+		if (link != null) {
+			return getDictionary(link[0]).getObjByCode(link[1]) ;
+		}
+		return null ;
+	}
+	/**
+	 * Sets bio enum obj class to map
+	 * @param enumClass
+	 * @param dictionary
+	 * @param code
+	 */
+	public static void setEnumObj(Class enumClass, int dictionary, int code) {
+		allEnumMap.put(enumClass, new Integer[] {dictionary, code}) ;
+	}
+	/**
+	 * Returns bio enum obj based on class
+	 * @param enumClass
+	 * @return
+	 */
+	public static BioEnumObj findEnum(Class enumClass) {
+		Integer[] link = allEnumMap.get(enumClass) ;
+		if (link != null) {
+			return getDictionary(link[0]).getBioEnumObj(link[1]) ;
+		}
+		return null ;
+	}
+	
 }

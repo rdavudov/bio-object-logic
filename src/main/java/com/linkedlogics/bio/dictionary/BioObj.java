@@ -57,8 +57,19 @@ public class BioObj {
 	 * isLarge used in serialization/deserialization for encoding lengths of arrays, objects normally it is 2 bytes but if large it will be 4 bytes
 	 */
 	private boolean isLarge ;
-	
+	/**
+	 * Indicates dictionary of obj
+	 */
 	private int dictionary ;
+	/**
+	 * Indicates code is auto generated
+	 */
+	private boolean isCodeGenerated ;
+	
+	public BioObj() {
+		
+	}
+	
 	/**
 	 * Creates a bio obj with code and type name and version
 	 * @param code
@@ -149,10 +160,24 @@ public class BioObj {
 		return type;
 	}
 	
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
 	public String getName() {
 		return name ;
 	}
-
+	
+	public boolean isCodeGenerated() {
+		return isCodeGenerated;
+	}
+	public void setCodeGenerated(boolean isCodeGenerated) {
+		this.isCodeGenerated = isCodeGenerated;
+	}
 	public HashMap<Integer, BioTag> getCodeMap() {
 		return codeMap;
 	}
@@ -180,7 +205,11 @@ public class BioObj {
 	public int getCode() {
 		return code;
 	}
-
+	
+	public void setCode(int code) {
+		this.code = code;
+	}
+	
 	public int getVersion() {
 		return version;
 	}

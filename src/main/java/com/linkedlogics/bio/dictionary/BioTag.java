@@ -85,14 +85,20 @@ public class BioTag {
 	 * Indicates possible BioEnums for the tag
 	 */
 	protected BioEnum[] enums ;
-
+	/**
+	 * Indicates enum obj
+	 */
 	protected BioEnumObj enumObj;
-	
-	protected boolean hasRelation ;
-	
+	/**
+	 * Indicates initial value
+	 */
 	protected String initial ;
-	
+	/**
+	 * Indicates initial value expression
+	 */
 	protected String expression ;
+	
+	protected boolean isCodeGenerated ;
 	
 	public BioTag(int code, String name, BioType type) {
 		this(code, name, type, null) ;
@@ -123,9 +129,15 @@ public class BioTag {
 	public String getName() {
 		return name;
 	}
+	
 	public int getCode() {
 		return code;
 	}
+	
+	public void setCode(int code) {
+		this.code = code;
+	}
+
 	public BioType getType() {
 		return type;
 	}
@@ -243,14 +255,6 @@ public class BioTag {
 		return isTrim;
 	}
 
-	public boolean hasRelation() {
-		return hasRelation;
-	}
-
-	public void setRelation(boolean hasRelation) {
-		this.hasRelation = hasRelation;
-	}
-	
 	public void setInitial(String initial) {
 		this.initial = initial ;
 	}
@@ -267,6 +271,14 @@ public class BioTag {
 		return expression ;
 	}
 	
+	public boolean isCodeGenerated() {
+		return isCodeGenerated;
+	}
+
+	public void setCodeGenerated(boolean isCodeGenerated) {
+		this.isCodeGenerated = isCodeGenerated;
+	}
+
 	public Object getInitialtValue(String initial) {
 		if (initial == null) {
 			return null ;

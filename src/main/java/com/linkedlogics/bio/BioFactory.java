@@ -7,7 +7,7 @@ import com.linkedlogics.bio.dictionary.BioEnumObj;
 import com.linkedlogics.bio.dictionary.BioObj;
 
 /**
- * Factory class for creating bio objects using dictionaru
+ * Factory class for creating bio objects using dictionary
  * @author rajab
  *
  */
@@ -88,59 +88,6 @@ public class BioFactory {
 		return null;
 	}
 
-	/**
-	 * Creates bio object by code
-	 * @param code
-	 * @param bioClass
-	 * @return
-	 */
-	public <T extends BioObject> T newBioObject(int code, Class<T> bioClass) {
-		BioObj obj = dictionary.getCodeMap().get(code);
-		if (obj != null && obj.getBioClass() != null) {
-			try {
-				T object = (T) obj.getBioClass().getConstructor().newInstance();
-				object.setBioCode(obj.getCode());
-				object.setBioName(obj.getName());
-				object.setBioDictionary(obj.getDictionary());
-				return object ;
-			} catch (Throwable e) {
-				throw new RuntimeException(e) ;
-			}
-		}
-		return null;
-	}
-
-	/**
-	 * Creates bio object by code
-	 * @param code
-	 * @param source
-	 * @param bioClass
-	 * @return
-	 */
-	public <T extends BioObject> T newBioObject(int code, BioObject source, Class<T> bioClass) {
-		BioObj obj = dictionary.getCodeMap().get(code);
-		if (obj != null && obj.getBioClass() != null) {
-			try {
-				Constructor<BioObject> constructor;
-				T object = null ;
-				try {
-					constructor = obj.getBioClass().getConstructor(BioObject.class);
-					object = (T) constructor.newInstance(source) ;
-				} catch (NoSuchMethodException e) {
-					constructor = obj.getBioClass().getConstructor();
-					object = (T) constructor.newInstance() ;
-					object.putAll(source) ;
-				}
-				object.setBioCode(obj.getCode());
-				object.setBioName(obj.getName());
-				object.setBioDictionary(obj.getDictionary());
-				return object ;
-			} catch (Throwable e) {
-				throw new RuntimeException(e) ;
-			}
-		}
-		return null;
-	}
 
 	/**
 	 * Creates bio object by type
@@ -214,14 +161,52 @@ public class BioFactory {
 	}
 
 	/**
-	 * Creates bio object by type
-	 * @param type
-	 * @param source
+	 * Creates bio object by class
 	 * @param bioClass
 	 * @return
 	 */
-	public <T extends BioObject> T newBioObject(String type, BioObject source, Class<T> bioClass) {
-		BioObj obj = dictionary.getTypeMap().get(type);
+	public <T extends BioObject> T newBioObject(Class<T> bioClass) {
+		BioObj obj = BioDictionary.findObj(bioClass) ;
+		if (obj != null && obj.getBioClass() != null) {
+			try {
+				T object = (T) obj.getBioClass().getConstructor().newInstance();
+				object.setBioCode(obj.getCode());
+				object.setBioName(obj.getName());
+				object.setBioDictionary(obj.getDictionary());
+				return object ;
+			} catch (Throwable e) {
+				throw new RuntimeException(e) ;
+			}
+		}
+		return null;
+	}
+	
+	/**
+	 * Creates bio object array by class
+	 * @param code
+	 * @param size
+	 * @return
+	 */
+	public <T extends BioObject> T[] newBioObjectArray(Class<T> bioClass, int size) {
+		BioObj obj = BioDictionary.findObj(bioClass) ;
+		if (obj != null && obj.getBioClass() != null) {
+			try {
+				return (T[]) Array.newInstance(obj.getBioClass(), size);
+			} catch (Throwable e) {
+				throw new RuntimeException(e) ;
+			}
+		}
+		return null;
+	}
+	
+	/**
+	 * Creates bio object by class
+	 * @param code
+	 * @param source
+	 * @return
+	 */
+	public <T extends BioObject> T newBioObject(Class<T> bioClass, BioObject source) {
+		BioObj obj = BioDictionary.findObj(bioClass) ;
 		if (obj != null && obj.getBioClass() != null) {
 			try {
 				Constructor<BioObject> constructor;
@@ -244,7 +229,6 @@ public class BioFactory {
 		}
 		return null;
 	}
-
 	/**
 	 * Creates bio enum array by code
 	 * @param code

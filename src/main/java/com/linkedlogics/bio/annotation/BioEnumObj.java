@@ -13,7 +13,8 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface BioEnumObj {
-    int code();
+    int code() default 0;
+    String name() default "" ; 
     int version() default 0 ;
 	int dictionary() default 0 ;
 }

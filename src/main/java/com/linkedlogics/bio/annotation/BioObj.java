@@ -13,7 +13,9 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface BioObj {
-	int code() ;
+	int code() default 0 ;
+	String name() default "" ;
+	String type() default "" ;
 	int version() default 0 ;
 	boolean isLarge() default false ;
 	int dictionary() default 0 ;

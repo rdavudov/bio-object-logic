@@ -18,6 +18,7 @@ import com.linkedlogics.bio.BioDictionary;
 import com.linkedlogics.bio.BioDictionaryBuilder;
 import com.linkedlogics.bio.BioEnum;
 import com.linkedlogics.bio.BioFunction;
+import com.linkedlogics.bio.BioObject;
 import com.linkedlogics.bio.dictionary.BioEnumObj;
 import com.linkedlogics.bio.dictionary.BioFunc;
 import com.linkedlogics.bio.dictionary.BioObj;
@@ -28,6 +29,7 @@ import com.linkedlogics.bio.exception.ParserException;
 
 public class XmlReader implements DictionaryReader {
 	private InputStream in ;
+	private BioDictionaryBuilder builder ;
 	
 	public XmlReader(InputStream in) {
 		this.in = in ;
@@ -37,6 +39,7 @@ public class XmlReader implements DictionaryReader {
 	
 	@Override
 	public void read(BioDictionaryBuilder builder) {
+		this.builder = builder ;
 		parse(in) ;
 	}
 
@@ -95,11 +98,21 @@ public class XmlReader implements DictionaryReader {
          			BioObj obj = parseObj(node, dictionary.getCode()) ;
          			if (obj != null) {
          				dictionary.addObj(obj);
+         				Class bioClass = obj.getBioClass() ;
+         				while (bioClass != BioObject.class && bioClass != null) {
+         					BioDictionary.setBioObj(bioClass, obj.getDictionary(), obj.getCode());
+         					bioClass = bioClass.getSuperclass() ;
+         				}
          			}
          		} else if (node.getNodeName().contentEquals("enum")) {
          			BioEnumObj enumObj = parseEnumObj(node, dictionary.getCode()) ;
          			if (enumObj != null) {
          				dictionary.addEnumObj(enumObj);
+         				Class bioClass = enumObj.getBioClass() ;
+         				while (bioClass != BioObject.class && bioClass != null) {
+         					BioDictionary.setEnumObj(bioClass, enumObj.getDictionary(), enumObj.getCode());
+         					bioClass = bioClass.getSuperclass() ;
+         				}
          			}
          		} else if (node.getNodeName().contentEquals("super-tag")) {
          			BioTag tag = parseTag(node) ;
@@ -153,7 +166,21 @@ public class XmlReader implements DictionaryReader {
 			} catch (ClassNotFoundException ex) {
 				return null ;
 			}
+    		
+    		if (code == 0) {
+        		obj.setCode(builder.getTagHahser().hash(obj.getBioClass().getName()));
+        		obj.setCodeGenerated(true);
+        	}
+    		
+    		if (type == null) {
+    			obj.setType(obj.getBioClass().getSimpleName());
+    		}
+    		
+    		if (name == null) {
+    			obj.setName(obj.getBioClass().getSimpleName().replaceAll("([^_A-Z])([A-Z])", "$1_$2").toLowerCase());
+    		}
     	}
+    	
     	NodeList nodes = e.getChildNodes() ;
         for (int i = 0; i < nodes.getLength(); i++) {
         	Node node = nodes.item(i);
@@ -199,6 +226,15 @@ public class XmlReader implements DictionaryReader {
 			} catch (ClassNotFoundException ex) {
 				return null ;
 			}
+    		
+    		if (code == 0) {
+    			enumObj.setCode(builder.getTagHahser().hash(enumObj.getBioClass().getName()));
+    			enumObj.setCodeGenerated(true);
+        	}
+    		
+    		if (name == null) {
+    			enumObj.setName(enumObj.getBioClass().getSimpleName());
+    		}
     	}
     	NodeList nodes = e.getChildNodes() ;
         for (int i = 0; i < nodes.getLength(); i++) {
@@ -315,6 +351,11 @@ public class XmlReader implements DictionaryReader {
         	tag = new BioTag(code, name, BioType.BioObject) ;
         	tag.setObjName(type);
         }
+
+    	if (code == 0) {
+    		tag.setCode(builder.getTagHahser().hash(tag.getName()));
+    		tag.setCodeGenerated(true);
+    	}
     	
     	tag.setArray(isArray);
     	tag.setList(isList);

@@ -14,7 +14,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
 public @interface BioTag {
-	int code() ;
+	int code() default 0 ;
 	String type() ;
 	boolean isArray() default false ;
 	boolean isList() default false ;

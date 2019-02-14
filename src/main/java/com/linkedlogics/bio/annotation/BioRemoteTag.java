@@ -16,7 +16,7 @@ import java.lang.annotation.Target;
 @Repeatable(value=BioRemoteTags.class)
 public @interface BioRemoteTag {
 	String obj() ;
-	int code() ;
+	int code() default 0 ;
 	String type() ;
 	boolean isArray() default false ;
 	boolean isList() default false ;

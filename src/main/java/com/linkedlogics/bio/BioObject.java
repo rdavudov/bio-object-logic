@@ -86,12 +86,27 @@ public class BioObject implements BioObjectHolder, Cloneable {
 		this(code, name, object.getBioVersion(), object.getBioDictionary(), object) ;
 	}
 	
-	public BioObject(BioObject object) {
-		this(object.getBioCode(), object.getBioName(), object.getBioVersion(), object.getBioDictionary(), object) ;
-	}
-	
 	public BioObject(int code) {
 		this(code, null, 0, 0) ;
+	}
+	
+	public BioObject() {
+		this(null) ;
+	}
+	
+	public BioObject(BioObject object) {
+		BioObj obj = BioDictionary.findObj(this.getClass()) ;
+		
+		this.code = obj.getCode();
+		this.name = obj.getName() ;
+		this.version = obj.getVersion();
+		this.dictionary = obj.getDictionary() ;
+		
+		if (object != null) {
+			putAll(object);
+		}
+		
+		init() ;
 	}
 	
 	public int getBioDictionary() {

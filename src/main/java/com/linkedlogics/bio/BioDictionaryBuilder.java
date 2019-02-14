@@ -29,6 +29,7 @@ public class BioDictionaryBuilder {
 	protected List<DictionaryReader> readers = new ArrayList<DictionaryReader>();
 	protected HashSet<String> profiles = new HashSet<String>();
 	protected boolean isOnlyProfiles ;
+	protected BioTagHasher tagHahser = new BioTagHasher() ;
 	
 	/**
 	 * Adding a package name for gathering bio obj info from annotations
@@ -176,7 +177,12 @@ public class BioDictionaryBuilder {
 		return this ;
 	}
 	
-	
+	public BioTagHasher getTagHahser() {
+		return tagHahser;
+	}
+	public void setTagHahser(BioTagHasher tagHahser) {
+		this.tagHahser = tagHahser;
+	}
 	/**
 	 * Returns profiles
 	 * @return
