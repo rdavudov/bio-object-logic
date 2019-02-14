@@ -81,7 +81,7 @@ public class XmlReader implements DictionaryReader {
          int code = 0 ;
          for (int i = 0; i < atts.getLength(); i++) {
  			Node node = atts.item(i);
- 			if ("dictionary".contentEquals(node.getNodeName())) {
+ 			if ("code".contentEquals(node.getNodeName())) {
  				code = Integer.parseInt(node.getNodeValue()) ;
  			} 
          }
