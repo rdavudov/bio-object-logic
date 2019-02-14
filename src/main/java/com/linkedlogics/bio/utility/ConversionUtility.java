@@ -16,6 +16,9 @@ import com.linkedlogics.bio.BioTime;
 import com.linkedlogics.bio.dictionary.BioEnumObj;
 import com.linkedlogics.bio.dictionary.BioType;
 import com.linkedlogics.bio.exception.ParserException;
+import com.linkedlogics.bio.expression.Conditional;
+import com.linkedlogics.bio.expression.Constant;
+import com.linkedlogics.bio.expression.Dynamic;
 
 /**
  * It is used to conver string values to actual types based on BioType
@@ -162,6 +165,10 @@ public class ConversionUtility {
                 return BioType.BioObject;
             } else if (value instanceof BioEnum) {
                 return BioType.BioEnum;
+            } else if (value instanceof Conditional) {
+                return BioType.Conditional;
+            } else if (value instanceof Dynamic) {
+                return BioType.Dynamic;
             } else {
                 return BioType.JavaObject;
             }

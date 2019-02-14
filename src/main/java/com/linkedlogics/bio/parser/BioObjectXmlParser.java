@@ -275,7 +275,7 @@ public class BioObjectXmlParser {
     			return bioEnumObj.getBioEnum(e.getTextContent().trim());
     		
     		return null ;
-    	} else if (elementType == BioType.Expression) {
+    	} else if (elementType == BioType.Dynamic) {
     		return BioExpression.parse(e.getTextContent().trim()) ;
     	} else if (elementType == BioType.Formatted) {
     		return BioExpression.parseFormatted(e.getTextContent().trim()) ;

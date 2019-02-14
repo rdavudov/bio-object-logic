@@ -1,6 +1,7 @@
 package com.linkedlogics.bio.utility;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -35,25 +36,25 @@ public class DictionaryUtility {
 			return e.getValue() ;
 		}).sorted(Comparator.comparing(BioObj::getCode)).collect(Collectors.toList()).forEach(o -> {
 			objToXml(o, xml);
-		}); ;
+		});
 		
 		dictionary.getEnumCodeMap().entrySet().stream().map(e -> {
 			return e.getValue() ;
 		}).sorted(Comparator.comparing(BioEnumObj::getCode)).collect(Collectors.toList()).forEach(e -> {
 			enumToXml(e, xml);
-		}); ;
+		});
 		
 		dictionary.getSuperTagCodeMap().entrySet().stream().map(e -> {
 			return e.getValue() ;
 		}).sorted(Comparator.comparing(BioTag::getCode)).collect(Collectors.toList()).forEach(t -> {
 			tagToXml(t, xml, "\t<super-tag");
-		}); ;
+		});
 
 		dictionary.getFuncNameMap().entrySet().stream().map(e -> {
 			return e.getValue() ;
 		}).sorted(Comparator.comparing(BioFunc::getName)).collect(Collectors.toList()).forEach(f -> {
 			funcToXml(f, xml);
-		}); ;
+		});
 		
 		xml.append("</dictionary>") ;
 		return xml.toString() ;
@@ -74,18 +75,14 @@ public class DictionaryUtility {
 			xml.append(" class=\"").append(obj.getBioClass().getName()).append("\"") ;
 		}
 		xml.append(">\n") ;
-		List<BioTag> tags = new ArrayList<BioTag>() ;
-		for (Entry<Integer, BioTag> entry : obj.getCodeMap().entrySet()) {
-			tags.add(entry.getValue()) ;
-		}
-		Collections.sort(tags, new Comparator<BioTag>() {
-			public int compare(BioTag o1, BioTag o2) {
-				return o1.getCode() - o2.getCode() ;
-			}
+		
+		
+		obj.getCodeMap().entrySet().stream().map(e -> {
+			return e.getValue() ;
+		}).sorted(Comparator.comparing(BioTag::getCode)).forEach(t -> {
+			tagToXml(t, xml, "\t\t<tag");
 		});
-		for (BioTag tag : tags) {
-			tagToXml(tag, xml, "\t\t<tag");
-		}
+
 		xml.append("\t</obj>\n") ;
 	}
 	/**
@@ -100,18 +97,11 @@ public class DictionaryUtility {
 		}
 		xml.append(">\n") ;
 		
-		List<BioEnum> values = new ArrayList<BioEnum>() ;
-		for (Entry<Integer, BioEnum> entry : enumObj.getCodeMap().entrySet()) {
-			values.add(entry.getValue()) ;
-		}
-		Collections.sort(values, new Comparator<BioEnum>() {
-			public int compare(BioEnum o1, BioEnum o2) {
-				return o1.getOrdinal() - o2.getOrdinal();
-			}
+		enumObj.getCodeMap().entrySet().stream().map(e -> {
+			return e.getValue() ;
+		}).sorted(Comparator.comparing(BioEnum::getOrdinal)).forEach(e -> {
+			xml.append("\t\t<value code=\"").append(e.getOrdinal()).append("\" name=\"").append(e.getName()).append("\"/>\n") ;
 		});
-		for (BioEnum bioEnum : values) {
-			xml.append("\t\t<value code=\"").append(bioEnum.getOrdinal()).append("\" name=\"").append(bioEnum.getName()).append("\"/>\n") ;
-		}
 		
 		xml.append("\t</enum>\n") ;
     }
@@ -152,21 +142,13 @@ public class DictionaryUtility {
 		
 		if (tag.getTrimKeys() != null && tag.getTrimKeys().length > 0) {
 			xml.append(" trim-keys=\"") ;
-			String sep = "" ;
-			for (int i = 0; i < tag.getTrimKeys().length; i++) {
-				xml.append(sep).append(tag.getTrimKeys()[i]) ;
-				sep = "," ;
-			}
+			xml.append(Arrays.stream(tag.getTrimKeys()).collect(Collectors.joining(","))) ;
 			xml.append("\"") ;
 		}
 		
 		if (tag.getInverseTrimKeys() != null && tag.getInverseTrimKeys().length > 0) {
 			xml.append(" inverse-trim-keys=\"") ;
-			String sep = "" ;
-			for (int i = 0; i < tag.getInverseTrimKeys().length; i++) {
-				xml.append(sep).append(tag.getInverseTrimKeys()[i]) ;
-				sep = "," ;
-			}
+			xml.append(Arrays.stream(tag.getInverseTrimKeys()).collect(Collectors.joining(","))) ;
 			xml.append("\"") ;
 		}
 		

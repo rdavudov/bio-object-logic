@@ -33,4 +33,16 @@ public class Conditional extends Expression {
 		}
 		return null;
 	}
+
+	public Object getValue() {
+		return value;
+	}
+
+	public Object getElseValue() {
+		return elseValue;
+	}
+
+	public BioExpression getCondition() {
+		return condition;
+	}
 }

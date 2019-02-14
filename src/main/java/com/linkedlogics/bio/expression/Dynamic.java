@@ -23,6 +23,12 @@ public class Dynamic extends Expression {
 				return object.get() ;
 			}
 			
+			// sometimes object itself is given and expression tries to get a tag
+			// for example
+			// we have bio object A with tags t1, t2, t3 and an expression "t2"
+			// in fact expression should be "a.t2" but sometimes we don't know bio name
+			// but want to refer to "this" so by expression "t2" Dynamic tries to check from keys
+			// when upper side of this code couldn't find anything
 			Optional<Object> value = Arrays.stream(params).filter(o -> {
 				return o != null && o.has(key) ;
 			}).map(o -> {

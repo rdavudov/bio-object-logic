@@ -20,7 +20,7 @@ public enum BioType {
     BioEnum((byte) 16),
     Unknown((byte) 17),
     // starting from here these types are not serialized because they are dynamic and must be filled with actual values
-    Expression((byte) -1),
+    Dynamic((byte) -1),
     Conditional((byte) -1),
     Formatted((byte) -1);
 

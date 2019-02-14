@@ -16,6 +16,7 @@ import com.linkedlogics.bio.dictionary.BioEnumObj;
 import com.linkedlogics.bio.dictionary.BioObj;
 import com.linkedlogics.bio.dictionary.BioTag;
 import com.linkedlogics.bio.dictionary.BioType;
+import com.linkedlogics.bio.expression.Conditional;
 import com.linkedlogics.bio.parser.BioObjectXmlParser;
 
 /**
@@ -162,9 +163,20 @@ public class XMLUtility {
 			.append("</").append(key).append(">\n");
 		} else if (value instanceof BioObject) {
 			toXml(xml, tab + TAB, key, ((BioObject) value));
+		} else if (value instanceof Conditional) {
+			Conditional conditional = (Conditional) value;
+			xml.append(tab).append(TAB).append("<").append(key).append(" type=\"").append(BioType.Conditional).append("\">\n");
+			xml.append(tab).append(TAB).append(TAB).append("<condition><![CDATA[").append(conditional.getCondition()).append("]]></condition>\n");
+			if (conditional.getValue() != null) {
+				toXml(xml, tab + TAB, "value", conditional.getValue(), ConversionUtility.getType(conditional.getValue()), null);
+			}
+			if (conditional.getElseValue() != null) {
+				toXml(xml, tab + TAB, "else-value", conditional.getElseValue(), ConversionUtility.getType(conditional.getElseValue()), null);
+			}
+			xml.append(tab).append(TAB).append("</").append(key).append(">\n");
 		} else if (value instanceof BioExpression) {
 			xml.append(tab).append(TAB).append("<").append(key)
-			.append(" type=\"").append(BioType.Expression).append("\">")
+			.append(" type=\"").append(BioType.Dynamic).append("\">")
 			.append(value).append("</")
 			.append(key).append(">\n");
 		} else if (type == BioType.String || type == BioType.UtfString) {
