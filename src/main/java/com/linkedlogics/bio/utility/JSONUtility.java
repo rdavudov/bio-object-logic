@@ -83,12 +83,12 @@ public class JSONUtility {
 		final JSONObject json = new JSONObject();
 		final BioObj obj = BioDictionary.getDictionary(object.getBioDictionary()).getObjByCode(object.getBioCode());
 		
-		object.stream().sorted(Comparator.comparing(Entry::getKey)).forEach(e -> {
+		for(Entry<String, Object> e : object.entries()) {
 			if (!e.getKey().startsWith("_")) {
 				if (obj != null) {
 					BioTag tag = obj.getTag(e.getKey());
 					if (tag != null && !tag.isExportable()) {
-						return ;
+						continue ;
 					}
 				}
 
@@ -133,7 +133,7 @@ public class JSONUtility {
 					json.put(e.getKey(), e.getValue());
 				}
 			}
-		});
+		}
 		
 		return json ;
 	}

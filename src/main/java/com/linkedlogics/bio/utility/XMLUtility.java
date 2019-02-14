@@ -1,6 +1,8 @@
 package com.linkedlogics.bio.utility;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map.Entry;
@@ -48,6 +50,10 @@ public class XMLUtility {
 			tag = "bio";
 		}
 		
+		ArrayList<String> tags = new ArrayList<String>(object.keys());
+		Collections.sort(tags);
+
+		
 		BioDictionary dictionary = BioDictionary.getDictionary(object.getBioDictionary());
 		if (dictionary.getObjByCode(object.getBioCode()) != null) {
 			BioObj obj = dictionary.getObjByCode(object.getBioCode());
@@ -62,19 +68,21 @@ public class XMLUtility {
 				xml.append("\" dictionary=\"").append(object.getBioDictionary()) ;
 			}
 			xml.append("\">\n");
-			object.stream().sorted(Comparator.comparing(Entry::getKey)).forEach(e -> {
+			
+			for (int i = 0; i < tags.size(); i++) {
+				String key = tags.get(i) ;
 				// keys starting with _ will not be exported
-				if (!e.getKey().startsWith("_")) {
-					Object value = object.get(e.getKey());
+				if (!key.startsWith("_")) {
+					Object value = object.get(key);
 					
-					BioTag bioTag = obj.getTag(e.getKey()) ;
+					BioTag bioTag = obj.getTag(key) ;
 					if (bioTag == null) {
-						toXml(xml, tab, e.getKey().replaceAll("_", "-"), value, ConversionUtility.getType(value), null);
+						toXml(xml, tab, key.replaceAll("_", "-"), value, ConversionUtility.getType(value), null);
 					} else if (bioTag.isExportable()) {
-						toXml(xml, tab, e.getKey().replaceAll("_", "-"), value, bioTag.getType(), bioTag);
+						toXml(xml, tab, key.replaceAll("_", "-"), value, bioTag.getType(), bioTag);
 					}
 				}
-			});
+			}
 		} else {
 			xml.append(tab).append("<")
 			.append(tag.replaceAll("_", "-"))
@@ -82,12 +90,13 @@ public class XMLUtility {
 			.append("\" code=\"").append(object.getBioCode())
 			.append("\" version=\"").append(object.getBioVersion())
 			.append("\">\n");
-			object.stream().sorted(Comparator.comparing(Entry::getKey)).forEach(e -> {
-				if (!e.getKey().startsWith("_")) {
-					Object value = object.get(e.getKey());
-					toXml(xml, tab, e.getKey().replaceAll("_", "-"), value, ConversionUtility.getType(value), null);
+			for (int i = 0; i < tags.size(); i++) {
+				String key = tags.get(i) ;
+				if (!key.startsWith("_")) {
+					Object value = object.get(key);
+					toXml(xml, tab, key.replaceAll("_", "-"), value, ConversionUtility.getType(value), null);
 				}
-			});
+			}
 		}
 		
 		xml.append(tab).append("</").append(tag.replaceAll("_", "-")).append(">\n");
@@ -117,18 +126,14 @@ public class XMLUtility {
 			xml.append(tab).append(TAB).append("<").append(key)
 			.append(" type=\"").append(tag.getEnumObj().getName())
 			.append("\" is-array=\"true\">")
-			.append(Arrays.stream(array).map(e -> {
-				return e.toString() ;
-			}).collect(Collectors.joining(SEP)))
+			.append(StringUtility.join(array))
 			.append("</").append(key).append(">\n");
 		} else if (value instanceof Object[]) {
 			Object[] array = (Object[]) value;
 			xml.append(tab).append(TAB).append("<").append(key)
 			.append(" type=\"").append(type)
 			.append("\" is-array=\"true\">")
-			.append(Arrays.stream(array).map(e -> {
-				return e.toString() ;
-			}).collect(Collectors.joining(SEP)))
+			.append(StringUtility.join(array))
 			.append("</").append(key).append(">\n");
 		} else if (value instanceof List) {
 			List<Object> list = (List<Object>) value;
@@ -157,9 +162,7 @@ public class XMLUtility {
 			}
 			
 			xml.append("\" is-list=\"true\">")
-			.append(list.stream().map(e -> {
-				return e.toString() ;
-			}).collect(Collectors.joining(SEP)))
+			.append(StringUtility.join(list))
 			.append("</").append(key).append(">\n");
 		} else if (value instanceof BioObject) {
 			toXml(xml, tab + TAB, key, ((BioObject) value));

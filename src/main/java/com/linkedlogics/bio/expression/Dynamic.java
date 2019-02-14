@@ -15,12 +15,12 @@ public class Dynamic extends Expression {
 	@Override
 	public Object getValue(Object source, BioObject... params) {
 		if (source == null) {
-			Optional<BioObject> object = Arrays.stream(params).filter(o -> {
-				return o != null && key.equals(o.getBioName()) ;
-			}).findFirst() ;
 			
-			if (object.isPresent()) {
-				return object.get() ;
+			
+			for (int i = 0; i < params.length; i++) {
+				if (params[i] != null && params[i].getBioName().equals(key)) {
+					return params[i] ;
+				}
 			}
 			
 			// sometimes object itself is given and expression tries to get a tag
@@ -29,14 +29,11 @@ public class Dynamic extends Expression {
 			// in fact expression should be "a.t2" but sometimes we don't know bio name
 			// but want to refer to "this" so by expression "t2" Dynamic tries to check from keys
 			// when upper side of this code couldn't find anything
-			Optional<Object> value = Arrays.stream(params).filter(o -> {
-				return o != null && o.has(key) ;
-			}).map(o -> {
-				return o.get(key) ;
-			}).findFirst() ;
 			
-			if (value.isPresent()) {
-				return value.get() ;
+			for (int i = 0; i < params.length; i++) {
+				if (params[i] != null && params[i].has(key)) {
+					return params[i].get(key) ;
+				}
 			}
 			
 			return null ;

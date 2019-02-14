@@ -5,6 +5,7 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map.Entry;
 
 import com.linkedlogics.bio.BioCompressor;
 import com.linkedlogics.bio.BioDictionary;
@@ -402,9 +403,10 @@ public class BioObjectBinaryParser {
 		stream.write(ByteUtility.shortToBytes((short) object.getCode()));
 		stream.write(ByteUtility.shortToBytes((short) object.getVersion()));
 		
-		bio.stream().forEach(e -> {
+		for (Entry<String, Object> e : bio.entries()) {
 			writeValue(object, stream, e.getKey(), e.getValue());
-		});
+		}
+		
 		stream.close();
 
 		return stream.getBytes();

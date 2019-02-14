@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Stream;
 
@@ -212,8 +213,12 @@ public class BioObject implements BioObjectHolder, Cloneable {
 		return this ;
 	}
 	
-	public Stream<Entry<String, Object>> stream() {
-		return map.entrySet().stream() ;
+	public Set<Entry<String, Object>> entries() {
+		return map.entrySet() ;
+	}
+	
+	public Set<String> keys() {
+		return map.keySet() ;
 	}
 	
 	/**
@@ -261,12 +266,13 @@ public class BioObject implements BioObjectHolder, Cloneable {
 	 */
 	public BioObject putAllIfAbsent(BioObject... objects) {
 		for (int i = 0; i < objects.length; i++) {
-			if (objects[i] != null)
-				objects[i].stream().forEach(e -> {
+			if (objects[i] != null) {
+				for(Entry<String, Object> e : objects[i].entries()) {
 					putIfAbsent(e.getKey(), e.getValue()) ;
-				});
+				}
+			}
 		}
-		
+
 		return this ;
 	}
 	
@@ -291,11 +297,11 @@ public class BioObject implements BioObjectHolder, Cloneable {
 	public BioObject putAllByTags(BioObject object) {
 		BioObj obj = BioDictionary.getDictionary(dictionary).getObjByCode(code);
 		if (obj != null) {
-			object.stream().forEach(e -> {
+			for(Entry<String, Object> e : object.entries()) {
 				if (obj.getTag(e.getKey()) != null) {
 					set(e.getKey(), e.getValue()) ;
 				}
-			});
+			}
 		} else {
 			putAll(object) ;
 		}
@@ -307,13 +313,13 @@ public class BioObject implements BioObjectHolder, Cloneable {
 	 * @param object
 	 */
 	public void merge(BioObject object) {
-		object.stream().forEach(e -> {
+		for(Entry<String, Object> e : object.entries()) {
 			if (e.getValue() instanceof BioObject && has(e.getKey()) && get(e.getKey()) instanceof BioObject) {
 				((BioObject) get(e.getKey())).merge((BioObject) e.getValue());
 			} else {
 				set(e.getKey(), e.getValue()) ;
 			}
-		});
+		}
 	}
 	
 	/* Getter methods with castings */
@@ -569,7 +575,7 @@ public class BioObject implements BioObjectHolder, Cloneable {
 			}
 			AtomicBoolean isEquals = new AtomicBoolean(true) ;
 			
-			Iterator<Entry<String, Object>> iterator = stream().iterator() ;
+			Iterator<Entry<String, Object>> iterator = entries().iterator() ;
 			while (iterator.hasNext()) {
 				Entry<String, Object> e = iterator.next() ;
 				if (!bioObject.has(e.getKey())) {
@@ -626,7 +632,7 @@ public class BioObject implements BioObjectHolder, Cloneable {
 			clone.setBioName(name);
 			clone.isImmutable = false ;
 			
-			stream().forEach(e -> {
+			for(Entry<String, Object> e : entries()) {
 				if (e.getValue() instanceof BioObject) {
 					clone.put(e.getKey(), ((BioObject) e.getValue()).clone());
 				} else if (e.getValue() instanceof List) {
@@ -650,7 +656,7 @@ public class BioObject implements BioObjectHolder, Cloneable {
 				} else {
 					clone.put(e.getKey(), e.getValue());
 				}
-			});
+			};
 			
 			return clone ;
 		} catch (NoSuchMethodException e) {
@@ -669,7 +675,7 @@ public class BioObject implements BioObjectHolder, Cloneable {
 			BioObj obj = BioDictionary.getDictionary(dictionary).getObjByCode(code) ;
 			if (obj != null) {
 				// first let's populate initial values, they can also be used in expression initial values
-				obj.getNameMap().entrySet().stream().forEach(e -> {
+				for(Entry<String, BioTag> e : obj.getNameMap().entrySet()) {
 					// if key doesn't exist then
 					if (!has(e.getKey())) {
 						BioTag tag = e.getValue() ;
@@ -695,10 +701,10 @@ public class BioObject implements BioObjectHolder, Cloneable {
 							}
 						}
 					}
-				});
+				};
 				
 				// lets populate expression based initial values
-				obj.getNameMap().entrySet().stream().forEach(e -> {
+				for(Entry<String, BioTag> e : obj.getNameMap().entrySet()) {
 					if (!has(e.getKey())) {
 						BioTag tag = e.getValue() ;
 						// if tag has an expression initial value
@@ -706,11 +712,10 @@ public class BioObject implements BioObjectHolder, Cloneable {
 							Object value = BioExpression.parse(tag.getExpression()).getValue(this) ;
 							if (value != null) {
 								set(e.getKey(), value) ;
-								return ;
 							}
 						}
 					}
-				});
+				};
 			}
 		}
 		
@@ -719,7 +724,7 @@ public class BioObject implements BioObjectHolder, Cloneable {
 
 	public BioObject fill(BioObject... params) {
 		final ArrayList<String> filledKeys = new ArrayList<String>();
-		stream().forEach(e -> {
+		for(Entry<String, Object> e : entries()) {
 			if (e.getValue() instanceof BioExpression) {
 				filledKeys.add(e.getKey()) ;
 			} else if (e.getValue() instanceof BioObject) {
@@ -737,9 +742,10 @@ public class BioObject implements BioObjectHolder, Cloneable {
 					}
 				}
 			}
-		});
+		};
 		
-		filledKeys.stream().forEach(k -> {
+		for (int i = 0; i < filledKeys.size(); i++) {
+			String k = filledKeys.get(i) ;
 			BioExpression expression = (BioExpression) get(k) ;
 			Object value = expression.getValue(params) ;
 			if (value != null) {
@@ -749,7 +755,7 @@ public class BioObject implements BioObjectHolder, Cloneable {
 				// since we couldn't evaluate expression and got NULL so we remove that key because we can't put NULL values into bio
 				remove(k) ;
 			}
-		});
+		};
 		
 		return this ;
 	}
@@ -759,19 +765,20 @@ public class BioObject implements BioObjectHolder, Cloneable {
 			BioObj obj = BioDictionary.getDictionary(dictionary).getObjByCode(code);
 			if (obj != null) {
 				final ArrayList<String> formattedKeys = new ArrayList<String>();
-				stream().forEach(e -> {
+				for (Entry<String, Object> e : entries()) {
 					BioTag tag = obj.getTag(e.getKey());
 					if (tag != null) {
 						formattedKeys.add(e.getKey());
 					}
-				});
-				
-				formattedKeys.stream().forEach(k -> {
+				}
+
+				for (int i = 0; i < formattedKeys.size(); i++) {
+					String k = formattedKeys.get(i) ;
 					BioTag tag = obj.getTag(k) ;
 					Object value = get(k) ;
-					
+
 					if (value instanceof BioExpression) {
-						return ;
+						continue ;
 					} else if (tag.isArray()) {
 						if (tag.getType() != BioType.BioEnum) {
 							value = ConversionUtility.convertAsArray(tag.getType(), value) ;
@@ -786,7 +793,7 @@ public class BioObject implements BioObjectHolder, Cloneable {
 						}
 					} else if (value instanceof BioObject) {
 						((BioObject) value).format(); 
-						return ;
+						continue ;
 					} else if (tag.getType() != ConversionUtility.getType(value)) {
 						if (tag.getType() != BioType.BioEnum) {
 							value = ConversionUtility.convert(tag.getType(), value) ;
@@ -794,16 +801,15 @@ public class BioObject implements BioObjectHolder, Cloneable {
 							value = ConversionUtility.convert(tag.getEnumObj(), value) ;
 						}
 					}
-					
+
 					if (value != null) {
 						put(tag.getName(), value) ;
 					} else {
 						remove(tag.getName()) ;
 					}
-				});
+				}
 			}
 		}
-		
 		return this ;
 	}
 	
@@ -815,16 +821,18 @@ public class BioObject implements BioObjectHolder, Cloneable {
 		BioObj obj = BioDictionary.getDictionary(dictionary).getObjByCode(code);
 		if (obj != null) {
 			final ArrayList<String> trimmedKeys = new ArrayList<String>();
-			stream().forEach(e -> {
+			
+			for (Entry<String, Object> e : entries()) {
 				BioTag tag = obj.getTag(e.getKey());
-				if (tag == null) {
+				if (tag != null) {
 					trimmedKeys.add(e.getKey());
 				}
-			});
+			}
 			
-			trimmedKeys.stream().forEach(k -> {
+			for (int i = 0; i < trimmedKeys.size(); i++) {
+				String k = trimmedKeys.get(i) ;
 				trimmed.put(k, remove(k)) ;
-			});
+			}
 		}
 		
 		return this ;
@@ -838,7 +846,7 @@ public class BioObject implements BioObjectHolder, Cloneable {
 		BioObj obj = BioDictionary.getDictionary(dictionary).getObjByCode(code);
 		if (obj != null) {
 			final ArrayList<String> trimmedKeys = new ArrayList<String>();
-			stream().forEach(e -> {
+			for(Entry<String, Object> e : entries()) {
 				BioTag tag = obj.getTag(e.getKey());
 				if (tag == null) {
 					trimmedKeys.add(e.getKey());
@@ -859,11 +867,12 @@ public class BioObject implements BioObjectHolder, Cloneable {
 						}
 					}
 				}
-			});
+			}
 			
-			trimmedKeys.stream().forEach(k -> {
+			for (int i = 0; i < trimmedKeys.size(); i++) {
+				String k = trimmedKeys.get(i) ;
 				trimmed.put(k, remove(k)) ;
-			});
+			}
 		}
 		
 		return this ;
@@ -878,7 +887,7 @@ public class BioObject implements BioObjectHolder, Cloneable {
 		BioObj obj = BioDictionary.getDictionary(dictionary).getObjByCode(code);
 		if (obj != null) {
 			final ArrayList<String> trimmedKeys = new ArrayList<String>();
-			stream().forEach(e -> {
+			for(Entry<String, Object> e : entries()) {
 				BioTag tag = obj.getTag(e.getKey());
 				if (tag != null && tag.isTrimKey(trimKey)) {
 					trimmedKeys.add(e.getKey());
@@ -899,11 +908,12 @@ public class BioObject implements BioObjectHolder, Cloneable {
 						}
 					}
 				}
-			});
+			};
 			
-			trimmedKeys.stream().forEach(k -> {
+			for (int i = 0; i < trimmedKeys.size(); i++) {
+				String k = trimmedKeys.get(i) ;
 				trimmed.put(k, remove(k)) ;
-			});
+			}
 		}
 		
 		return trimmed ;
@@ -918,7 +928,7 @@ public class BioObject implements BioObjectHolder, Cloneable {
 		BioObj obj = BioDictionary.getDictionary(dictionary).getObjByCode(code);
 		if (obj != null) {
 			final ArrayList<String> trimmedKeys = new ArrayList<String>();
-			stream().forEach(e -> {
+			for(Entry<String, Object> e : entries()) {
 				BioTag tag = obj.getTag(e.getKey());
 				if (tag != null && tag.isInverseTrimKey(inverseTrimKey)) {
 					trimmedKeys.add(e.getKey());
@@ -939,11 +949,12 @@ public class BioObject implements BioObjectHolder, Cloneable {
 						}
 					}
 				}
-			});
+			};
 			
-			trimmedKeys.stream().forEach(k -> {
+			for (int i = 0; i < trimmedKeys.size(); i++) {
+				String k = trimmedKeys.get(i) ;
 				trimmed.put(k, remove(k)) ;
-			});
+			}
 		}
 		
 		return trimmed ;

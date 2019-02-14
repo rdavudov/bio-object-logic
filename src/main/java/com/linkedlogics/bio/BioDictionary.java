@@ -1,5 +1,6 @@
 package com.linkedlogics.bio;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -508,7 +509,7 @@ public class BioDictionary {
 	 * @return
 	 */
 	public static List<String> getSupportedDateFormats() {
-		return supportedDateFormats.stream().collect(Collectors.toList()) ;
+		return new ArrayList<String>(supportedDateFormats) ;
 	}
 	
 	/**

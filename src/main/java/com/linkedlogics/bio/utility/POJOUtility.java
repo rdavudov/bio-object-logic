@@ -2,6 +2,7 @@ package com.linkedlogics.bio.utility;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
+import java.util.Map.Entry;
 
 import com.linkedlogics.bio.BioDictionary;
 import com.linkedlogics.bio.BioEnum;
@@ -28,8 +29,7 @@ public class POJOUtility {
 		BioObj obj = BioDictionary.getDictionary().getObjByCode(code) ;
 		if (obj != null) {
 			BioObject object = new BioObject(obj.getCode(), obj.getName()) ;
-			
-			obj.getNameMap().entrySet().stream().forEach(t -> {
+			for (Entry<String, BioTag> t : obj.getNameMap().entrySet()) {
 				Object value = getValue(t.getValue(), pojo) ;
 				
 				if (value != null) {
@@ -54,7 +54,7 @@ public class POJOUtility {
 						}
 					}
 				}
-			});
+			}
 
 			return object ;
 		}
@@ -72,7 +72,7 @@ public class POJOUtility {
 		if (obj != null) {
 			try {
 				Object pojo = obj.getBioClass().getConstructor().newInstance() ;
-				object.stream().forEach(e -> {
+				for(Entry<String, Object> e : object.entries()) {
 					BioTag tag = obj.getTag(e.getKey()) ;
 					if (tag != null) {
 						if (e.getValue() instanceof BioObject) {
@@ -95,7 +95,7 @@ public class POJOUtility {
 							setValue(tag, pojo, e.getValue());
 						}
 					}
-				});
+				}
 				return pojo ;
 			} catch (Throwable e) {
 				throw new DictionaryException(e) ;

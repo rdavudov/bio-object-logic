@@ -1,5 +1,7 @@
 package com.linkedlogics.bio.utility;
 
+import java.util.List;
+
 public class StringUtility {
 	
 	public static boolean equal(Object left, Object right) {
@@ -69,5 +71,39 @@ public class StringUtility {
 		}
 		
 		return result.toString() ;
+	}
+	
+	public static String join(Object[] array) {
+		return join(array, ",") ;
+	}
+	
+	public static String join(Object[] array, String sep) {
+		if (array == null || array.length == 0) {
+			return null ;
+		}
+		
+		StringBuilder s = new StringBuilder() ;
+		for (int i = 0; i < array.length; i++) {
+			s.append(sep).append(array[i].toString()) ;
+		}
+		
+		return s.substring(1) ;
+	}
+	
+	public static String join(List<Object> list) {
+		return join(list, ",") ;
+	}
+	
+	public static String join(List<Object> list, String sep) {
+		if (list == null || list.size() == 0) {
+			return null ;
+		}
+		
+		StringBuilder s = new StringBuilder() ;
+		for (int i = 0; i < list.size(); i++) {
+			s.append(sep).append(list.get(i).toString()) ;
+		}
+		
+		return s.substring(1) ;
 	}
 }

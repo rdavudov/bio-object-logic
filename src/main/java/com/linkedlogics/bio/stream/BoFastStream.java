@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
+import java.util.Map.Entry;
 
 import com.linkedlogics.bio.BioObject;
 import com.linkedlogics.bio.dictionary.BioObj;
@@ -379,7 +380,7 @@ public class BoFastStream extends OutputStream {
 	
 	public void writeProperties(final BioObj object, BioObject properties) {
 		writeLength(properties.size()) ;
-		properties.stream().forEach(e -> {
+		for(Entry<String, Object> e : properties.entries()) {
 			String key = e.getKey() ;
 			Object value = e.getValue() ;
 			boolean isArray = value.getClass().isArray() ;
@@ -447,8 +448,7 @@ public class BoFastStream extends OutputStream {
 			case Unknown:
 				break;
 			}
-		});
-		
+		}
 	}
 	
 	@Override

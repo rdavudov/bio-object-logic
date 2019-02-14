@@ -213,9 +213,9 @@ public class BioDictionaryBuilder {
 			reader.read(this); 
 		}
 		
-		BioDictionary.getDictionaryMap().entrySet().stream().forEach(e -> {
-			validate(e.getValue());
-		});
+		for (Entry<Integer, BioDictionary> d : BioDictionary.getDictionaryMap().entrySet()) {
+			validate(d.getValue());
+		}
 	}
 	
 	/**

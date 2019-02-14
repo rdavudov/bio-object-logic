@@ -70,9 +70,9 @@ public class DictionaryUtility {
 		if (obj.getName() != null) {
 			xml.append(" name=\"").append(obj.getName()).append("\"") ;
 		}
-		if (!obj.isCodeGenerated()) {
+//		if (!obj.isCodeGenerated()) {
 			xml.append(" code=\"").append(obj.getCode()).append("\"");
-		}
+//		}
 		xml.append(" version=\"").append(obj.getVersion()).append("\"") ;
 		if (obj.getBioClass() != null) {
 			xml.append(" class=\"").append(obj.getBioClass().getName()).append("\"") ;
@@ -93,9 +93,9 @@ public class DictionaryUtility {
 	 */
 	private static void enumToXml(BioEnumObj enumObj, StringBuilder xml) {
     	xml.append("\t<enum name=\"").append(enumObj.getName()).append("\"") ;
-    	if (!enumObj.isCodeGenerated()) {
+//    	if (!enumObj.isCodeGenerated()) {
 			xml.append(" code=\"").append(enumObj.getCode()).append("\"");
-		}
+//		}
     	xml.append(" version=\"").append(enumObj.getVersion()).append("\"") ;
     	if (enumObj.getBioClass() != null) {
 			xml.append(" class=\"").append(enumObj.getBioClass().getName()).append("\"") ;
@@ -117,9 +117,9 @@ public class DictionaryUtility {
     private static void tagToXml(BioTag tag, StringBuilder xml, String firstTag) {
     	xml.append(firstTag) ;
     	xml.append(" name=\"").append(tag.getName()).append("\"") ;
-    	if (!tag.isCodeGenerated()) {
+//    	if (!tag.isCodeGenerated()) {
 			xml.append(" code=\"").append(tag.getCode()).append("\"");
-		}
+//		}
 		if (tag.getObj() != null) {
 			xml.append(" type=\"").append(tag.getObj().getType()).append("\"") ;
 		} else if (tag.getEnumObj() != null) {
@@ -143,12 +143,12 @@ public class DictionaryUtility {
 		}
 		if (tag.getTrimKeys() != null && tag.getTrimKeys().length > 0) {
 			xml.append(" trim-keys=\"") ;
-			xml.append(Arrays.stream(tag.getTrimKeys()).collect(Collectors.joining(","))) ;
+			xml.append(StringUtility.join(tag.getTrimKeys())) ;
 			xml.append("\"") ;
 		}
 		if (tag.getInverseTrimKeys() != null && tag.getInverseTrimKeys().length > 0) {
 			xml.append(" inverse-trim-keys=\"") ;
-			xml.append(Arrays.stream(tag.getInverseTrimKeys()).collect(Collectors.joining(","))) ;
+			xml.append(StringUtility.join(tag.getInverseTrimKeys())) ;
 			xml.append("\"") ;
 		}
 		if (tag.getUseKey() != null) {
