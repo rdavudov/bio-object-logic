@@ -824,7 +824,7 @@ public class BioObject implements BioObjectHolder, Cloneable {
 			
 			for (Entry<String, Object> e : entries()) {
 				BioTag tag = obj.getTag(e.getKey());
-				if (tag != null) {
+				if (tag == null) {
 					trimmedKeys.add(e.getKey());
 				}
 			}
