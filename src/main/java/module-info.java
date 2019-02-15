@@ -2,15 +2,15 @@
  * @author rajab
  *
  */
-module bio.object {
+module com.linkedlogics.bio {
 	exports com.linkedlogics.bio;
 	exports com.linkedlogics.bio.exception;
 	exports com.linkedlogics.bio.annotation;
 	exports com.linkedlogics.bio.parser;
-	exports com.linkedlogics.bio.dictionary to bio.sql ;
-	exports com.linkedlogics.bio.expression to bio.sql ;
-	exports com.linkedlogics.bio.dictionary.builder to bio.sql ;
-	exports com.linkedlogics.bio.utility to bio.sql ;
+	exports com.linkedlogics.bio.dictionary to com.linkedlogics.bio.sql ;
+	exports com.linkedlogics.bio.expression to com.linkedlogics.bio.sql ;
+	exports com.linkedlogics.bio.dictionary.builder to com.linkedlogics.bio.sql ;
+	exports com.linkedlogics.bio.utility to com.linkedlogics.bio.sql ;
 	
 	requires transitive java.xml;
 	requires transitive org.json;
