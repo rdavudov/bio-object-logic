@@ -698,7 +698,10 @@ public class BioObjectBinaryParser {
 			// we create an instance of bio object
 			BioObject bio = null;
 			if (obj.getBioClass() != null) {
-				bio = (BioObject) obj.getBioClass().getConstructor().newInstance();
+				// why empty() because otherwise if bio obj has initial fields they will auto generated
+				// but actually during serialization they were not present
+				// so here we empty object and only add serialized tag values
+				bio = (BioObject) obj.getBioClass().getConstructor().newInstance().empty();
 				bio.setBioCode(objCode);
 				bio.setBioName(obj.getName());
 				bio.setBioVersion(objVersion);
