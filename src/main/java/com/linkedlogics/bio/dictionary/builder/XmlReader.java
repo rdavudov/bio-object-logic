@@ -1,8 +1,6 @@
 package com.linkedlogics.bio.dictionary.builder;
 
 import java.io.ByteArrayInputStream;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 
@@ -34,8 +32,6 @@ public class XmlReader implements DictionaryReader {
 	public XmlReader(InputStream in) {
 		this.in = in ;
 	}
-	
-	
 	
 	@Override
 	public void read(BioDictionaryBuilder builder) {
