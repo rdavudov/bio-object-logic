@@ -418,7 +418,7 @@ public class BioDictionary {
 	
 	private static HashMap<Integer, BioDictionary> dictionaryMap = new HashMap<Integer, BioDictionary>() ;
 	
-    private static BioDictionary dictionary ;
+    private static BioDictionary dictionary = getOrCreateDictionary(0) ;
  
     /**
      * Returns all dictionaries as map
