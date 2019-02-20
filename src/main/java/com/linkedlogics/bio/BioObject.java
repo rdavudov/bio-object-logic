@@ -9,7 +9,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.stream.Stream;
 
 import org.json.JSONObject;
 
@@ -18,7 +17,6 @@ import com.linkedlogics.bio.dictionary.BioTag;
 import com.linkedlogics.bio.dictionary.BioType;
 import com.linkedlogics.bio.exception.DictionaryException;
 import com.linkedlogics.bio.exception.ImmutableException;
-import com.linkedlogics.bio.object.BioObjectHolder;
 import com.linkedlogics.bio.utility.ConversionUtility;
 import com.linkedlogics.bio.utility.JSONUtility;
 import com.linkedlogics.bio.utility.POJOUtility;
@@ -32,7 +30,7 @@ import com.linkedlogics.bio.utility.XMLUtility;
  * @author rdavudov
  *
  */
-public class BioObject implements BioObjectHolder, Cloneable {
+public class BioObject implements Cloneable {
 	/**
 	 * Bio Dictionary Id 
 	 */
@@ -967,11 +965,6 @@ public class BioObject implements BioObjectHolder, Cloneable {
 	
 	protected Map<String, Object> getMap() {
 		return map ;
-	}
-	
-	@Override
-	public BioObject getBioObject() {
-		return this ;
 	}
 	
 	public String toString() {
