@@ -210,7 +210,5 @@ Vehicle clonned = (Vehicle) v.clone() ;
 System.out.println(clonned.equals(v)) ;
 ```
 
-```java
-
 ### setImmutable()
-```setImmutable()``` sets object to be immutable. No further **set**, **remove** or **clear** will not be possible.
+```setImmutable()``` sets object to be immutable. No further **set**, **remove** or **clear** will be possible.
