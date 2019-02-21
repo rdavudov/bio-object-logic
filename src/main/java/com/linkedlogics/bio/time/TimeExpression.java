@@ -30,7 +30,7 @@ public abstract class TimeExpression {
     }
     
     protected long getLocalTime(LocalDateTime time) {
-    	return time.toInstant(ZoneOffset.ofTotalSeconds(0)).toEpochMilli() ;
+    	return time.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli() ;
     }
 
     public long getTime(long now) {
