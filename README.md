@@ -180,7 +180,7 @@ v.set("undefined tag", "Hello world") ;
 ```"undefined tag"``` tag will be removed when you call ```v.trim()```
 
 ### format()
-```trim()``` method converts inappropriate values to correct types based on dictionary. If a tag is Integer but inside Bio Object it is a String ("42") it will be converted to int 42. It is applied to all primitive types and arrays of primitive types. For example:
+```format()``` method converts inappropriate values to correct types based on dictionary. If a tag is Integer but inside Bio Object it is a String ("42") it will be converted to int 42. It is applied to all primitive types and arrays of primitive types. For example:
 ```java
 v.set(Vehicle.PRODUCER, "Ford") ;
 v.set(Vehicle.YEAR_OF_PRODUCTION, "2019") ;
