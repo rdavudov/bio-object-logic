@@ -33,7 +33,7 @@ First of all we need to create dictionary which is done by following code. Bio D
 ```java
  new BioDictionaryBuilder().build(); 
  ```
- also you can specify which package root to travers for Bio Objects.
+ also you can specify which package root for Bio Objects traversal.
  ```java
  new BioDictionaryBuilder().addPackage("com.linkedlogics.bio.test").build();
  ```
@@ -102,7 +102,7 @@ In order to serialize/deserialize Bio Objects you need to use to ```BioObjectBin
  
  byte[] encoded = parser.encode(v) ;
  
- Vehicle decoded = parser.decode(encoded) ;
+ Vehicle decoded = (Vehicle) parser.decode(encoded) ;
  ```
  This serialization/deserialization is way to fast than standard Java serialization because it only serializes data and field codes. Bio Object codes must be unique within one dictionary (you can have multiple dictionaries at the same time) and tag codes must be unique within single Bio Object. By default Bio Dictionary uses standard hashing to assign default codes but it is possible that there can be duplicates. For that purpose you can also assign custom codes inside annotations ```@BioObj``` and ```@BioTag``` for each object and tag. For example:
  ```java
@@ -139,7 +139,75 @@ System.out.println(v.toXml()) ;
     <year-of-production type="Integer">2019</year-of-production>
 </vehicle>
 ```
-Each object tag starts with name field and followed by attributes about its type and code. 
+Each root tag in XML starts with name (vehicle) field and followed by attributes about its type (Vehicle) and code (1). 
 - **name** is by default snake case of class name it is commonly used in Bio Expressions
 - **type** is by default class name it is commonly used in Bio Dictionary for dependencies between Bio Objects
 - **code** is by default hash generated or can be given inside annotation, it is used in serialization/deserialization
+
+In order to parse XML to Bio Object you have to use BioObjectXmlParser class in below way.
+```java
+BioObjectXmlParser xmlParser = new BioObjectXmlParser() ;
+Vehicle v = (Vehicle) xmlParser.parse(new FileInputStream("vehicle.xml")) ;
+```
+Another way of parsing from XML is to use a static method ```fromXml(String xml)``` inside ```BioObject``` class. For example:
+```java
+Vehicle v = (Vehicle) BioObject.fromXml(xml) ;
+```
+
+## JSON parsing and export
+For exporting to JSON you should use ```toJson()``` method and for parsing from JSON you can use static  ```BioObject.fromJson(String json)``` method. ```toJson()``` method returns a ```org.json.JSONObject``` instance
+```java
+System.out.println(v.toJson().toString(4)) ;
+```
+```json
+{
+    "fuel_efficiency": 17.8,
+    "undefined tag": "Hello world",
+    "producer": "Ford",
+    "year_of_production": 2019
+}
+```
+## Aditional methods from BioObject
+### trim()
+```trim()``` method removes all keys which are not found in the dictionary. For example:
+```java
+v.set(Vehicle.PRODUCER, "Ford") ;
+v.set(Vehicle.YEAR_OF_PRODUCTION, 2019) ;
+v.set(Vehicle.FUEL_EFFICIENCY, 17.8) ;
+v.set("undefined tag", "Hello world") ;
+```
+```"undefined tag"``` tag will be removed when you call ```v.trim()```
+
+### format()
+```trim()``` method converts inappropriate values to correct types based on dictionary. If a tag is Integer but inside Bio Object it is a String ("42") it will be converted to int 42. It is applied to all primitive types and arrays of primitive types. For example:
+```java
+v.set(Vehicle.PRODUCER, "Ford") ;
+v.set(Vehicle.YEAR_OF_PRODUCTION, "2019") ;
+v.set(Vehicle.FUEL_EFFICIENCY, "17.8") ;
+v.set("undefined tag", "Hello world") ;
+```
+
+```java
+v.format() ;
+System.out.println(v.toXml());
+```
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<vehicle type="Vehicle" code="1">
+    <fuel-efficiency type="Double">17.8</fuel-efficiency>
+    <producer type="String">Ford</producer>
+    <undefined tag type="String">Hello world</undefined tag>
+    <year-of-production type="Integer">2019</year-of-production>
+</vehicle>
+```
+
+
+### clone() and equals()
+```clone()``` method returns completely new instance but with same tag values. ```equals()``` is comparing all tag values for equality.
+```java
+Vehicle clonned = (Vehicle) v.clone() ;
+System.out.println(clonned.equals(v)) ;
+```
+
+```java
+v.format() ;
