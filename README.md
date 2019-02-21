@@ -136,7 +136,7 @@ System.out.println(v.toXml()) ;
 <vehicle type="Vehicle" code="1">
     <fuel-efficiency type="Double">17.8</fuel-efficiency>
     <producer type="String">Ford</producer>
-    <undefined tag type="String">Hello world</undefined tag>
+    <undefined-tag type="String">Hello world</undefined-tag>
     <year-of-production type="Integer">2019</year-of-production>
 </vehicle>
 ```
@@ -197,7 +197,7 @@ System.out.println(v.toXml());
 <vehicle type="Vehicle" code="1">
     <fuel-efficiency type="Double">17.8</fuel-efficiency>
     <producer type="String">Ford</producer>
-    <undefined tag type="String">Hello world</undefined tag>
+    <undefined-tag type="String">Hello world</undefined-tag>
     <year-of-production type="Integer">2019</year-of-production>
 </vehicle>
 ```
