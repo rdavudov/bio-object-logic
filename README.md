@@ -10,7 +10,7 @@ Bio Objects is a library which can be used as a replacement for **Java Beans** o
 - Immutability support
 - **Fast Expression Language evaluation (10x faster than SpEL)**
 
-Bio Objects are easy solution where Model objects are changed frequently and developers don't want to change main code each time. Also it contains some additional functionalities which are very helpful.
+Bio Objects are easy solution where Model objects are changed frequently and developers don't want to change main code each time. Also it contains some additional functionalities which are very helpful. 
 
 ```java
 @BioObj
@@ -33,12 +33,12 @@ First of all we need to create dictionary which is done by following code. Bio D
 ```java
  new BioDictionaryBuilder().build(); 
  ```
- also you can specify which package root for Bio Objects traversal.
+ also you can specify package root for Bio Objects traversal.
  ```java
  new BioDictionaryBuilder().addPackage("com.linkedlogics.bio.test").build();
  ```
  
- After dictiontary is created you can instantiate your classes either by default constructor
+ After dictionary is created you can instantiate your objects either by default constructor
  ```java
  Vehicle v = new Vehicle() ;
  ```
@@ -210,4 +210,6 @@ System.out.println(clonned.equals(v)) ;
 ```
 
 ```java
-v.format() ;
+
+### setImmutable()
+```setImmutable()``` sets object to be immutable. No further **set**, **remove** or **clear** will not be possible.
