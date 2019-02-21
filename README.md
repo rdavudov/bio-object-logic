@@ -104,3 +104,42 @@ In order to serialize/deserialize Bio Objects you need to use to ```BioObjectBin
  
  Vehicle decoded = parser.decode(encoded) ;
  ```
+ This serialization/deserialization is way to fast than standard Java serialization because it only serializes data and field codes. Bio Object codes must be unique within one dictionary (you can have multiple dictionaries at the same time) and tag codes must be unique within single Bio Object. By default Bio Dictionary uses standard hashing to assign default codes but it is possible that there can be duplicates. For that purpose you can also assign custom codes inside annotations ```@BioObj``` and ```@BioTag``` for each object and tag. For example:
+ ```java
+@BioObj(code=1)
+public class Vehicle extends BioObject {
+	  @BioTag(code=1, type="Integer")
+	  public static final String YEAR_OF_PRODUCTION = "year_of_production" ;
+	  @BioTag(code=2, type="String")
+	  public static final String PRODUCER = "producer" ;
+	  @BioTag(code=3, type="Integer")
+	  public static final String ENGINE = "engine" ;
+	  @BioTag(code=4, type="Integer")
+	  public static final String CYLINDERS = "cylinders" ;
+}
+```
+also by adding dictionary code to @BioObj you can differentiate Bio Objects based on whole dictionary.
+```java
+@BioObj(code=1, dictionary=3)
+public class Vehicle extends BioObject { ... }
+```
+
+## XML parsing and export
+It is very easy to export Bio Object to xml and also parse it from XML. You don't have to do anything additional.
+For exporting you can use ```toXml()``` method in BioObject which is inherited.
+```java
+System.out.println(v.toXml()) ;
+```
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<vehicle type="Vehicle" code="1">
+    <fuel-efficiency type="Double">17.8</fuel-efficiency>
+    <producer type="String">Ford</producer>
+    <undefined tag type="String">Hello world</undefined tag>
+    <year-of-production type="Integer">2019</year-of-production>
+</vehicle>
+```
+Each object tag starts with name field and followed by attributes about its type and code. 
+- **name** is by default snake case of class name it is commonly used in Bio Expressions
+- **type** is by default class name it is commonly used in Bio Dictionary for dependencies between Bio Objects
+- **code** is by default hash generated or can be given inside annotation, it is used in serialization/deserialization
