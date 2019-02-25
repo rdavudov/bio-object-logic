@@ -16,5 +16,5 @@ module com.linkedlogics.bio {
 	requires transitive java.xml;
 	requires transitive org.json;
 	requires transitive io.github.classgraph ;
-	requires lz4;
+	requires transitive lz4;
 }
