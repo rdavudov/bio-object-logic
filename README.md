@@ -105,7 +105,7 @@ In order to serialize/deserialize Bio Objects you need to use to ```BioObjectBin
  
  Vehicle decoded = (Vehicle) parser.decode(encoded) ;
  ```
- This serialization/deserialization is way to fast than standard Java serialization because it only serializes data and field codes. Bio Object codes must be unique within one dictionary (you can have multiple dictionaries at the same time) and tag codes must be unique within single Bio Object. By default Bio Dictionary uses standard hashing to assign default codes but it is possible that there can be duplicates. For that purpose you can also assign custom codes inside annotations ```@BioObj``` and ```@BioTag``` for each object and tag. For example:
+ This serialization/deserialization is way too fast than standard Java serialization because it only serializes keys and values. Bio Object codes must be unique within one dictionary (you can have multiple dictionaries at the same time) and tag codes must be unique within single Bio Object. By default Bio Dictionary uses standard hashing to assign default codes but it is possible that there can be duplicates. For that purpose you can also assign custom codes inside annotations ```@BioObj``` and ```@BioTag``` for each object and tag. For example:
  ```java
 @BioObj(code=1)
 public class Vehicle extends BioObject {
