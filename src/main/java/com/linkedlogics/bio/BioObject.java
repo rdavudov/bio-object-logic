@@ -95,16 +95,15 @@ public class BioObject implements Cloneable {
 	
 	public BioObject(BioObject object) {
 		BioObj obj = BioDictionary.findObj(this.getClass()) ;
-		
-		this.code = obj.getCode();
-		this.name = obj.getName() ;
-		this.version = obj.getVersion();
-		this.dictionary = obj.getDictionary() ;
-		
+		if (obj != null) {
+			this.code = obj.getCode();
+			this.name = obj.getName() ;
+			this.version = obj.getVersion();
+			this.dictionary = obj.getDictionary() ;
+		}
 		if (object != null) {
 			putAll(object);
 		}
-		
 		init() ;
 	}
 	
