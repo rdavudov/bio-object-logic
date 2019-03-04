@@ -96,7 +96,7 @@ public class Vehicle extends BioObject {
 ```
 
 
-## Serialization/Deserialization
+## Serialization and Deserialization
 In order to serialize/deserialize Bio Objects you need to use to ```BioObjectBinaryParser``` class. Here is an example:
 ```java
  BioObjectBinaryParser parser = new BioObjectBinaryParser() ;
