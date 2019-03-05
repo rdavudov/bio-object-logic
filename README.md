@@ -28,6 +28,8 @@ BioExpression expr = BioExpression.parse("car.calculateHP(car.cylinders, car.eng
 double result = (Double) expr.getValue(car) ;
 ```
 
+**Note that** parsed Bio Expressions are cached, so parsing multiple times will not affect your application performance. If you parse exactly same expression again, it will return already parsed one from cache and since they are stateless objects there will be impact on your application logic.
+
 ## Features
 - Easily customizable by adding new keys to map, without changing your code.
 - Fast and efficient serialization/deserialization
