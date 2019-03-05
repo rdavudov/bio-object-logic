@@ -12,7 +12,16 @@ Bio Objects is a library which can be used as a replacement for **Java Beans**. 
 
 if ```car``` object contains a tag ```producer``` and it is equal to any of the elements of array.
 
-...
+Bio Expressions are created and used as following:
+```java
+BioExpression expr = BioExpression.parse("car.year_of_production > 2015 and car.engine * 2 < 6000") ;
+System.out.println(expr.getValue(car)) ;
+```
+you can use multiple Bio Objects in expression
+```java
+BioExpression expr = BioExpression.parse("car.year_of_production > 2015 and driver.license.category = ['B','E''D']") ;
+System.out.println(expr.getValue(car, driver)) ;
+```
 
 ## Features
 - Easily customizable by adding new keys to map, without changing your code.
