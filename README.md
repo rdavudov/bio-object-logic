@@ -353,4 +353,4 @@ v.set(Vehicle.ENGINE_TYPE, EngineType.INLINE) ;
 ```
 Respectively all xml and json parsing will remain unchanged it will be handled by the library.
 
-**Note that** Bio Enums are stored as Bio Enum instances but serialized as int. Since Bio Enum extends ```java.lang.Number``` enums also act as numbers. But during export to xml or json string representation is been used. 
+**Note that** Bio Enums are stored as Bio Enum instances but serialized as int. Since ```class BioEnum extends java.lang.Number``` enums also act as numbers. But during export to xml or json string representation is being used. 
