@@ -220,7 +220,7 @@ v.set("undefined tag", "Hello world") ;
 	  @BioTag(type="Integer", trimKeys= {"key2", "keys3"})
 	  public static final String ENGINE = "engine" ;
 ```
-Here ```PRODUCER``` will be removed when we call ```v,trim("key1")``` and ```ENGINE``` will be removed when we call ```v.trim("key2")```
+Here ```PRODUCER``` will be removed when we call ```v.trim("key1")``` and ```ENGINE``` will be removed when we call ```v.trim("key2")```
 
 ### format()
 ```format()``` method converts inappropriate values to correct types based on dictionary. If a tag is Integer but inside Bio Object it is a String ("42") it will be converted to int 42. It is applied to all primitive types and arrays of primitive types. For example:
