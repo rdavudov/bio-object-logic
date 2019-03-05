@@ -30,7 +30,7 @@ double result = (Double) expr.getValue(car) ;
 
 **Note that** parsed Bio Expressions are cached, so parsing multiple times will not affect your application performance. If you parse exactly same expression again, it will return already parsed one from cache and since they are stateless objects there will be impact on your application logic.
 
-## Features
+## Cool Features
 - Easily customizable by adding new keys to map, without changing your code.
 - Fast and efficient serialization/deserialization
 - Binary compression and encryption after serialization
@@ -42,6 +42,7 @@ double result = (Double) expr.getValue(car) ;
 
 Bio Objects are easy solution where Model objects are changed frequently and developers don't want to change main code each time. Also it contains some additional functionalities which are very helpful. 
 
+## Quick Start
 ```java
 @BioObj
 public class Vehicle extends BioObject {
