@@ -17,9 +17,9 @@ Bio Expressions are created and used as following:
 BioExpression expr = BioExpression.parse("car.year_of_production > 2015 and car.engine * 2 < 6000") ;
 boolean result = (Boolean) expr.getValue(car) ;
 ```
-you can use multiple Bio Objects in expression
+you can use multiple Bio Objects in your expression:
 ```java
-BioExpression expr = BioExpression.parse("car.year_of_production > 2015 and driver.license.category = ['B','E''D']") ;
+BioExpression expr = BioExpression.parse("car.year_of_production > 2015 and driver.license.category = ['B','E','D']") ;
 boolean result = expr.getBooleanValue(car, driver) ;
 ```
 Another example:
