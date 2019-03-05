@@ -209,6 +209,7 @@ v.set("undefined tag", "Hello world") ;
 ```
 ```"undefined tag"``` tag will be removed when you call ```v.trim()```
 
+
 ### format()
 ```format()``` method converts inappropriate values to correct types based on dictionary. If a tag is Integer but inside Bio Object it is a String ("42") it will be converted to int 42. It is applied to all primitive types and arrays of primitive types. For example:
 ```java
@@ -232,7 +233,6 @@ System.out.println(v.toXml());
 </vehicle>
 ```
 
-
 ### clone() and equals()
 ```clone()``` method returns completely new instance but with same tag values. ```equals()``` is comparing all tag values for equality.
 ```java
@@ -242,3 +242,40 @@ System.out.println(clonned.equals(v)) ;
 
 ### setImmutable()
 ```setImmutable()``` sets object to be immutable. No further **set**, **remove** or **clear** will be possible.
+
+
+### fill()
+Sometimes Bio Objects can contain dynamic expression values which can be filled afterwards using other Bio Objects.
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<vehicle type="Vehicle" code="1">
+    <fuel-efficiency type="Double">17.8</fuel-efficiency>
+    <producer type="String">Ford</producer>
+    <undefined-tag type="String">Hello world</undefined-tag>
+    <year-of-production type="Integer">2019</year-of-production>
+    <horse-power type="Dynamic">calculateHP(vehicle.engine, vehicle.cylinders)</horse-power>
+    <is-driveable type="Dynamic">weather.celcius > -10 and !weather.is_windy</is-driveable>
+</vehicle>
+```
+Once it is parsed by XML parser we can use following code to fill in dynamic values wit actual ones:
+```java
+Weather w = new Weather() ;
+w.setCelcius(11) ;
+w.setWindy(false) ;
+
+Vehicle v = (Vehicle) BioObject.fromXml(xml) ;
+v.fill(v, w) ;
+System.out.println(v) ;
+```
+And result will be as following
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<vehicle type="Vehicle" code="1">
+    <fuel-efficiency type="Double">17.8</fuel-efficiency>
+    <producer type="String">Ford</producer>
+    <undefined-tag type="String">Hello world</undefined-tag>
+    <year-of-production type="Integer">2019</year-of-production>
+    <horse-power type="Double">220.0</horse-power>
+    <is-driveable type="Boolean">true</is-driveable>
+</vehicle>
+```
