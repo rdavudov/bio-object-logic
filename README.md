@@ -1,5 +1,5 @@
 # Bio Objects
-Bio Objects is a library which can be used as a replacement for **Java Beans**. Bio Objects are based on Maps (Keys-Values) and you will only need to extend ```BioObject``` class and add necessary annotations. Bio Dictionary will be built based on @annotations or xml configuration and will contain all information required for serialization, xml/json parsing etc. Once everything is set up **Bio Objects** library gives you following cool features.
+Bio Objects is a library which can be used as a replacement for **Java Beans**. Bio Objects are based on Maps (Keys-Values) and you will only need to extend ```BioObject``` class and add necessary annotations. Bio Dictionary will be built based on @annotations or xml configuration and will contain all information required for serialization, xml/json parsing etc. Once everything is set up **Bio Objects** library gives you following cool features discussed in the next section.
 
 **You may have concerns about Maps and their memory consumption etc.** But in terms of flexibility Maps provide better experience. Also you can use different Map implementations here such as Trove (https://bitbucket.org/trove4j/trove/src/master/) or etc. for low memory footprint.
 
