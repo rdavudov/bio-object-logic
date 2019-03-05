@@ -3,11 +3,15 @@ Bio Objects is a library which can be used as a replacement for **Java Beans**. 
 
 **You may have concerns about Maps and their memory consumption etc.** But in terms of flexibility Maps provide better experience. Also you can use different Map implementations here such as Trove (https://bitbucket.org/trove4j/trove/src/master/) or etc. for low memory footprint.
 
-Bio Objects are very useful in conjuction with Bio Expressions where you can write dynamic decision mechanisms for your application. Such as :
-- if ```car.year_of_production > 2015 and car.engine * 2 < 6000``` do this
-- else if ```car.fuel_efficiency.checkEUStandard()``` do this
-- else if ```?car.producer``` (if ```car``` object contains a tag ```producer```) do this
-- else if ```car.calculateHP(car.cylinders, car.engine) > 200``` do this
+**Bio Objects** are very useful in conjuction with **Bio Expressions** where you can write dynamic decision making mechanisms for your application. Such as :
+- if		```car.year_of_production > 2015 and car.engine * 2 < 6000``` 		do this
+- else if 	```car.fuel_efficiency.checkEUStandard()``` 				do this
+- else if 	```car.calculateHP(car.cylinders, car.engine) > 200``` 			do this
+- else if 	```4 < car.cylinders <= 6 and car.fuel_efficiency < 15.4```		do this
+- else if 	```?car.producer and car.producer = ['BMW', 'Toyota']``` 		do this
+
+if ```car``` object contains a tag ```producer``` and it is equal to any of the elements of array.
+
 ...
 
 ## Features
