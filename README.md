@@ -198,7 +198,7 @@ System.out.println(v.toJson().toString(4)) ;
     "year_of_production": 2019
 }
 ```
-## Aditional methods from BioObject
+## Additional methods from BioObject
 ### trim()
 ```trim()``` method removes all keys which are not found in the dictionary. For example:
 ```java
@@ -269,7 +269,7 @@ Sometimes Bio Objects can contain dynamic expression values which can be filled 
     <is-driveable type="Dynamic">weather.celcius > -10 and !weather.is_windy</is-driveable>
 </vehicle>
 ```
-Once it is parsed by XML parser we can use following code to fill in dynamic values wit actual ones:
+Once it is parsed by XML parser we can use following code to fill in dynamic values with actual ones:
 ```java
 Weather w = new Weather() ;
 w.setCelcius(11) ;
