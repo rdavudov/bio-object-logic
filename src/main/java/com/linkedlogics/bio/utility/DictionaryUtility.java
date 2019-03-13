@@ -139,7 +139,7 @@ public class DictionaryUtility {
 			xml.append(" is-encodable=\"false\"") ;
 		}
 		if (!tag.isExportable()) {
-			xml.append(" is-xml-exportable=\"false\"") ;
+			xml.append(" is-exportable=\"false\"") ;
 		}
 		if (tag.getTrimKeys() != null && tag.getTrimKeys().length > 0) {
 			xml.append(" trim-keys=\"") ;
