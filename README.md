@@ -10,23 +10,18 @@ Bio Objects is a library which can be used as a replacement for **Java Beans**. 
 
 if ```car``` object contains a tag ```producer``` and it is equal to any of the elements of array.
 
-Bio Expressions are created and used as following:
+Here is simple definition of Bio Object
 ```java
-BioExpression expr = BioExpression.parse("car.year_of_production > 2015 and car.engine * 2 < 6000") ;
-boolean result = (Boolean) expr.getValue(car) ;
+@BioObj
+public class Car extends BioObject {
+  @BioTag(type="Integer")
+  public static final String YEAR_OF_PRODUCTION = "year_of_production" ;
+  @BioTag(type="String")
+  public static final String PRODUCER = "producer" ;
+  @BioTag(type="Double")
+  public static final String FUEL_EFFICIENCY = "fuel_efficiency" ;
+}
 ```
-you can use multiple Bio Objects in your expression:
-```java
-BioExpression expr = BioExpression.parse("car.year_of_production > 2015 and driver.license.category = ['B','E','D']") ;
-boolean result = expr.getBooleanValue(car, driver) ;
-```
-Another example:
-```java
-BioExpression expr = BioExpression.parse("car.calculateHP(car.cylinders, car.engine)") ;
-double result = (Double) expr.getValue(car) ;
-```
-
-**Note that** parsed Bio Expressions are cached, so parsing multiple times will not affect your application performance. If you parse exactly same expression again, it will return already parsed one from cache and since they are stateless objects there will be impact on your application logic.
 
 ## Cool Features
 - Easily customizable by adding new keys to map, without changing your code.
