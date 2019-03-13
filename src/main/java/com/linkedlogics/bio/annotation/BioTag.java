@@ -22,7 +22,6 @@ public @interface BioTag {
 	boolean isEncodable() default true ;
 	boolean isExportable() default true ;
 	boolean isInheritable() default true ;
-	boolean isProtected() default false ;
 	String initial() default "" ;
 	String expression() default "" ;
 	String[] trimKeys() default "" ;
