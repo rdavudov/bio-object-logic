@@ -23,4 +23,4 @@ public class Car extends BioObject {
 }
 ```
 
-For more information please visit [Wiki](wiki)
+For more information please visit [Wiki](https://github.com/rdavudov/bio-object-logic/wiki)
