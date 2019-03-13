@@ -164,7 +164,7 @@ public class XmlReader implements DictionaryReader {
 			}
     		
     		if (code == 0) {
-        		obj.setCode(builder.getTagHahser().hash(obj.getBioClass().getName()));
+        		obj.setCode(builder.getTagHasher().hash(obj.getBioClass().getName()));
         		obj.setCodeGenerated(true);
         	}
     		
@@ -224,7 +224,7 @@ public class XmlReader implements DictionaryReader {
 			}
     		
     		if (code == 0) {
-    			enumObj.setCode(builder.getTagHahser().hash(enumObj.getBioClass().getName()));
+    			enumObj.setCode(builder.getTagHasher().hash(enumObj.getBioClass().getName()));
     			enumObj.setCodeGenerated(true);
         	}
     		
@@ -349,7 +349,7 @@ public class XmlReader implements DictionaryReader {
         }
 
     	if (code == 0) {
-    		tag.setCode(builder.getTagHahser().hash(tag.getName()));
+    		tag.setCode(builder.getTagHasher().hash(tag.getName()));
     		tag.setCodeGenerated(true);
     	}
     	

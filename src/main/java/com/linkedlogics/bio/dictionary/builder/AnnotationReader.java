@@ -63,7 +63,7 @@ public class AnnotationReader implements DictionaryReader {
 				BioObj obj = createObj(classInfo.getName());
 				if (obj != null) {
 					if (obj.getCode() == 0) {
-						obj.setCode(builder.getTagHahser().hash(obj.getBioClass().getName()));
+						obj.setCode(builder.getTagHasher().hash(obj.getBioClass().getName()));
 						obj.setCodeGenerated(true);
 					}
 					BioDictionary.getOrCreateDictionary(obj.getDictionary()).addObj(obj);
@@ -78,7 +78,7 @@ public class AnnotationReader implements DictionaryReader {
 				BioEnumObj enumObj = createEnum(classInfo.getName());
 				if (enumObj != null) {
 					if (enumObj.getCode() == 0) {
-						enumObj.setCode(builder.getTagHahser().hash(enumObj.getBioClass().getName()));
+						enumObj.setCode(builder.getTagHasher().hash(enumObj.getBioClass().getName()));
 						enumObj.setCodeGenerated(true);
 					}
 					BioDictionary.getOrCreateDictionary(enumObj.getDictionary()).addEnumObj(enumObj);
@@ -98,7 +98,7 @@ public class AnnotationReader implements DictionaryReader {
 						try {
 							BioTag tag = createSuperTag(fields[j]);
 							if (tag.getCode() == 0) {
-								tag.setCode(-builder.getTagHahser().hash(tag.getName()));
+								tag.setCode(-builder.getTagHasher().hash(tag.getName()));
 								tag.setCodeGenerated(true);
 							}
 							if (tag.getCode() > -1) {
@@ -129,7 +129,7 @@ public class AnnotationReader implements DictionaryReader {
 							BioObj obj = BioDictionary.getOrCreateDictionary(remoteAnnotation.dictionary()).getObjByType(annotation.obj()) ;
 							if (obj != null) {
 								if (tag.getCode() == 0) {
-									tag.setCode(builder.getTagHahser().hash(tag.getName()));
+									tag.setCode(builder.getTagHasher().hash(tag.getName()));
 									tag.setCodeGenerated(true);
 								}
 								obj.addTag(tag);
@@ -146,7 +146,7 @@ public class AnnotationReader implements DictionaryReader {
 								BioObj obj = BioDictionary.getOrCreateDictionary(remoteAnnotation.dictionary()).getObjByType(annotation.obj()) ;
 								if (obj != null) {
 									if (tag.getCode() == 0) {
-										tag.setCode(builder.getTagHahser().hash(tag.getName()));
+										tag.setCode(builder.getTagHasher().hash(tag.getName()));
 										tag.setCodeGenerated(true);
 									}
 									obj.addTag(tag);
@@ -217,39 +217,70 @@ public class AnnotationReader implements DictionaryReader {
 			// for name default value is bio object class snake case
 			while (bioClass != BioObject.class && bioClass != null) {
 				com.linkedlogics.bio.annotation.BioObj annotation = (com.linkedlogics.bio.annotation.BioObj) bioClass.getAnnotation(com.linkedlogics.bio.annotation.BioObj.class);
+				
 				// if annotation is present we check
 				if (annotation != null) {
 					// if no code given from annotation before and current one contains code we use it and stop going further
-					if (!isAnnotatedCode && annotation.code() > 0) {
-						obj.setCode(annotation.code());
+					if (!isAnnotatedCode) {
+						if (annotation.code() > 0) {
+							obj.setCode(annotation.code());
+							obj.setCodeGenerated(false);
+							// else if it is not given then we generate a code using hash function 
+						} else {
+							obj.setCode(builder.getTagHasher().hash(bioClass.getName()));
+							obj.setCodeGenerated(true);
+						}
 						isAnnotatedCode = true ;
-						obj.setCodeGenerated(false);
-					// else if it is not given then we generate a code using hash function 
-					} else {
-						obj.setCode(builder.getTagHahser().hash(bioClass.getName()));
-						obj.setCodeGenerated(true);
 					}
-					// if no name given from annotation before and current one contains name we use it and stop going further
-					if (!isAnnotatedName && annotation.name().length() > 0) {
-						obj.setName(annotation.name());
+					
+					if (!isAnnotatedName) {
+						// if no name given from annotation before and current one contains name we use it and stop going further
+						if (annotation.name().length() > 0) {
+							obj.setName(annotation.name());
+							// else if it is not given then we generate a snake case of class
+						} else {
+							obj.setName(bioClass.getSimpleName().replaceAll("([^_A-Z])([A-Z])", "$1_$2").toLowerCase());
+						}
 						isAnnotatedName = true ;
-					// else if it is not given then we generate a snake case of class
-					} else {
-						obj.setName(bioClass.getSimpleName().replaceAll("([^_A-Z])([A-Z])", "$1_$2").toLowerCase());
 					}
-					// if no type given from annotation before and current one contains name we use it and stop going further
-					if (!isAnnotatedType && annotation.type().length() > 0) {
-						obj.setType(annotation.type());
+					
+					if (!isAnnotatedType) {
+						// if no type given from annotation before and current one contains name we use it and stop going further
+						if (annotation.type().length() > 0) {
+							obj.setType(annotation.type());
+							// else if it is not given then we use class name as type
+						} else {
+							obj.setType(bioClass.getSimpleName());
+						}
 						isAnnotatedType = true ;
-					// else if it is not given then we use class name as type
 					} else {
-						obj.setType(bioClass.getSimpleName());
+						// here we check if types of subclass and superclass are same
+						String type = null ;
+						if (annotation.type().length() > 0) {
+							type = annotation.type();
+						} else {
+							type = bioClass.getSimpleName();
+						}
+						// if they are same then we copy code and name from parent and replace bio obj with more concrete one
+						if (type.equals(obj.getType())) {
+							if (obj.isCodeGenerated()) {
+								if (annotation.code() > 0) {
+									obj.setCode(annotation.code());
+									obj.setCodeGenerated(false);
+									// else if it is not given then we generate a code using hash function 
+								} else {
+									obj.setCode(builder.getTagHasher().hash(bioClass.getName()));
+									obj.setCodeGenerated(true);
+								}
+							}
+						}
 					}
+
 					// if no type given from annotation before and current one contains dictinary we use it and stop going further
 					if (!isAnnotatedDict && annotation.dictionary() > 0) {
 						obj.setDictionary(annotation.dictionary());
-						isAnnotatedDict = true ;
 					}
+					isAnnotatedDict = true ;
 				}
 				
 				// here we create tags using fields having @BioTag annotation
@@ -266,7 +297,7 @@ public class AnnotationReader implements DictionaryReader {
 
 							BioTag tag = createTag(fields[j]);
 							if (tag.getCode() == 0) {
-								tag.setCode(builder.getTagHahser().hash(tag.getName()));
+								tag.setCode(builder.getTagHasher().hash(tag.getName()));
 								tag.setCodeGenerated(true);
 							}
 							obj.addTag(tag);
@@ -432,7 +463,7 @@ public class AnnotationReader implements DictionaryReader {
 						isAnnotatedCode = true ;
 						enumObj.setCodeGenerated(false);
 					} else {
-						enumObj.setCode(builder.getTagHahser().hash(bioClass.getName()));
+						enumObj.setCode(builder.getTagHasher().hash(bioClass.getName()));
 						enumObj.setCodeGenerated(true);
 					}
 					
