@@ -3,12 +3,12 @@ Bio Objects is a library which can be used as a replacement for **Java Beans**. 
 
 **Bio Objects** are very useful in conjunction with **Bio Expressions** where you can write dynamic decision making mechanisms for your application. Such as :
 - if		```car.year_of_production > 2015 and car.engine * 2 < 6000``` 		do this
-- else if 	```car.fuel_efficiency.checkEUStandard()``` 				do this
-- else if 	```car.calculateHP(car.cylinders, car.engine) > 200``` 			do this
-- else if 	```4 < car.cylinders <= 6 and car.fuel_efficiency < 15.4```		do this
-- else if 	```?car.producer and car.producer = ['BMW', 'Toyota']``` 		do this
+- if 	```car.fuel_efficiency.checkEUStandard()``` 				do this
+- if 	```car.calculateHP(car.cylinders, car.engine) > 200``` 			do this
+- if 	```4 <= car.engine.cylinders <= 6 and car.fuel_efficiency < 15.4```		do this
+- if 	```?car.producer and car.producer = ['BMW', 'Toyota']``` 		do this (if ```car``` object contains a tag ```producer``` and it is equal to any of the elements of array.)
 
-if ```car``` object contains a tag ```producer``` and it is equal to any of the elements of array.
+
 
 Here is simple definition of Bio Object
 ```java
