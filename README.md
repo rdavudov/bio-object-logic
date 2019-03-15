@@ -1,7 +1,7 @@
 # Bio Objects
 Bio Objects is a library which can be used as a replacement for **Java Beans**. Bio Objects are based on Maps (Keys-Values) and you will only need to extend ```BioObject``` class and add necessary annotations. Bio Dictionary will be built based on @annotations or xml configuration and will contain all information required for serialization, xml/json parsing etc. 
 
-**Bio Objects** are very useful in conjunction with [**Bio Expressions**](Bio-Expressions) where you can write dynamic decision making mechanisms for your application. Such as :
+[**Bio Objects**](https://github.com/rdavudov/bio-object-logic/wiki/Bio-Objects-Basics) are very useful in conjunction with [**Bio Expressions**](https://github.com/rdavudov/bio-object-logic/wiki/Bio-Expressions) where you can write dynamic decision making mechanisms for your application. Such as :
 - if		```car.year_of_production > 2015 and car.engine * 2 < 6000``` 		do this
 - if 	```car.fuel_efficiency.checkEUStandard()``` 				do this
 - if 	```car.calculateHP(car.cylinders, car.engine) > 200``` 			do this
