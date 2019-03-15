@@ -9,18 +9,20 @@ Bio Objects is a library which can be used as a replacement for **Java Beans**. 
 - if 	```?car.producer and car.producer = ['BMW', 'Toyota']``` 		do this (if ```car``` object contains a tag ```producer``` and it is equal to any of the elements of array.)
 
 
-
 Here is simple definition of Bio Object
 ```java
 @BioObj
 public class Car extends BioObject {
+
   @BioTag(type="Integer")
   public static final String YEAR_OF_PRODUCTION = "year_of_production" ;
+  
   @BioTag(type="String")
   public static final String PRODUCER = "producer" ;
+  
   @BioTag(type="Double")
   public static final String FUEL_EFFICIENCY = "fuel_efficiency" ;
 }
 ```
 
-For more information please visit [Wiki](https://github.com/rdavudov/bio-object-logic/wiki)
+For more information please visit [wiki](https://github.com/rdavudov/bio-object-logic/wiki)
