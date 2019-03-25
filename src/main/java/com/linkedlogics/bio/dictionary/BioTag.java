@@ -279,7 +279,7 @@ public class BioTag {
 		this.isCodeGenerated = isCodeGenerated;
 	}
 
-	public Object getInitialtValue(String initial) {
+	public Object getInitialValue(String initial) {
 		if (initial == null) {
 			return null ;
 		}

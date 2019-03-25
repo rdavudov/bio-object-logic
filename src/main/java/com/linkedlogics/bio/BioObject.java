@@ -682,18 +682,18 @@ public class BioObject implements Cloneable {
 								String[] initials = e.getValue().getInitial().split(",") ;
 								Object[] array = (Object[]) Array.newInstance(tag.getJavaClass(), initials.length) ;
 								for (int i = 0; i < initials.length; i++) {
-									array[i] = tag.getInitialtValue(initials[i]) ;
+									array[i] = tag.getInitialValue(initials[i]) ;
 								}
 								put(e.getKey(), array) ;
 							} else if (tag.isList()) {
 								String[] initials = tag.getInitial().split(",") ;
 								List<Object> list = new ArrayList<Object>() ;
 								for (int i = 0; i < initials.length; i++) {
-									list.add(tag.getInitialtValue(initials[i])) ;
+									list.add(tag.getInitialValue(initials[i])) ;
 								}
 								put(e.getKey(), list) ;
 							} else {
-								Object initialValue = tag.getInitialtValue(tag.getInitial()) ;
+								Object initialValue = tag.getInitialValue(tag.getInitial()) ;
 								put(e.getKey(), initialValue) ;
 							}
 						}
