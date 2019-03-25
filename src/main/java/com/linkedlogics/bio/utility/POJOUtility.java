@@ -27,6 +27,10 @@ public class POJOUtility {
 		int code = getCode(pojo.getClass().getName()) ;
 		
 		BioObj obj = BioDictionary.getDictionary().getObjByCode(code) ;
+		if (obj == null) {
+			obj = createObj(pojo.getClass()) ;
+		}
+		
 		if (obj != null) {
 			BioObject object = new BioObject(obj.getCode(), obj.getName()) ;
 			for (Entry<String, BioTag> t : obj.getNameMap().entrySet()) {
@@ -60,6 +64,64 @@ public class POJOUtility {
 		}
 		
 		return null ;
+	}
+	
+	public static BioObj createObj(Class objectClass) {
+		int code = POJOUtility.getCode(objectClass.getName()) ;
+
+		String name = objectClass.getSimpleName().replaceAll("([^_A-Z])([A-Z])", "$1_$2").toLowerCase() ;
+
+		BioObj obj = new BioObj(0, code, objectClass.getSimpleName(), name, 0);
+		obj.setBioClass(objectClass);
+
+		while (objectClass != null) {
+			Field[] fields = objectClass.getDeclaredFields();
+			for (int j = 0; j < fields.length; j++) {
+				try {
+					BioTag tag = createPojoTag(fields[j]);
+					obj.addTag(tag);
+				} catch (Throwable e) {
+					throw new DictionaryException("error in adding tag for " + objectClass.getName(), e) ;
+				}
+			}
+			
+			objectClass = objectClass.getSuperclass();
+		}
+		
+		return obj ;
+	}
+
+	public static BioTag createPojoTag(Field field) throws Throwable {
+		String name = field.getName().replaceAll("([^_A-Z])([A-Z])", "$1_$2").toLowerCase() ;
+		int code = POJOUtility.getCode(name) ;
+
+		String typeStr = field.getType().getName() ;
+		if (field.getType().isArray()) {
+			typeStr = field.getType().getComponentType().getName() ;
+		}
+
+		typeStr = typeStr.substring(0, 1).toUpperCase() + typeStr.substring(1) ;
+		typeStr = typeStr.split("\\.")[typeStr.split("\\.").length - 1] ;
+		if (typeStr.equals("Int")) {
+			typeStr = "Integer" ;
+		} 
+
+		BioType type = BioType.BioObject;
+		try {
+			type = Enum.valueOf(BioType.class, typeStr);
+		} catch (Exception e) {
+
+		}
+		BioTag tag = new BioTag(code, name, type);
+		if (tag.getType() == BioType.BioObject) {
+			tag.setObjName(typeStr);
+		}
+
+		tag.setArray(field.getType().isArray());
+		tag.setEncodable(true);
+		tag.setExportable(true);
+
+		return tag;
 	}
 	
 	/**
