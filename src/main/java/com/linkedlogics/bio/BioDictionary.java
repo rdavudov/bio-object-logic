@@ -165,26 +165,26 @@ public class BioDictionary {
      */
     public void addEnumObj(BioEnumObj enumObj) {
         BioEnumObj enumByCode = enumCodeMap.get(enumObj.getCode());
-        BioEnumObj enumByName = enumTypeMap.get(enumObj.getName());
+        BioEnumObj enumByType = enumTypeMap.get(enumObj.getType());
 
         setEnumObj(enumObj.getBioClass(), enumObj.getDictionary(), enumObj.getCode());
         
-        if (enumByCode == null && enumByName == null) {
-            enumTypeMap.put(enumObj.getName(), enumObj);
+        if (enumByCode == null && enumByType == null) {
+            enumTypeMap.put(enumObj.getType(), enumObj);
             enumCodeMap.put(enumObj.getCode(), enumObj);
-        } else if (enumByCode != enumByName) {
+        } else if (enumByCode != enumByType) {
             if (enumByCode == null) {
-                throw new DictionaryException("already existing name " + enumObj.getName() + " in dictionary with different code " + enumByName.getCode());
-            } else if (enumByName == null) {
+                throw new DictionaryException("already existing name " + enumObj.getType() + " in dictionary with different code " + enumByType.getCode());
+            } else if (enumByType == null) {
                 throw new DictionaryException("already existing code " + enumObj.getCode() + " in dictionary with different name " + enumByCode.getCode());
             } else if (enumByCode.getCode() != enumObj.getCode()) {
-                throw new DictionaryException("already existing name " + enumObj.getName() + " in dictionary with different code " + enumByCode.getCode());
-            } else if (!enumByName.getName().equals(enumObj.getName())) {
-                throw new DictionaryException("already existing code " + enumObj.getCode() + " in dictionary with different name " + enumByName.getCode());
+                throw new DictionaryException("already existing name " + enumObj.getType() + " in dictionary with different code " + enumByCode.getCode());
+            } else if (!enumByType.getType().equals(enumObj.getType())) {
+                throw new DictionaryException("already existing code " + enumObj.getCode() + " in dictionary with different name " + enumByType.getCode());
             }
         } else if (enumByCode.getBioClass().isAssignableFrom(enumObj.getBioClass()) || enumByCode.getBioClass() == enumObj.getBioClass()) {
             enumCodeMap.put(enumObj.getCode(), enumObj);
-            enumTypeMap.put(enumObj.getName(), enumObj);
+            enumTypeMap.put(enumObj.getType(), enumObj);
         }
     }
     /**
@@ -200,8 +200,8 @@ public class BioDictionary {
      * @param code
      * @return
      */
-    public BioEnumObj getBioEnumObj(String name) {
-        return enumTypeMap.get(name);
+    public BioEnumObj getBioEnumObj(String type) {
+        return enumTypeMap.get(type);
     }
    
     /**

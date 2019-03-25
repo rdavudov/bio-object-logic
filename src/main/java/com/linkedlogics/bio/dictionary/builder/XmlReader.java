@@ -202,20 +202,20 @@ public class XmlReader implements DictionaryReader {
     protected BioEnumObj parseEnumObj(Node e, int dictionary) {
     	NamedNodeMap atts = e.getAttributes();
     	int code = 0 ;
-    	String name = null ;
+    	String type = null ;
     	String bioClass = null ;
     	for (int i = 0; i < atts.getLength(); i++) {
     		Node node = atts.item(i);
     		if ("code".contentEquals(node.getNodeName())) {
     			code = Integer.parseInt(node.getNodeValue()) ;
-    		} else if ("name".contentEquals(node.getNodeName())) {
-    			name = node.getNodeValue() ;
+    		} else if ("type".contentEquals(node.getNodeName())) {
+    			type = node.getNodeValue() ;
     		} else if ("class".contentEquals(node.getNodeName())) {
     			bioClass = node.getNodeValue() ;
     		}  
     	}
     	
-    	BioEnumObj enumObj = new BioEnumObj(dictionary, code, name) ;
+    	BioEnumObj enumObj = new BioEnumObj(dictionary, code, type) ;
     	if (bioClass != null) {
     		try {
     			enumObj.setBioClass(Class.forName(bioClass));
@@ -228,8 +228,8 @@ public class XmlReader implements DictionaryReader {
     			enumObj.setCodeGenerated(true);
         	}
     		
-    		if (name == null) {
-    			enumObj.setName(enumObj.getBioClass().getSimpleName());
+    		if (type == null) {
+    			enumObj.setType(enumObj.getBioClass().getSimpleName());
     		}
     	}
     	NodeList nodes = e.getChildNodes() ;

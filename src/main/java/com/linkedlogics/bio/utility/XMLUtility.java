@@ -120,7 +120,7 @@ public class XMLUtility {
 		} else if (value instanceof BioEnum[] && tag.getEnumObj() != null) {
 			BioEnum[] array = (BioEnum[]) value;
 			xml.append(tab).append(TAB).append("<").append(key)
-			.append(" type=\"").append(tag.getEnumObj().getName())
+			.append(" type=\"").append(tag.getEnumObj().getType())
 			.append("\" is-array=\"true\">")
 			.append(StringUtility.join(array))
 			.append("</").append(key).append(">\n");
@@ -147,7 +147,7 @@ public class XMLUtility {
 					return ;
 				} else if (tag.getEnumObj() != null) {
 					xml.append(tab).append(TAB).append("<").append(key)
-					.append(" type=\"").append(tag.getEnumObj().getName()) ;
+					.append(" type=\"").append(tag.getEnumObj().getType()) ;
 				} else {
 					xml.append(tab).append(TAB).append("<").append(key)
 					.append(" type=\"").append(tag.getType()) ;
@@ -205,7 +205,7 @@ public class XMLUtility {
 			}
 			if (bioEnumObj != null) {
 				xml.append(tab).append(TAB).append("<").append(key)
-				.append(" type=\"").append(bioEnumObj.getName()).append("\">")
+				.append(" type=\"").append(bioEnumObj.getType()).append("\">")
 				.append(value).append("</")
 				.append(key).append(">\n");
 			}

@@ -92,7 +92,7 @@ public class DictionaryUtility {
 	 * @param xml
 	 */
 	private static void enumToXml(BioEnumObj enumObj, StringBuilder xml) {
-    	xml.append("\t<enum name=\"").append(enumObj.getName()).append("\"") ;
+    	xml.append("\t<enum type=\"").append(enumObj.getType()).append("\"") ;
 //    	if (!enumObj.isCodeGenerated()) {
 			xml.append(" code=\"").append(enumObj.getCode()).append("\"");
 //		}
@@ -123,7 +123,7 @@ public class DictionaryUtility {
 		if (tag.getObj() != null) {
 			xml.append(" type=\"").append(tag.getObj().getType()).append("\"") ;
 		} else if (tag.getEnumObj() != null) {
-			xml.append(" type=\"").append(tag.getEnumObj().getName()).append("\"") ;
+			xml.append(" type=\"").append(tag.getEnumObj().getType()).append("\"") ;
 		} else {
 			xml.append(" type=\"").append(tag.getType()).append("\"") ;
 		}
