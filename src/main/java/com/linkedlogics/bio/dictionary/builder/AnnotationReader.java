@@ -456,6 +456,11 @@ public class AnnotationReader implements DictionaryReader {
 			
 			while (bioClass != BioEnum.class && bioClass != null) {
 				com.linkedlogics.bio.annotation.BioEnumObj annotation = (com.linkedlogics.bio.annotation.BioEnumObj) bioClass.getAnnotation(com.linkedlogics.bio.annotation.BioEnumObj.class);
+				// there was a case when enum is extended and added new enum values if don't below line
+				// in dictionary enum bio class will most recent one and when try to create an enum array
+				// enums create in super classes will not fit in this array because they will not be instance of 
+				// this recent class. Therefore, each time we update bio class as parent but not BioEnum.class itself
+				enumObj.setBioClass(bioClass);
 				
 				if (annotation != null) {
 					if (!isAnnotatedCode && annotation.code() > 0) {
@@ -467,11 +472,11 @@ public class AnnotationReader implements DictionaryReader {
 						enumObj.setCodeGenerated(true);
 					}
 					
-					if (!isAnnotatedName && annotation.name().length() > 0) {
-						enumObj.setName(annotation.name());
+					if (!isAnnotatedName && annotation.type().length() > 0) {
+						enumObj.setType(annotation.type());
 						isAnnotatedName = true ;
 					} else {
-						enumObj.setName(bioClass.getSimpleName());
+						enumObj.setType(bioClass.getSimpleName());
 					}
 					
 					if (!isAnnotatedDict && annotation.dictionary() > 0) {
@@ -567,7 +572,7 @@ public class AnnotationReader implements DictionaryReader {
 					Field[] fields = bioClass.getDeclaredFields();
 					for (int j = 0; j < fields.length; j++) {
 						try {
-							BioTag tag = createPojoTag(fields[j]);
+							BioTag tag = POJOUtility.createPojoTag(fields[j]);
 							obj.addTag(tag);
 						} catch (Throwable e) {
 							throw new DictionaryException("error in adding tag for " + bioClass.getName(), e) ;
@@ -582,45 +587,6 @@ public class AnnotationReader implements DictionaryReader {
 		} catch (Throwable e) {
 			throw new DictionaryException(e) ;
 		}
-	}
-	
-	/**
-	 * Creating tag from pojo field
-	 * @param field
-	 * @return
-	 * @throws Throwable
-	 */
-	private static BioTag createPojoTag(Field field) throws Throwable {
-		String name = field.getName().replaceAll("([^_A-Z])([A-Z])", "$1_$2").toLowerCase() ;
-		int code = POJOUtility.getCode(name) ;
-		
-		String typeStr = field.getType().getName() ;
-		if (field.getType().isArray()) {
-			typeStr = field.getType().getComponentType().getName() ;
-		}
-		
-		typeStr = typeStr.substring(0, 1).toUpperCase() + typeStr.substring(1) ;
-		typeStr = typeStr.split("\\.")[typeStr.split("\\.").length - 1] ;
-		if (typeStr.equals("Int")) {
-			typeStr = "Integer" ;
-		} 
-		
-		BioType type = BioType.BioObject;
-		try {
-			type = Enum.valueOf(BioType.class, typeStr);
-		} catch (Exception e) {
-
-		}
-		BioTag tag = new BioTag(code, name, type);
-		if (tag.getType() == BioType.BioObject) {
-			tag.setObjName(typeStr);
-		}
-
-		tag.setArray(field.getType().isArray());
-		tag.setEncodable(true);
-		tag.setExportable(true);
-
-		return tag;
 	}
 	
 	/**

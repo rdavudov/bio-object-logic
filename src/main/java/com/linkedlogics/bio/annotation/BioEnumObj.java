@@ -14,7 +14,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 public @interface BioEnumObj {
     int code() default 0;
-    String name() default "" ; 
+    String type() default "" ; 
     int version() default 0 ;
 	int dictionary() default 0 ;
 }

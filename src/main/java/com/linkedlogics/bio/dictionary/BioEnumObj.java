@@ -11,7 +11,7 @@ import com.linkedlogics.bio.BioEnum;
  */
 public class BioEnumObj {
 
-    private String name ;
+    private String type ;
 
     private int code ;
     
@@ -29,12 +29,12 @@ public class BioEnumObj {
     
     private boolean isCodeGenerated ;
 
-    public String getName() {
-        return name;
+    public String getType() {
+        return type;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setType(String type) {
+        this.type = type;
     }
 
     public int getCode() {
@@ -114,10 +114,10 @@ public class BioEnumObj {
     	this(0, code, null) ;
     }
 
-    public BioEnumObj(int dictionary, int code, String name) {
+    public BioEnumObj(int dictionary, int code, String type) {
     	this.dictionary = dictionary ;
     	this.code = code; 
-    	this.name = name;
+    	this.type = type;
     }
 
     public void addValue(BioEnum value) {
@@ -136,6 +136,6 @@ public class BioEnumObj {
     }
     
     public String toString() {
-    	return name ;
+    	return type ;
     }
 }
