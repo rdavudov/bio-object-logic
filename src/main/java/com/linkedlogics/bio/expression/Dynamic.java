@@ -18,7 +18,7 @@ public class Dynamic extends Expression {
 			
 			
 			for (int i = 0; i < params.length; i++) {
-				if (params[i] != null && params[i].getBioName().equals(key)) {
+				if (params[i] != null && params[i].getBioName() != null && params[i].getBioName().equals(key)) {
 					return params[i] ;
 				}
 			}
