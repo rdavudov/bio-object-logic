@@ -14,6 +14,7 @@ import com.linkedlogics.bio.dictionary.BioEnumObj;
 import com.linkedlogics.bio.dictionary.BioFunc;
 import com.linkedlogics.bio.dictionary.BioObj;
 import com.linkedlogics.bio.dictionary.BioTag;
+import com.linkedlogics.bio.expression.GenericFunction;
 
 /**
  * Class for exporting whole dictionary to xml
@@ -172,12 +173,22 @@ public class DictionaryUtility {
      */
     private static void funcToXml(BioFunc func, StringBuilder xml) {
 		xml.append("\t<func name=\"").append(func.getName()).append("\" version=\"").append(func.getVersion()).append("\"") ;
-		if (func.getFuncClass() != null) {
-			xml.append(" class=\"").append(func.getFuncClass().getName()).append("\"") ;
+		if (func.getFunction() instanceof GenericFunction) {
+			GenericFunction generic = (GenericFunction) func.getFunction() ;
+			if (generic.getParameterNames() != null) {
+				xml.append(" parameters=\"").append(Arrays.stream(generic.getParameterNames()).collect(Collectors.joining(","))).append("\"") ;
+			}
+			xml.append(">\n") ;
+			xml.append("\t\t").append(generic.getExpression()).append("\n") ;
+			xml.append("\t</func>\n") ;
+		} else {
+			if (func.getFuncClass() != null) {
+				xml.append(" class=\"").append(func.getFuncClass().getName()).append("\"") ;
+			}
+			if (func.isCached()) {
+				xml.append(" is-cached=\"true\"") ;
+			}
+			xml.append("/>\n") ;
 		}
-		if (func.isCached()) {
-			xml.append(" is-cached=\"true\"") ;
-		}
-		xml.append("/>\n") ;
 	}
 }

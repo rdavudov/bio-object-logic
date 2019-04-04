@@ -24,6 +24,7 @@ import com.linkedlogics.bio.dictionary.BioTag;
 import com.linkedlogics.bio.dictionary.BioType;
 import com.linkedlogics.bio.exception.DictionaryException;
 import com.linkedlogics.bio.exception.ParserException;
+import com.linkedlogics.bio.expression.GenericFunction;
 
 public class XmlReader implements DictionaryReader {
 	private InputStream in ;
@@ -382,7 +383,9 @@ public class XmlReader implements DictionaryReader {
     	NamedNodeMap atts = e.getAttributes();
     	int version = 0 ;
     	String name = null ;
-    	String bioClass = null ;
+    	String funcClass = null ;
+    	String expression = null ;
+    	String parameters = null ;
     	boolean isCached = false ;
     	for (int i = 0; i < atts.getLength(); i++) {
     		Node node = atts.item(i);
@@ -391,16 +394,29 @@ public class XmlReader implements DictionaryReader {
     		} else if ("name".contentEquals(node.getNodeName())) {
     			name = node.getNodeValue() ;
     		} else if ("class".contentEquals(node.getNodeName())) {
-    			bioClass = node.getNodeValue() ;
+    			funcClass = node.getNodeValue() ;
     		} else if ("is-cached".contentEquals(node.getNodeName())) {
     			isCached = Boolean.parseBoolean(node.getNodeValue()) ;
-    		} 
+    		} else if ("parameters".contentEquals(node.getNodeName())) {
+    			parameters = node.getNodeValue() ;
+    		}
     	}
     	
+    	expression = e.getTextContent().trim() ;
+
     	try {
-			return new BioFunc(name, (Class<? extends BioFunction>) Class.forName(bioClass), isCached, dictionary, version) ;
-		} catch (ClassNotFoundException ex) {
-			
+    		if (funcClass != null) {
+    			return new BioFunc(name, (Class<? extends BioFunction>) Class.forName(funcClass), isCached, dictionary, version) ;
+    		} else if (expression != null) {
+    			BioFunc f = new BioFunc(name, GenericFunction.class, isCached, dictionary, version) ;
+    			f.setCached(new GenericFunction(expression, parameters.split(",")));
+    			f.setCached(true);
+    			return f ;
+    		} else {
+    			throw new ParserException("missing class/expression in func definition") ;
+    		}
+    	} catch (ClassNotFoundException ex) {
+
 		}
     	return null ;
     }
