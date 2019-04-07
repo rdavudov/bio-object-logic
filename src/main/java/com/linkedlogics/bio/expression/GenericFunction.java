@@ -32,6 +32,7 @@ public class GenericFunction implements BioFunction {
 		for (int i = 0; i < parameters.length && i < parameterNames.length; i++) {
 			input.put(parameterNames[i], parameters[i]) ;
 		}
+		// also adding caller value as "self"
 		if (value != null) {
 			input.put("self", value) ;
 		}
