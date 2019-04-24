@@ -1,6 +1,7 @@
 package com.linkedlogics.bio.dictionary.builder;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 
@@ -59,7 +60,7 @@ public class XmlReader implements DictionaryReader {
      * @return
      */
     public BioDictionary parse(InputStream in) {
-    	try (in) {
+    	try {
 			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
 			Document doc = dBuilder.parse(in);
@@ -67,6 +68,10 @@ public class XmlReader implements DictionaryReader {
 			return parseDictionary(doc.getFirstChild()) ;
 		} catch (Throwable e) {
 			throw new ParserException(e) ;
+		} finally {
+			try {
+				in.close();
+			} catch (IOException e) { }
 		}
     }
     
