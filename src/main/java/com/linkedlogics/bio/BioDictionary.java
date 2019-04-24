@@ -78,11 +78,11 @@ public class BioDictionary {
 	
 	private static Set<String> supportedDateFormats = new HashSet<String>() ;
     
-    BioDictionary() {
+    public BioDictionary() {
 
     }
     
-    BioDictionary(int code) {
+    public BioDictionary(int code) {
     	this.code = code ;
     }
     

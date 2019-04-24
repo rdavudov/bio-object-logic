@@ -67,7 +67,9 @@ public class BioEnumObj {
 
 	public void setClassName(String className) throws ClassNotFoundException {
 		this.className = className;
-		this.bioClass = Class.forName(className) ;
+		if (className != null) {
+			this.bioClass = Class.forName(className) ;
+		}
 	}
     
     public int getVersion() {

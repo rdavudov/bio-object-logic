@@ -1,5 +1,7 @@
 package com.linkedlogics.bio.utility;
 
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -14,7 +16,10 @@ import com.linkedlogics.bio.dictionary.BioEnumObj;
 import com.linkedlogics.bio.dictionary.BioFunc;
 import com.linkedlogics.bio.dictionary.BioObj;
 import com.linkedlogics.bio.dictionary.BioTag;
+import com.linkedlogics.bio.dictionary.BioType;
 import com.linkedlogics.bio.expression.GenericFunction;
+import com.linkedlogics.bio.stream.BiFastStream;
+import com.linkedlogics.bio.stream.BoFastStream;
 
 /**
  * Class for exporting whole dictionary to xml
@@ -191,4 +196,127 @@ public class DictionaryUtility {
 			xml.append("/>\n") ;
 		}
 	}
+    
+    public static byte[] toBytes(BioDictionary dictionary) throws IOException {
+    	BoFastStream out = new BoFastStream() ;
+    	out.writeShort(dictionary.getCode());
+    	out.writeShort(dictionary.getCodeMap().size());
+    	
+    	for (Entry<Integer, BioObj> obj : dictionary.getCodeMap().entrySet()) {
+    		out.writeShort(obj.getValue().getCode());
+			out.writeAsciiString(obj.getValue().getName());
+			out.writeAsciiString(obj.getValue().getType());
+			out.writeShort(obj.getValue().getVersion());
+			if (obj.getValue().getBioClass() != null) {
+				out.writeAsciiString(obj.getValue().getBioClass().getName());
+			} else {
+				out.writeAsciiString(null);
+			}
+			
+			out.writeShort(obj.getValue().getCodeMap().size());
+			for (Entry<Integer, BioTag> tag : obj.getValue().getCodeMap().entrySet()) {
+				out.writeShort(tag.getValue().getCode()) ;
+				out.writeAsciiString(tag.getValue().getName());
+				out.writeByte(tag.getValue().getType().value()) ;
+				out.writeBoolean(tag.getValue().isMandatory());
+				out.writeBoolean(tag.getValue().isEncodable());
+				out.writeBoolean(tag.getValue().isExportable());
+				out.writeBoolean(tag.getValue().isArray());
+				out.writeBoolean(tag.getValue().isList());
+				if (tag.getValue().getType() == BioType.BioObject || tag.getValue().getType() == BioType.BioEnum) {
+					out.writeAsciiString(tag.getValue().getObjName());
+				}
+				out.writeAsciiString(tag.getValue().getInitial());
+				out.writeAsciiString(tag.getValue().getExpression());
+			}
+		}
+    	
+    	out.writeShort(dictionary.getEnumCodeMap().size());
+    	for (Entry<Integer, BioEnumObj> obj : dictionary.getEnumCodeMap().entrySet()) {
+    		out.writeShort(obj.getValue().getCode());
+			out.writeAsciiString(obj.getValue().getType());
+			out.writeShort(obj.getValue().getVersion());
+			if (obj.getValue().getBioClass() != null) {
+				out.writeAsciiString(obj.getValue().getBioClass().getName());
+			} else {
+				out.writeAsciiString(null);
+			}
+			out.writeShort(obj.getValue().getCodeMap().size());
+			for (Entry<Integer, BioEnum> e : obj.getValue().getCodeMap().entrySet()) {
+				out.writeInt(e.getValue().getOrdinal()) ;
+				out.writeAsciiString(e.getValue().getName());
+			}
+    	}
+    	
+    	
+    	
+    	out.flush() ;
+    	out.close();
+    	return out.getBytes() ;
+    }
+    
+    public static BioDictionary fromBytes(byte[] bytes) {
+		BiFastStream in = new BiFastStream(bytes) ;
+		BioDictionary dictionary = new BioDictionary(in.readShort()) ;
+		int objCount = in.readShort() ;
+		for (int i = 0; i < objCount; i++) {
+			BioObj obj = new BioObj() ;
+			obj.setCode(in.readShort());
+			obj.setName(in.readAsciiString());
+			obj.setType(in.readAsciiString());
+			obj.setVersion(in.readShort());
+			try {
+				obj.setClassName(in.readAsciiString());
+			} catch (ClassNotFoundException e) { }
+			int tagCount = in.readShort() ;
+			for (int j = 0; j < tagCount; j++) {
+				BioTag tag = new BioTag() ;
+				tag.setCode(in.readShort());
+				tag.setName(in.readAsciiString());
+				tag.setType(BioType.getType(in.readByte()));
+				tag.setMandatory(in.readBoolean());
+				tag.setEncodable(in.readBoolean());
+				tag.setExportable(in.readBoolean());
+				tag.setArray(in.readBoolean());
+				tag.setList(in.readBoolean());
+				if (tag.getType() == BioType.BioObject || tag.getType() == BioType.BioEnum) {
+					tag.setObjName(in.readAsciiString());
+				}
+				tag.setInitial(in.readAsciiString());
+				tag.setExpression(in.readAsciiString());
+				
+				obj.addTag(tag);
+			}
+			
+			dictionary.addObj(obj);
+		}
+		
+		int enumCount = in.readShort() ;
+		for (int i = 0; i < enumCount; i++) {
+			BioEnumObj enumObj = new BioEnumObj() ;
+			enumObj.setCode(in.readShort());
+			enumObj.setType(in.readAsciiString());
+			enumObj.setVersion(in.readShort());
+			try {
+				enumObj.setClassName(in.readAsciiString());
+			} catch (ClassNotFoundException e) { }
+			int valueCount = in.readShort() ;
+			for (int j = 0; j < valueCount; j++) {
+				int ordinal = in.readInt() ;
+				String name = in.readAsciiString() ;
+				try {
+					BioEnum value = (BioEnum) enumObj.getBioClass().getConstructor(int.class, String.class).newInstance(ordinal, name) ;
+					enumObj.addValue(value);
+				} catch (Throwable e) { e.printStackTrace();}
+			}
+			
+			dictionary.addEnumObj(enumObj);
+		}
+		
+		in.close();
+//		validate(dictionary);
+		return dictionary ;
+	}
+    
+   
 }

@@ -12,7 +12,7 @@ public enum BioType {
     Double((byte) 8),
     Time((byte) 9),
     JavaObject((byte) 10),
-    Properties((byte) 11),
+    Raw((byte) 11),
     BioObject((byte) 12),
     BioMap((byte) 13),
     BioList((byte) 14),
@@ -59,7 +59,7 @@ public enum BioType {
             case 10:
                 return BioType.JavaObject;
             case 11:
-                return BioType.Properties;
+                return BioType.Raw;
             case 12:
                 return BioType.BioObject;
             case 13:

@@ -234,7 +234,7 @@ public class BioObjectXmlParser {
 			isList = false ;
 		}
 
-    	if (elementType == BioType.BioObject || elementType == BioType.Properties) {
+    	if (elementType == BioType.BioObject) {
     		if (isArray || isList) {
     			if (isList) {
     				return parseList(e, tag != null ? tag.getObj().getBioClass() : null);

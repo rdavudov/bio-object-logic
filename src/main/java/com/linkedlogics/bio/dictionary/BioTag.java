@@ -6,8 +6,7 @@ import com.linkedlogics.bio.BioDictionary;
 import com.linkedlogics.bio.BioEnum;
 import com.linkedlogics.bio.BioObject;
 import com.linkedlogics.bio.BioTime;
-import com.linkedlogics.bio.expression.BioExpressionParser;
-import com.linkedlogics.bio.utility.ConversionUtility;
+import com.linkedlogics.bio.utility.ByteUtility;
 
 /**
  * BioTag is a definition a single Key-Value information inside a BioObject
@@ -100,6 +99,10 @@ public class BioTag {
 	
 	protected boolean isCodeGenerated ;
 	
+	public BioTag() {
+		
+	}
+	
 	public BioTag(int code, String name, BioType type) {
 		this(code, name, type, null) ;
 	}
@@ -124,6 +127,10 @@ public class BioTag {
 
 	public void setType(BioType type) {
 		this.type = type;
+	}
+	
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	public String getName() {
@@ -303,13 +310,16 @@ public class BioTag {
 		case BioEnum:
 			return enumObj.getBioEnum(initial) ;
 		case BioObject:
+			if (obj.getCode() == 0) {
+				return new BioObject() ;
+			}
 			return BioDictionary.getDictionary(obj.getDictionary()).getFactory().newBioObject(obj.getCode()) ;
 		case Long:
 			return Long.parseLong(initial) ;
 		case Time:
 			return BioTime.getTime(initial) ;
-		case Properties:
-			return ConversionUtility.convert(BioType.Properties, initial) ;
+		case Raw:
+			return ByteUtility.bytesToBytes(ByteUtility.hexToBytes(initial)) ;
 		}
 		
 		return null ;

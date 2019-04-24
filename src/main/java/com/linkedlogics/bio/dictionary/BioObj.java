@@ -172,6 +172,10 @@ public class BioObj {
 		return name ;
 	}
 	
+	public void setVersion(int version) {
+		this.version = version;
+	}
+
 	public boolean isCodeGenerated() {
 		return isCodeGenerated;
 	}
@@ -230,6 +234,17 @@ public class BioObj {
 		return bioClass ;
 	}
 	
+	public String getClassName() {
+		return className;
+	}
+
+	public void setClassName(String className) throws ClassNotFoundException {
+		this.className = className;
+		if (className != null) {
+			this.bioClass = Class.forName(className) ;
+		}
+	}
+
 	public boolean isLarge() {
 		return isLarge;
 	}

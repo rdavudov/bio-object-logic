@@ -45,7 +45,7 @@ public class ConversionUtility {
     		return convertedList ;
     	} else if (value instanceof BioObject[]) {
     		return convertArrayToList((BioObject[]) value) ;
-    	} else if (target == BioType.BioObject || target == BioType.Properties) {
+    	} else if (target == BioType.BioObject) {
     		String[] strValues = value.toString().split(",,");
     		ArrayList<BioObject> values = new ArrayList<BioObject>();
     		for (int i = 0; i < strValues.length; i++) {
@@ -94,12 +94,6 @@ public class ConversionUtility {
             } else if (value instanceof Byte[]) {
                 return BioType.Byte;
             } else if (value instanceof BioObject[]) {
-            	if (((BioObject[]) value).length > 0) {
-            		value = ((BioObject[]) value)[0] ;
-            		if (((BioObject) value).getBioCode() == 0 && ((BioObject) value).getBioVersion() == 0) {
-                		return BioType.Properties;
-                	}
-            	}
                 return BioType.BioObject;
             } else if (value instanceof BioEnum[]) {
             	return BioType.BioEnum ;
@@ -132,9 +126,6 @@ public class ConversionUtility {
             } else if (value instanceof Byte) {
                 return BioType.Byte;
             } else if (value instanceof BioObject) {
-            	if (((BioObject) value).getBioCode() == 0 && ((BioObject) value).getBioVersion() == 0) {
-            		return BioType.Properties;
-            	}
                 return BioType.BioObject;
             } else if (value instanceof BioEnum) {
                 return BioType.BioEnum;
@@ -162,9 +153,6 @@ public class ConversionUtility {
             } else if (value instanceof Byte) {
                 return BioType.Byte;
             } else if (value instanceof BioObject) {
-            	if (((BioObject) value).getBioCode() == 0 && ((BioObject) value).getBioVersion() == 0) {
-            		return BioType.Properties;
-            	}
                 return BioType.BioObject;
             } else if (value instanceof BioEnum) {
                 return BioType.BioEnum;
@@ -337,7 +325,6 @@ public class ConversionUtility {
 			}
 			return tArray ;
 		case BioObject:
-		case Properties:
 			if (value instanceof String) {
 				array = value.toString().split(",,") ;
 			}
@@ -513,7 +500,6 @@ public class ConversionUtility {
 			} 
 			return null;	
 		case BioObject:
-		case Properties:
 			if (value instanceof String) {
 				String s = (String) value ;
 				if (s.startsWith("{")) {
