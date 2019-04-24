@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
 
@@ -21,6 +22,7 @@ import com.linkedlogics.bio.exception.ParserException;
 import com.linkedlogics.bio.stream.BiFastStream;
 import com.linkedlogics.bio.stream.BoFastStream;
 import com.linkedlogics.bio.utility.ByteUtility;
+import com.linkedlogics.bio.utility.ConversionUtility;
 import com.linkedlogics.bio.utility.XMLUtility;
 
 /**
@@ -51,6 +53,11 @@ public class BioObjectBinaryParser {
 	 */
 	public static final int FLAG_XML = 0x10 ;
 	
+	/**
+	 * indicates weather dictionary also needs to be serialized
+	 */
+	public static final int FLAG_PORTABLE = 0x20 ;
+	
 	private boolean isCompressed ;
 	private boolean isEncrypted ;
 	private boolean isLossless ;
@@ -58,6 +65,10 @@ public class BioObjectBinaryParser {
 	private BioEncrypter encrypter = BioDictionary.getEncrypter() ;
 	private BioObjectXmlParser xmlParser = new BioObjectXmlParser() ;
 	private boolean isValidated ;
+	
+	private HashMap<Integer, BioTag> codeMap = new HashMap<Integer, BioTag>() ;
+	private HashMap<String, BioTag> nameMap =new HashMap<String, BioTag>() ;
+	private int codeCounter ;
 	
 	/**
 	 * Indicates whether parser will use compression
@@ -103,6 +114,14 @@ public class BioObjectBinaryParser {
 	 */
 	public void setValidated(boolean isValidated) {
 		this.isValidated = isValidated;
+	}
+	
+	public boolean isLossless() {
+		return isLossless;
+	}
+	
+	public void setLossless(boolean isLossless) {
+		this.isLossless = isLossless;
 	}
 	
 	/**
@@ -152,7 +171,20 @@ public class BioObjectBinaryParser {
 		final BoFastStream stream = createOutputStream();
 		int flag = 0 ;
 		// set up necessary flags need while decoding
-		flag = flag | (isLossless ? FLAG_XML : 0) ;
+		if (isLossless) {
+			flag = flag | FLAG_XML ;
+		}
+		
+		if (isEncrypted && encrypter != null) {
+			flag = flag | (isEncrypted ? FLAG_ENCRYPTED : 0) ;
+		}
+		
+		if (isCompressed && compressor != null) {
+			flag = flag | (isCompressed ? FLAG_COMPRESSED : 0) ;
+		}
+		
+		nameMap.clear(); 
+		codeCounter = 0 ;
 		
 		byte[] encoded = null ;
 		if (object instanceof BioObject[]) {
@@ -174,23 +206,20 @@ public class BioObjectBinaryParser {
 		
 		if (isEncrypted && encrypter != null) {
 			encoded = encrypter.encrypt(encoded) ;
-			flag = flag | (isEncrypted ? FLAG_ENCRYPTED : 0) ;
+		}
+		stream.write(flag);
+		
+		stream.writeShort(nameMap.size());
+		for (Entry<String, BioTag> tag : nameMap.entrySet()) {
+			stream.writeAsciiString(tag.getKey());
+			stream.writeShort(tag.getValue().getCode());
 		}
 		
 		if (isCompressed && compressor != null) {
 			byte[] compressed = compressor.compress(encoded) ;
-			// we check if compressed bytes are smaller than original only then we write compressed bytes
-			if (compressed.length + 4 /* original length in 4 bytes */ < encoded.length) {
-				flag = flag | (isCompressed ? FLAG_COMPRESSED : 0) ;
-				stream.write(flag);
-				stream.writeInt(encoded.length); // original length in 4 bytes
-				stream.write(compressed);
-			} else {
-				stream.write(flag);
-				stream.write(encoded);
-			}
+			stream.writeInt(encoded.length); // original length in 4 bytes
+			stream.write(compressed);
 		} else {
-			stream.write(flag);
 			stream.write(encoded);
 		}
 		
@@ -208,9 +237,6 @@ public class BioObjectBinaryParser {
 		if (isLossless) {
 			return XMLUtility.toXml(bio).getBytes() ;
 		} else {
-			if (bio.getBioCode() == 0 && bio.getBioVersion() == 0) {
-				return writeProperties(bio);
-			}
 			return writeBio(bio);
 		}
 	}
@@ -268,6 +294,18 @@ public class BioObjectBinaryParser {
 		boolean isLossless = (int) (flag & FLAG_XML) > 0 ;
 		boolean isEncrypted = (int) (flag & FLAG_ENCRYPTED) > 0 ;
 		
+		codeMap.clear(); 
+		codeCounter = 0 ;
+		
+		int codeCount = stream.readShort() ;
+		for (int i = 0; i < codeCount; i++) {
+			String key = stream.readAsciiString() ;
+			int code = stream.readShort() ;
+			BioTag tag = new BioTag() ;
+			tag.setCode(code);
+			tag.setName(key);
+			codeMap.put(code, tag) ;
+		}
 		try {
 			int originalLength = 0 ;
 			if (isCompressed) {
@@ -324,7 +362,7 @@ public class BioObjectBinaryParser {
 			
 			ArrayList<BioObject> list = new ArrayList<BioObject>(length) ;
 			
-			for (int i = 0; i < list.size(); i++) {
+			for (int i = 0; i < length; i++) {
 				byte[] bioBytes = stream.readBioBytes();
 				BioObject object = decode(bioBytes, isLossless) ;
 				if (object != null) {
@@ -382,49 +420,50 @@ public class BioObjectBinaryParser {
 	 * @return
 	 */
 	private byte[] writeBio(BioObject bio) {
-		if (BioDictionary.getDictionary(bio.getBioDictionary()) == null) {
-			if (!isValidated)
-				return null ;
-			else 
-				throw new ParserException("bio dictionary " + bio.getBioDictionary() + " is not found");
-		}
-		final BioObj object = BioDictionary.getDictionary(bio.getBioDictionary()).getObjByCode(bio.getBioCode());
-		if (object == null) {
-			if (!isValidated)
-				return null ;
-			else 
-				throw new ParserException("bio object " + bio.getBioCode() + "v" + bio.getBioVersion() + " is not found");
-		}
-		final BoFastStream stream = createOutputStream();
-		if (object.isLarge()) {
-			stream.setLengthAsInt(true);
-		}
-		stream.write(object.getDictionary());
-		stream.write(ByteUtility.shortToBytes((short) object.getCode()));
-		stream.write(ByteUtility.shortToBytes((short) object.getVersion()));
-		
-		for (Entry<String, Object> e : bio.entries()) {
-			writeValue(object, stream, e.getKey(), e.getValue());
-		}
-		
-		stream.close();
+		if (bio.getBioCode() == 0) {
+			final BoFastStream stream = createOutputStream();
+			stream.write(bio.getBioDictionary());
+			stream.write(ByteUtility.shortToBytes((short) bio.getBioCode()));
+			stream.write(ByteUtility.shortToBytes((short) bio.getBioVersion()));
+			
+			for (Entry<String, Object> e : bio.entries()) {
+				writeValue(stream, e.getKey(), e.getValue());
+			}
+			
+			stream.close();
 
-		return stream.getBytes();
-	}
-	
-	/**
-	 * Encodes bio object without checking bio dictionary assuming that it has no bio code
-	 * @param properties
-	 * @return
-	 */
-	private byte[] writeProperties(BioObject properties) {
-		final BoFastStream stream = createOutputStream();
-		stream.write(properties.getBioDictionary());
-		stream.write(ByteUtility.shortToBytes((short) properties.getBioCode()));
-		stream.write(ByteUtility.shortToBytes((short) properties.getBioVersion()));
-		stream.writeProperties(null, properties);
-		stream.close();
-		return stream.getBytes();
+			return stream.getBytes();
+			
+		} else {
+			if (BioDictionary.getDictionary(bio.getBioDictionary()) == null) {
+				if (!isValidated)
+					return null ;
+				else 
+					throw new ParserException("bio dictionary " + bio.getBioDictionary() + " is not found");
+			}
+			final BioObj object = BioDictionary.getDictionary(bio.getBioDictionary()).getObjByCode(bio.getBioCode());
+			if (object == null) {
+				if (!isValidated)
+					return null ;
+				else 
+					throw new ParserException("bio object " + bio.getBioCode() + "v" + bio.getBioVersion() + " is not found");
+			}
+			final BoFastStream stream = createOutputStream();
+			if (object.isLarge()) {
+				stream.setLengthAsInt(true);
+			}
+			stream.write(object.getDictionary());
+			stream.write(ByteUtility.shortToBytes((short) object.getCode()));
+			stream.write(ByteUtility.shortToBytes((short) object.getVersion()));
+			
+			for (Entry<String, Object> e : bio.entries()) {
+				writeValue(object, stream, e.getKey(), e.getValue());
+			}
+			
+			stream.close();
+
+			return stream.getBytes();
+		}
 	}
 	
 	/**
@@ -648,9 +687,6 @@ public class BioObjectBinaryParser {
 					case JavaObject:
 						stream.writeObject(tag, value);
 						break;
-					case Properties:
-						stream.writeProperties(object, tag, (BioObject) value);
-						break;
 					case BioObject:
 						byte[] bioBytes = writeBio((BioObject) value);
 						if (bioBytes != null) {
@@ -665,6 +701,224 @@ public class BioObjectBinaryParser {
 		}
 	}
 	
+	private void writeValue(final BoFastStream stream, String key, Object value) {
+		try {
+			BioTag tag = null ;
+			// We find tag information
+			if (nameMap.containsKey(key)) {
+				tag = nameMap.get(key) ;
+			} else {
+				tag = new BioTag() ;
+				tag.setCode(++codeCounter);
+				tag.setName(key);
+				nameMap.put(key, tag) ;
+			}
+
+			boolean isArray = value instanceof Object[] ;
+			boolean isList = value instanceof List ;
+			BioType type = ConversionUtility.getType(value) ;
+
+			// encode like array (including array length) if tag is 
+			if (isArray) {
+				// writing tag info
+				stream.write(type.value());
+				// writing array indicator
+				stream.write((byte) 1);
+				switch (type) {
+				case Long:
+					stream.writeLongArray(tag, (Long[]) value);
+					break;
+				case Time:
+					stream.writeLongArray(tag, (Long[]) value);
+					break;
+				case BioEnum:
+					BioEnum[] bioEnumArray = (BioEnum[]) value;
+					Integer[] intArray = new Integer[bioEnumArray.length];
+					for (int i = 0; i < bioEnumArray.length; i++)
+						intArray[i] = bioEnumArray[i].getOrdinal();
+					stream.writeIntArray(tag, intArray);
+					break;
+				case Integer:
+					stream.writeIntArray(tag, (Integer[]) value);
+					break;
+				case Byte:
+					stream.writeByteArray(tag, (Byte[]) value);
+					break;
+				case Short:
+					stream.writeShortArray(tag, (Short[]) value);
+					break;
+				case Float:
+					stream.writeFloatArray(tag, (Float[]) value);
+					break;
+				case Boolean:
+					stream.writeBooleanArray(tag, (Boolean[]) value);
+					break;
+				case Double:
+					stream.writeDoubleArray(tag, (Double[]) value);
+					break;
+				case String:
+					stream.writeAsciiStringArray(tag, (String[]) value);
+					break;
+				case UtfString:
+					stream.writeUtfStringArray(tag, (String[]) value);
+					break;
+				case JavaObject:
+					stream.writeObjectArray(tag, (Object[]) value);
+					break;
+				case BioObject:
+					BioObject[] bioArray = (BioObject[]) value;
+					stream.writeTag(tag);
+					stream.writeLength(bioArray.length);
+					for (int i = 0; i < bioArray.length; i++) {
+						byte[] bioBytes = writeBio(bioArray[i]);
+						if (bioBytes != null) {
+							stream.writeBioBytes(bioBytes);
+						}
+					}
+					break;
+				default:
+					throw new ParserException(tag.getType() + " arrays are not supported");
+				}
+			} else if (isList) {
+				// writing tag info
+				stream.write(type.value());
+				// writing list indicator
+				stream.write((byte) 2);
+				List<Object> list = (List) value;
+				switch (type) {
+				case Long:
+					Long[] longArray = new Long[list.size()];
+					list.toArray(longArray);
+					stream.writeLongArray(tag, longArray);
+					break;
+				case Time:
+					longArray = new Long[list.size()];
+					list.toArray(longArray);
+					stream.writeLongArray(tag, longArray);
+					break;
+				case BioEnum:
+					List<BioEnum> bioEnumArray = (List<BioEnum>) value;
+					Integer[] intCodeArray = new Integer[list.size()];
+					for (int i = 0; i < bioEnumArray.size(); i++)
+						intCodeArray[i] = bioEnumArray.get(i).getOrdinal();
+					stream.writeIntArray(tag, intCodeArray);
+					break;
+				case Integer:
+					Integer[] intArray = new Integer[list.size()];
+					list.toArray(intArray);
+					stream.writeIntArray(tag, intArray);
+					break;
+				case Byte:
+					Byte[] byteArray = new Byte[list.size()];
+					list.toArray(byteArray);
+					stream.writeByteArray(tag, byteArray);
+					break;
+				case Short:
+					Short[] shortArray = new Short[list.size()];
+					list.toArray(shortArray);
+					stream.writeShortArray(tag, shortArray);
+					break;
+				case Float:
+					Float[] floatArray = new Float[list.size()];
+					list.toArray(floatArray);
+					stream.writeFloatArray(tag, floatArray);
+					break;
+				case Boolean:
+					Boolean[] booleanArray = new Boolean[list.size()];
+					list.toArray(booleanArray);
+					stream.writeBooleanArray(tag, booleanArray);
+					break;
+				case Double:
+					Double[] doubleArray = new Double[list.size()];
+					list.toArray(doubleArray);
+					stream.writeDoubleArray(tag, doubleArray);
+					break;
+				case String:
+					String[] stringArray = new String[list.size()];
+					list.toArray(stringArray);
+					stream.writeAsciiStringArray(tag, stringArray);
+					break;
+				case UtfString:
+					stringArray = new String[list.size()];
+					list.toArray(stringArray);
+					stream.writeUtfStringArray(tag, stringArray);
+					break;
+				case JavaObject:
+					Object[] objectArray = new Object[list.size()];
+					list.toArray(objectArray);
+					stream.writeObjectArray(tag, objectArray);
+					break;
+				case BioObject:
+					BioObject[] bioArray = new BioObject[list.size()];
+					list.toArray(bioArray);
+					stream.writeTag(tag);
+					stream.writeLength(bioArray.length);
+					for (int i = 0; i < bioArray.length; i++) {
+						byte[] bioBytes = writeBio(bioArray[i]);
+						if (bioBytes != null) {
+							stream.writeBioBytes(bioBytes);
+						}
+					}
+					break;
+				default:
+					throw new ParserException(tag.getType() + " lists are not supported");
+				}
+			} else {
+				// write tag info
+				stream.write(type.value());
+				// write single object indicator
+				stream.write((byte) 0);
+				switch (type) {
+				case Long:
+					stream.writeLong(tag, ((Number) value).longValue());
+					break;
+				case Time:
+					stream.writeLong(tag, ((Number) value).longValue());
+					break;
+				case Byte:
+					stream.writeByte(tag, ((Number) value).byteValue());
+					break;
+				case Short:
+					stream.writeShort(tag, ((Number) value).shortValue());
+					break;
+				case Float:
+					stream.writeFloat(tag, ((Number) value).floatValue());
+					break;
+				case Integer:
+					stream.writeInt(tag, ((Number) value).intValue());
+					break;
+				case BioEnum:
+					BioEnum bioEnum = (BioEnum) value;
+					stream.writeInt(tag, bioEnum.getOrdinal());
+					break;
+				case Double:
+					stream.writeDouble(tag, (Double) value);
+					break;
+				case String:
+					stream.writeAsciiString(tag, (String) value);
+					break;
+				case UtfString:
+					stream.writeUtfString(tag, (String) value);
+					break;
+				case Boolean:
+					stream.writeBoolean(tag, (Boolean) value);
+					break;
+				case JavaObject:
+					stream.writeObject(tag, value);
+					break;
+				case BioObject:
+					byte[] bioBytes = writeBio((BioObject) value);
+					if (bioBytes != null) {
+						stream.writeBioBytes(tag, bioBytes);
+					}
+					break;
+				}
+			}
+		} catch (Exception e) {
+			throw new ParserException(e);
+		}
+	}
+	
 	/**
 	 * Decodes bio object
 	 * @param bytes
@@ -676,65 +930,91 @@ public class BioObjectBinaryParser {
 			int dictionary = stream.readByte() ;
 			int objCode = stream.readObjCode();
 			int objVersion = stream.readObjVersion();
+			
 			if (objCode == 0 && objVersion == 0) {
-				return stream.readProperties(null);
-			}
-			if (BioDictionary.getDictionary(dictionary) == null) {
-				if (!isValidated)
-					return null ;
-				else 
-					throw new ParserException("bio dictionary " + dictionary + " is not found");
-			}
-			BioObj obj = BioDictionary.getDictionary(dictionary).getObjByCode(objCode);
-			if (obj == null) {
-				if (!isValidated)
-					return null ;
-				else 
-					throw new ParserException("bio obj with " + objCode + " is not found");
-			}
-			if (obj.isLarge()) {
-				stream.setLengthAsInt(true);
-			}
-			// we create an instance of bio object
-			BioObject bio = null;
-			if (obj.getBioClass() != null) {
-				// why empty() because otherwise if bio obj has initial fields they will auto generated
-				// but actually during serialization they were not present
-				// so here we empty object and only add serialized tag values
-				bio = (BioObject) obj.getBioClass().getConstructor().newInstance().empty();
-				bio.setBioCode(objCode);
-				bio.setBioName(obj.getName());
-				bio.setBioVersion(objVersion);
-			} else {
-				bio = new BioObject(objCode, null, objVersion);
-			}
-			// we parse tags one by one
-			BioTag tag = null;
-			while (stream.available() > 0) {
-				byte tagInfo = stream.readByte();
-				BioType tagType = BioType.getType(tagInfo);
-				byte typeInfo = stream.readByte() ;
-				boolean isArray = typeInfo == 1 ;
-				boolean isList = typeInfo == 2 ;
-				int tagCode = stream.readTagCode();
-				tag = obj.getTag(tagCode);
-				// if couldn't find tag, may be it is a super tag ???
-				if (tag == null) {
-					tag = BioDictionary.getDictionary(dictionary).getSuperTag(tagCode);
-				}
-
-				if (tag != null) {
-					Object value = readValue(obj, tagType, isArray, isList, tag, stream);
+				BioObject bio = new BioObject();
+				
+				BioTag tag = null;
+				while (stream.available() > 0) {
+					byte tagInfo = stream.readByte();
+					BioType tagType = BioType.getType(tagInfo);
+					byte typeInfo = stream.readByte() ;
+					boolean isArray = typeInfo == 1 ;
+					boolean isList = typeInfo == 2 ;
+					int tagCode = stream.readTagCode();
+					tag = codeMap.get(tagCode) ;
+					Object value = readValue(tagType, isArray, isList, tag, stream);
 					if (value != null) {
 						bio.put(tag.getName(), value);
 					}
-				} else {
-					// there is something encoded but we don't have it in dictionary
-					// so we just ignore it
-					readValue(obj, tagType, isArray, isList, null, stream);
 				}
+				
+				return bio ;
+			} else {
+				if (BioDictionary.getDictionary(dictionary) == null) {
+					if (!isValidated)
+						return null ;
+					else 
+						throw new ParserException("bio dictionary " + dictionary + " is not found");
+				}
+				BioObj obj = BioDictionary.getDictionary(dictionary).getObjByCode(objCode);
+				if (obj == null) {
+					if (!isValidated)
+						return null ;
+					else 
+						throw new ParserException("bio obj with " + objCode + " is not found");
+				}
+				if (obj.isLarge()) {
+					stream.setLengthAsInt(true);
+				}
+				// we create an instance of bio object
+				BioObject bio = null;
+				if (obj.getBioClass() != null) {
+					// why empty() because otherwise if bio obj has initial fields they will auto generated
+					// but actually during serialization they were not present
+					// so here we empty object and only add serialized tag values
+					bio = (BioObject) obj.getBioClass().getConstructor().newInstance().empty();
+					bio.setBioCode(objCode);
+					bio.setBioName(obj.getName());
+					bio.setBioVersion(objVersion);
+				} else {
+					bio = new BioObject(objCode, null, objVersion);
+				}
+				// we parse tags one by one
+				BioTag tag = null;
+				while (stream.available() > 0) {
+					byte tagInfo = stream.readByte();
+					BioType tagType = BioType.getType(tagInfo);
+					byte typeInfo = stream.readByte() ;
+					boolean isArray = typeInfo == 1 ;
+					boolean isList = typeInfo == 2 ;
+					int tagCode = stream.readTagCode();
+					tag = obj.getTag(tagCode);
+					// if couldn't find tag, may be it is a super tag ???
+					if (tag == null) {
+						tag = BioDictionary.getDictionary(dictionary).getSuperTag(tagCode);
+					}
+
+					if (tag != null) {
+						Object value = readValue(tagType, isArray, isList, tag, stream);
+						if (value != null) {
+							bio.put(tag.getName(), value);
+						}
+					} else {
+						// there is something encoded but we don't have it in dictionary
+						// so we just ignore it
+						readValue(tagType, isArray, isList, null, stream);
+					}
+				}
+				return bio;
 			}
-			return bio;
+			
+			
+			
+			
+			
+			
+			
 		} catch (Throwable e) {
 			throw new ParserException(e);
 		} finally {
@@ -752,7 +1032,7 @@ public class BioObjectBinaryParser {
 	 * @param stream
 	 * @return
 	 */
-	private Object readValue(BioObj obj, BioType type, boolean isArray, boolean isList, BioTag tag, BiFastStream stream) {
+	private Object readValue(BioType type, boolean isArray, boolean isList, BioTag tag, BiFastStream stream) {
 		if (isArray) {
 			switch (type) {
 			case Long:
@@ -789,7 +1069,6 @@ public class BioObjectBinaryParser {
 			case Time:
 				return stream.readLongArray();
 			case BioObject:
-			case Properties:
 				int size = stream.readLength();
 				
 				ArrayList<BioObject> list = new ArrayList<BioObject>() ;
@@ -846,7 +1125,6 @@ public class BioObjectBinaryParser {
 			case Time:
 				return new ArrayList(Arrays.asList(stream.readLongArray()));
 			case BioObject:
-			case Properties:
 				int size = stream.readLength();
 				ArrayList<BioObject> list = new ArrayList<BioObject>() ;
 				for (int i = 0; i < size; i++) {
@@ -884,8 +1162,6 @@ public class BioObjectBinaryParser {
 				return stream.readUtfString();
 			case JavaObject:
 				return stream.readObject();
-			case Properties:
-				return stream.readProperties(obj);
 			case BioObject:
 				return readBio(stream.readBioBytes());
 			}
