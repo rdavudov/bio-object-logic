@@ -137,6 +137,9 @@ public class BiFastStream extends InputStream {
 	
 	public String readAsciiString() {
 		int length = readLength() ;
+		if (length == 0) {
+			return null ;
+		}
 		String value = ByteUtility.bytesToAsciiString(buffer, pos, length) ;
 		pos+=length ;
 		return value ;
@@ -144,6 +147,9 @@ public class BiFastStream extends InputStream {
 	
 	public String readUtfString() {
 		int length = readLength() ;
+		if (length == 0) {
+			return null ;
+		}
 		String value = ByteUtility.bytesToUtfString(buffer, pos, length) ;
 		pos+=length ;
 		return value ;

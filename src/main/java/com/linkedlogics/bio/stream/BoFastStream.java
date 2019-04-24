@@ -299,6 +299,10 @@ public class BoFastStream extends OutputStream {
 	}
 	
 	public void writeAsciiString(String value) {
+		if (value == null) {
+			writeLength(0) ;
+			return ;
+		}
 		writeLength(value.length()) ;
 		checkBuffer(value.length()) ;
 		ByteUtility.asciiStringToBytes(value, buffer, pos) ;
@@ -323,6 +327,10 @@ public class BoFastStream extends OutputStream {
 	}
 	
 	public void writeUtfString(String value) {
+		if (value == null) {
+			writeLength(0) ;
+			return ;
+		}
 		byte[] bytes = ByteUtility.utfStringToBytes(value) ;
 		writeLength(bytes.length) ;
 		write(bytes) ;
