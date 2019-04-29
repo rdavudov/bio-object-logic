@@ -1,4 +1,7 @@
 /**
+ * 
+ */
+/**
  * @author rajab
  *
  */
@@ -11,7 +14,7 @@ module com.linkedlogics.bio {
 	exports com.linkedlogics.bio.dictionary to com.linkedlogics.bio.sql ;
 	exports com.linkedlogics.bio.expression to com.linkedlogics.bio.sql ;
 	exports com.linkedlogics.bio.dictionary.builder to com.linkedlogics.bio.sql ;
-	exports com.linkedlogics.bio.stream to com.linkedlogics.processor, com.linkedlogics ;
+	exports com.linkedlogics.bio.stream to com.linkedlogics ;
 	
 	requires transitive java.xml;
 	requires transitive org.json;

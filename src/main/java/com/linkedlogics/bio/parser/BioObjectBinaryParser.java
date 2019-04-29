@@ -53,11 +53,6 @@ public class BioObjectBinaryParser {
 	 */
 	public static final int FLAG_XML = 0x10 ;
 	
-	/**
-	 * indicates weather dictionary also needs to be serialized
-	 */
-	public static final int FLAG_PORTABLE = 0x20 ;
-	
 	private boolean isCompressed ;
 	private boolean isEncrypted ;
 	private boolean isLossless ;
@@ -1041,7 +1036,7 @@ public class BioObjectBinaryParser {
 				return stream.readIntArray();
 			case BioEnum:
 				BioEnumObj bioEnumObj = tag.getEnumObj();
-				Integer intArray[] = stream.readIntArray();
+				Integer[] intArray = stream.readIntArray();
 				BioEnum[] bioEnumArray = null;
 				if (tag != null && tag.getEnumObj() != null && tag.getEnumObj().getBioClass() != null) {
 					bioEnumArray = (BioEnum[]) Array.newInstance(tag.getEnumObj().getBioClass(), intArray.length);
@@ -1049,7 +1044,7 @@ public class BioObjectBinaryParser {
 						bioEnumArray[i] = bioEnumObj.getBioEnum(intArray[i]);
 					return bioEnumArray;
 				}
-				return null;
+				return intArray;
 			case Double:
 				return stream.readDoubleArray();
 			case Byte:
@@ -1097,7 +1092,7 @@ public class BioObjectBinaryParser {
 				return new ArrayList(Arrays.asList(stream.readIntArray()));
 			case BioEnum:
 				BioEnumObj bioEnumObj = tag.getEnumObj();
-				Integer intArray[] = stream.readIntArray();
+				Integer[] intArray = stream.readIntArray();
 				BioEnum[] bioEnumArray = null;
 				if (tag != null && tag.getEnumObj() != null && tag.getEnumObj().getBioClass() != null) {
 					bioEnumArray = (BioEnum[]) Array.newInstance(tag.getEnumObj().getBioClass(), intArray.length);
@@ -1105,7 +1100,7 @@ public class BioObjectBinaryParser {
 						bioEnumArray[i] = bioEnumObj.getBioEnum(intArray[i]);
 					return new ArrayList(Arrays.asList(bioEnumArray));
 				}
-				return null;
+				return intArray;
 			case Double:
 				return new ArrayList(Arrays.asList(stream.readDoubleArray()));
 			case Byte:
@@ -1143,7 +1138,11 @@ public class BioObjectBinaryParser {
 				return stream.readInt();
 			case BioEnum:
 				BioEnumObj bioEnumObj = tag.getEnumObj();
-				return bioEnumObj.getBioEnum(stream.readInt());
+				int ordinal = stream.readInt() ;
+				if (tag != null && tag.getEnumObj() != null && tag.getEnumObj().getBioClass() != null) {
+					return bioEnumObj.getBioEnum(ordinal);
+				}
+				return ordinal ;
 			case Double:
 				return stream.readDouble();
 			case Time:

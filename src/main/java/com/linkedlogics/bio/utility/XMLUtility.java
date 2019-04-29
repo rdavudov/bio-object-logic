@@ -196,7 +196,7 @@ public class XMLUtility {
 			.append(" type=\"").append(type).append("\">")
 			.append(BioTime.format((Long) value, BioTime.DATETIME_FORMAT))
 			.append("</").append(key).append(">\n");
-		} else if (type == BioType.BioEnum && value instanceof BioEnum) {
+		} else if (type == BioType.BioEnum || value instanceof BioEnum) {
 			BioEnum bioEnum = (BioEnum) value;
 			String enumObjName = value.getClass().getSimpleName();
 			BioEnumObj bioEnumObj = BioDictionary.getDictionary(bioEnum.getBioDictionary()).getBioEnumObj(enumObjName);
@@ -206,6 +206,11 @@ public class XMLUtility {
 			if (bioEnumObj != null) {
 				xml.append(tab).append(TAB).append("<").append(key)
 				.append(" type=\"").append(bioEnumObj.getType()).append("\">")
+				.append(value).append("</")
+				.append(key).append(">\n");
+			} else {
+				xml.append(tab).append(TAB).append("<").append(key)
+				.append(" type=\"BioEnum\">")
 				.append(value).append("</")
 				.append(key).append(">\n");
 			}
