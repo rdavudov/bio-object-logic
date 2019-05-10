@@ -30,7 +30,7 @@ import com.linkedlogics.bio.utility.XMLUtility;
  * @author rdavudov
  *
  */
-public class BioObject implements Cloneable {
+public class BioObject implements Cloneable, BioObjectHolder {
 	/**
 	 * Bio Dictionary Id 
 	 */
@@ -970,6 +970,11 @@ public class BioObject implements Cloneable {
 		return toXml() ;
 	}
 	
+	@Override
+	public BioObject getBioObject() {
+		return this ;
+	}
+
 	/**
 	 * Exports bio object to json
 	 * @return
