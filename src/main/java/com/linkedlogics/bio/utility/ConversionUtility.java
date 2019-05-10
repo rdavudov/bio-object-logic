@@ -540,6 +540,14 @@ public class ConversionUtility {
     	return list ;
     }
     
+    public static String convertAsString(List list) {
+    	StringBuilder s = new StringBuilder() ;
+    	for (int i = 0; i < list.size(); i++) {
+			s.append(",").append(list.get(i)) ;
+		}
+    	return s.toString().substring(1) ;
+    }
+    
     public static void main(String[] args) {
     	Object source = new Integer[] {1, 1, 0} ;
     	Object result = ConversionUtility.convertAsArray(BioType.Boolean, source) ;
