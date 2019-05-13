@@ -1,3 +1,5 @@
+import com.linkedlogics.bio.compression.BioLZ4Compressor;
+
 /**
  * 
  */
@@ -15,6 +17,9 @@ module com.linkedlogics.bio {
 	exports com.linkedlogics.bio.expression to com.linkedlogics.bio.sql ;
 	exports com.linkedlogics.bio.dictionary.builder to com.linkedlogics.bio.sql ;
 	exports com.linkedlogics.bio.stream to com.linkedlogics ;
+	
+	provides com.linkedlogics.bio.BioCompressor with com.linkedlogics.bio.compression.BioLZ4Compressor;
+	provides com.linkedlogics.bio.BioEncrypter with com.linkedlogics.bio.encryption.AESEncrypter;
 	
 	requires transitive java.xml;
 	requires transitive org.json;
