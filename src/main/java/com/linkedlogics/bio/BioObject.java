@@ -168,28 +168,30 @@ public class BioObject implements Cloneable, BioObjectHolder {
 	 * @param key
 	 * @param value
 	 */
-	protected void validateKeyAndObject(String key, Object value) {
+	protected boolean validateKeyAndObject(String key, Object value) {
 		if (isImmutable()) {
 			throw new ImmutableException();
 		}
 		
-		if (key == null) {
-			throw new RuntimeException("key can't be null");
-		} else if (value == null) {
-			throw new RuntimeException("value can't be null");
+		// commented because causing lots of trouble
+		if (key == null || value == null) {
+			return false ;
 		}
 		
 		if (value != null && value.getClass().isArray() && !(value instanceof Object[])) {
 			throw new RuntimeException(key + "'s value can't be array of primitive type");
 		}
+		
+		return true ;
 	}
 	
 	/**
 	 * Puts key and object
 	 */
 	public BioObject put(String key, Object object) {
-		validateKeyAndObject(key, object) ;
-		map.put(key, object);
+		if (validateKeyAndObject(key, object)) {
+			map.put(key, object);
+		}
 		return this ;
 	}
 	
@@ -205,8 +207,9 @@ public class BioObject implements Cloneable, BioObjectHolder {
 	 * Puts key and object if key is not present
 	 */
 	public BioObject putIfAbsent(String key, Object object) {
-		validateKeyAndObject(key, object) ;
-		map.putIfAbsent(key, object);
+		if (validateKeyAndObject(key, object)) {
+			map.putIfAbsent(key, object);
+		}
 		return this ;
 	}
 	
@@ -223,16 +226,17 @@ public class BioObject implements Cloneable, BioObjectHolder {
 	 * If there is already a list then only appends
 	 */
 	public BioObject putOrAppend(String key, Object object) {
-		validateKeyAndObject(key, object) ;
-		if (!has(key)) {
-			map.put(key, object);
-		} else if (get(key) instanceof List) {
-			((List) get(key)).add(object) ;
-		} else {
-			List<Object> list = new ArrayList<Object>() ;
-			list.add(get(key)) ;
-			list.add(object) ;
-			map.put(key, list);
+		if (validateKeyAndObject(key, object)) {
+			if (!has(key)) {
+				map.put(key, object);
+			} else if (get(key) instanceof List) {
+				((List) get(key)).add(object) ;
+			} else {
+				List<Object> list = new ArrayList<Object>() ;
+				list.add(get(key)) ;
+				list.add(object) ;
+				map.put(key, list);
+			}
 		}
 		return this ;
 	}
@@ -309,7 +313,7 @@ public class BioObject implements Cloneable, BioObjectHolder {
 	 * Merges values inside bio object recursively
 	 * @param object
 	 */
-	public void merge(BioObject object) {
+	public BioObject merge(BioObject object) {
 		for(Entry<String, Object> e : object.entries()) {
 			if (e.getValue() instanceof BioObject && has(e.getKey()) && get(e.getKey()) instanceof BioObject) {
 				((BioObject) get(e.getKey())).merge((BioObject) e.getValue());
@@ -317,6 +321,8 @@ public class BioObject implements Cloneable, BioObjectHolder {
 				set(e.getKey(), e.getValue()) ;
 			}
 		}
+		
+		return this ;
 	}
 	
 	/* Getter methods with castings */
@@ -979,8 +985,8 @@ public class BioObject implements Cloneable, BioObjectHolder {
 	 * Exports bio object to json
 	 * @return
 	 */
-	public JSONObject toJson() {
-		return JSONUtility.toJson(this) ;
+	public String toJson() {
+		return JSONUtility.toJson(this).toString(4) ;
 	}
 	/**
 	 * Exports bio object to xml
