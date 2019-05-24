@@ -12,6 +12,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.json.JSONObject;
 
+import com.linkedlogics.bio.dictionary.BioAlias;
 import com.linkedlogics.bio.dictionary.BioObj;
 import com.linkedlogics.bio.dictionary.BioTag;
 import com.linkedlogics.bio.dictionary.BioType;
@@ -203,6 +204,11 @@ public class BioObject implements Cloneable, BioObjectHolder {
 		return this ;
 	}
 	
+	public BioObject setAlias(String aliasKey, String key) {
+		put(aliasKey, new BioAlias(key)) ;
+		return this ;
+	}
+	
 	/**
 	 * Puts key and object if key is not present
 	 */
@@ -328,7 +334,11 @@ public class BioObject implements Cloneable, BioObjectHolder {
 	/* Getter methods with castings */
 	
 	public Object get(String key) {
-		return map.get(key) ;
+		Object object = map.get(key) ;
+		if (object instanceof BioAlias) {
+			return BioExpression.parse(((BioAlias) object).getKey()).getValue(this) ;
+		}
+		return object ;
 	}
 	
 	public Object getOrDefault(String key, Object defaultValue) {
@@ -352,7 +362,14 @@ public class BioObject implements Cloneable, BioObjectHolder {
 	}
 
 	public BioObject getBioObject(String key, BioObject defaultValue) {
-		return (BioObject) getOrDefault(key, defaultValue);
+		BioObject value = (BioObject) get(key) ;
+		// if we only return defaultValue and any value is put, still we will not have defaultValue inside bio object
+		// therefore, we also need to put default value into bio object
+		if (value == null) {
+			set(key, defaultValue) ;
+			return defaultValue ;
+		}
+		return value ;
 	}
 	
 	public Byte getByte(String key) {
@@ -980,7 +997,7 @@ public class BioObject implements Cloneable, BioObjectHolder {
 	public BioObject getBioObject() {
 		return this ;
 	}
-
+	
 	/**
 	 * Exports bio object to json
 	 * @return

@@ -20,6 +20,7 @@ import com.linkedlogics.bio.BioDictionary;
 import com.linkedlogics.bio.BioEnum;
 import com.linkedlogics.bio.BioExpression;
 import com.linkedlogics.bio.BioObject;
+import com.linkedlogics.bio.dictionary.BioAlias;
 import com.linkedlogics.bio.dictionary.BioEnumObj;
 import com.linkedlogics.bio.dictionary.BioObj;
 import com.linkedlogics.bio.dictionary.BioTag;
@@ -90,7 +91,7 @@ public class BioObjectXmlParser {
      * @param bioClass
      * @return
      */
-    protected BioObject parseBioObject(Node e, Class<? extends BioObject> bioClass) {
+    public BioObject parseBioObject(Node e, Class<? extends BioObject> bioClass) {
         NamedNodeMap atts = e.getAttributes();
 
         int dictionary = 0 ;
@@ -277,6 +278,8 @@ public class BioObjectXmlParser {
     		return null ;
     	} else if (elementType == BioType.Dynamic) {
     		return BioExpression.parse(e.getTextContent().trim()) ;
+    	} else if (elementType == BioType.Alias) {
+    		return new BioAlias(e.getTextContent().trim()) ;
     	} else if (elementType == BioType.Formatted) {
     		return BioExpression.parseFormatted(e.getTextContent().trim()) ;
     	} else if (elementType == BioType.Conditional) {
