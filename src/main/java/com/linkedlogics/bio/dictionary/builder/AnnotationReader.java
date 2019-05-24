@@ -301,9 +301,10 @@ public class AnnotationReader implements DictionaryReader {
 								tag.setCodeGenerated(true);
 							}
 							obj.addTag(tag);
-
+						} catch (NullPointerException e) {
+							throw new DictionaryException("error in adding tag " + fields[j].getName() + " for " + bioClass.getName() + " it is not defined as static", e) ;
 						} catch (Throwable e) {
-							throw new DictionaryException("error in adding tag for " + bioClass.getName(), e) ;
+							throw new DictionaryException("error in adding tag " + fields[j].getName() + " for " + bioClass.getName(), e) ;
 						}
 					}
 				}
@@ -407,16 +408,6 @@ public class AnnotationReader implements DictionaryReader {
 
 		if (bioType == BioType.JavaEnum || bioType == BioType.JavaObject) {
 			tag.setJavaClass(javaClass);
-		}
-
-		if (bioType == BioType.BioMap) {
-			tag.setUseKey(useKey);
-		}
-
-		if (bioType == BioType.BioList || isList) {
-			if (sortKey != null && sortKey.length() > 0) {
-				tag.setSortKey(sortKey);
-			}
 		}
 
 		if (trimKeys != null && trimKeys.length > 0 && trimKeys[0].length() > 0) {
