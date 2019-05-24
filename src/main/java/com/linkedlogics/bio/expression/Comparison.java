@@ -107,39 +107,22 @@ public class Comparison extends Expression implements Operands {
 			Object[] leftValues = leftIsArray ? (Object[]) leftValue : new Object[] {leftValue} ;
 			Object[] rightValues = rightIsArray ? (Object[]) rightValue : new Object[] {rightValue} ;
 
-			//If both sides are arrays
-			if (leftIsArray && rightIsArray) {
-				// and lengths are not equal then FALSE
-				if (leftValues.length != rightValues.length) {
-					return false ;
-				}
-				// or any value is not equal then FALSE
-				for (int i = 0; i < leftValues.length; i++) {
-					if (!leftValues[i].equals(rightValues[i])) {
-						return false ;
+			for (Object left : leftValues) {
+				for (Object right : rightValues) {
+					if (left instanceof Number || right instanceof Number) {
+						arrayComparison = NumberUtility.equal(left, right) ;
+					} else if (left instanceof String || right instanceof String) {
+						return StringUtility.notEqual(left, right) ;
+					}  else {
+						arrayComparison = left.equals(right) ;
 					}
-				}
-				
-				return true ;
-			} else {
-				// here we check one by one for equality
-				for (Object left : leftValues) {
-					for (Object right : rightValues) {
-						if (left instanceof Number || right instanceof Number) {
-							arrayComparison = NumberUtility.equal(left, right) ;
-						} else if (left instanceof String || right instanceof String) {
-							return StringUtility.notEqual(left, right) ;
-						}  else {
-							arrayComparison = left.equals(right) ;
-						}
 
-						if (arrayComparison) {
-							return arrayComparison ;
-						}
+					if (arrayComparison) {
+						return arrayComparison ;
 					}
 				}
 			}
-			
+
 			return false ;
 		} else {
 			if (leftValue instanceof Number || rightValue instanceof Number) {
@@ -183,39 +166,25 @@ public class Comparison extends Expression implements Operands {
 			boolean arrayComparison = false ;
 			Object[] leftValues = leftIsArray ? (Object[]) leftValue : new Object[] {leftValue} ;
 			Object[] rightValues = rightIsArray ? (Object[]) rightValue : new Object[] {rightValue} ;
-			
-			//If both sides are arrays
-			if (leftIsArray && rightIsArray) {
-				// and lengths are not equal then TRUE
-				if (leftValues.length != rightValues.length) {
-					return true ;
-				}
-				// or any value is not equal then TRUE
-				for (int i = 0; i < leftValues.length; i++) {
-					if (!leftValues[i].equals(rightValues[i])) {
-						return true ;
-					}
-				}
-				return false ;
-			} else {
-				for (Object left : leftValues) {
-					for (Object right : rightValues) {
-						if (left instanceof Number || right instanceof Number) {
-							arrayComparison = NumberUtility.notEqual(left, right) ;
-						} else if (left instanceof String || right instanceof String) {
-							return StringUtility.notEqual(left, right) ;
-						} else {
-							arrayComparison = !left.equals(right) ;
-						}
 
-						if (arrayComparison) {
-							return arrayComparison ;
-						}
+			for (Object left : leftValues) {
+				for (Object right : rightValues) {
+					if (left instanceof Number || right instanceof Number) {
+						arrayComparison = NumberUtility.equal(left, right) ;
+					} else if (left instanceof String || right instanceof String) {
+						return StringUtility.equal(left, right) ;
+					} else {
+						arrayComparison = left.equals(right) ;
+					}
+
+					if (arrayComparison) {
+						return false ;
 					}
 				}
 			}
-			
-			return false ;
+
+			return true ;
+
 		} else {
 			if (leftValue instanceof Number || rightValue instanceof Number) {
 				return NumberUtility.notEqual(leftValue, rightValue) ;
