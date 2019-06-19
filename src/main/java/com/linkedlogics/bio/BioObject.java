@@ -547,11 +547,23 @@ public class BioObject implements Cloneable, BioObjectHolder {
 	}
 	
 	public String getString(String key) {
-		return (String) get(key);
+		Object object = get(key);
+		if (object == null) {
+			return null;
+		}
+		if (object instanceof String) {
+			return (String) object ;
+		} else {
+			return object.toString();
+		}
 	}
 
 	public String getString(String key, String defaultValue) {
-		return (String) getOrDefault(key, defaultValue) ;
+		String object = getString(key);
+		if (object == null) {
+			return defaultValue;
+		}
+		return object ;
 	}
 	
 	/**
