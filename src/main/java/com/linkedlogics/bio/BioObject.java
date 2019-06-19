@@ -12,7 +12,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.json.JSONObject;
 
-import com.linkedlogics.bio.dictionary.BioAlias;
 import com.linkedlogics.bio.dictionary.BioObj;
 import com.linkedlogics.bio.dictionary.BioTag;
 import com.linkedlogics.bio.dictionary.BioType;
@@ -205,7 +204,7 @@ public class BioObject implements Cloneable, BioObjectHolder {
 	}
 	
 	public BioObject setAlias(String aliasKey, String key) {
-		put(aliasKey, new BioAlias(key)) ;
+		put(aliasKey, BioExpression.parse(key)) ;
 		return this ;
 	}
 	
@@ -335,8 +334,8 @@ public class BioObject implements Cloneable, BioObjectHolder {
 	
 	public Object get(String key) {
 		Object object = map.get(key) ;
-		if (object instanceof BioAlias) {
-			return BioExpression.parse(((BioAlias) object).getKey()).getValue(this) ;
+		if (object instanceof BioExpression) {
+			return ((BioExpression) object).getValue(this) ;
 		}
 		return object ;
 	}
