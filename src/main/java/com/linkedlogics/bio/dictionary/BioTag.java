@@ -55,6 +55,10 @@ public class BioTag {
 	 */
 	protected boolean isTrim ;
 	/**
+	 * Indicates whether this tag is trimmable
+	 */
+	protected boolean isInheritable = true ;
+	/**
 	 * Indicates {@link com.linkedlogics.bio.dictionary.BioObj} instance in dictionary if {@link #type} is BioObject or any other class extending BioObject
 	 */
 	protected BioObj obj ;
@@ -177,6 +181,13 @@ public class BioTag {
 	}
 	public void setList(boolean isList) {
 		this.isList = isList;
+	}
+	public boolean isInheritable() {
+		return isInheritable;
+	}
+
+	public void setInheritable(boolean isInheritable) {
+		this.isInheritable = isInheritable;
 	}
 
 	public BioObj getObj() {

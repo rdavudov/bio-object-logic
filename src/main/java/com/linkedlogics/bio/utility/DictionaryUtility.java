@@ -141,6 +141,9 @@ public class DictionaryUtility {
 		if (tag.isMandatory()) {
 			xml.append(" is-mandatory=\"true\"") ;
 		}
+		if (!tag.isInheritable()) {
+			xml.append(" is-inheritable=\"false\"") ;
+		}
 		if (!tag.isEncodable()) {
 			xml.append(" is-encodable=\"false\"") ;
 		}

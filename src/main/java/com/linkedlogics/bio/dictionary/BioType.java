@@ -14,7 +14,6 @@ public enum BioType {
     JavaObject((byte) 10),
     Raw((byte) 11),
     BioObject((byte) 12),
-    Alias((byte) 13),
     JavaEnum((byte) 15),
     BioEnum((byte) 16),
     Unknown((byte) 17),
@@ -61,8 +60,6 @@ public enum BioType {
                 return BioType.Raw;
             case 12:
                 return BioType.BioObject;
-            case 13:
-                return BioType.Alias;
             case 15:
                 return BioType.JavaEnum;
             case 16:

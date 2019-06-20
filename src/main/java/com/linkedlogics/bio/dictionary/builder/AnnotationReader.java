@@ -334,7 +334,7 @@ public class AnnotationReader implements DictionaryReader {
 		
 		return createTag((String) field.get(null), annotation.type(), annotation.code(), 
 				annotation.isMandatory(), annotation.isEncodable(), annotation.isExportable(), 
-				annotation.isArray(), annotation.isList(), annotation.javaClass(), annotation.useKey(), 
+				annotation.isArray(), annotation.isList(), annotation.isInheritable(), annotation.javaClass(), annotation.useKey(), 
 				annotation.sortKey(), annotation.trimKeys(), annotation.inverseTrimKeys(), 
 				annotation.initial(), annotation.expression()) ;
 	}
@@ -350,7 +350,7 @@ public class AnnotationReader implements DictionaryReader {
 		
 		return createTag((String) field.get(null), annotation.type(), annotation.code(), 
 				annotation.isMandatory(), annotation.isEncodable(), annotation.isExportable(), 
-				annotation.isArray(), annotation.isList(), annotation.javaClass(), annotation.useKey(), 
+				annotation.isArray(), annotation.isList(), false, annotation.javaClass(), annotation.useKey(), 
 				annotation.sortKey(), annotation.trimKeys(), annotation.inverseTrimKeys(), 
 				annotation.initial(), annotation.expression()) ;
 	}
@@ -364,7 +364,7 @@ public class AnnotationReader implements DictionaryReader {
 	public static BioTag createRemoteTag(BioRemoteTag annotation, Field field) throws Throwable {
 		return createTag((String) field.get(null), annotation.type(), annotation.code(), 
 				annotation.isMandatory(), annotation.isEncodable(), annotation.isExportable(), 
-				annotation.isArray(), annotation.isList(), annotation.javaClass(), annotation.useKey(), 
+				annotation.isArray(), annotation.isList(), annotation.isInheritable(), annotation.javaClass(), annotation.useKey(), 
 				annotation.sortKey(), annotation.trimKeys(), annotation.inverseTrimKeys(), 
 				annotation.initial(), annotation.expression()) ;
 	}
@@ -388,7 +388,7 @@ public class AnnotationReader implements DictionaryReader {
 	 * @param expression
 	 * @return
 	 */
-	private static BioTag createTag(String name, String type, int code, boolean isMandatory, boolean isEncodable, boolean isExportable, boolean isArray, boolean isList, 
+	private static BioTag createTag(String name, String type, int code, boolean isMandatory, boolean isEncodable, boolean isExportable, boolean isArray, boolean isList, boolean isInheritable, 
 			Class javaClass, String useKey, String sortKey, String[] trimKeys, String[] inverseTrimKeys, String initial, String expression) {
 		BioType bioType = BioType.BioObject;
 		try {
@@ -403,6 +403,7 @@ public class AnnotationReader implements DictionaryReader {
 		tag.setMandatory(isMandatory);
 		tag.setEncodable(isEncodable);
 		tag.setExportable(isExportable);
+		tag.setInheritable(isInheritable);
 		tag.setArray(isArray);
 		tag.setList(isList);
 
