@@ -5,6 +5,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import com.linkedlogics.bio.dictionary.MergeType;
+
 /**
  * Annotation for defining properties of a SuperTag. SuperTag is a tag which can be serialized/deserialized without having any BioObj container
  * It is very useful when you have generate system tags for most of objects and don't want to add them as tag for each of the definition. But without
@@ -31,4 +33,6 @@ public @interface BioSuperTag {
 	String useKey() default "" ;
 	String sortKey() default "" ;
 	Class javaClass() default void.class;
+	MergeType mergeBy() default MergeType.Replace ;
+	String mergeWhen() default "" ;
 }

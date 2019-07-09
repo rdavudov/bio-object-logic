@@ -100,8 +100,14 @@ public class BioTag {
 	 * Indicates initial value expression
 	 */
 	protected String expression ;
-	
+	/**
+	 * Indicates code is auto generated
+	 */
 	protected boolean isCodeGenerated ;
+	/**
+	 * Indicates merge type
+	 */
+	protected MergeType mergeType = MergeType.Replace ;
 	
 	public BioTag() {
 		
@@ -295,6 +301,14 @@ public class BioTag {
 
 	public void setCodeGenerated(boolean isCodeGenerated) {
 		this.isCodeGenerated = isCodeGenerated;
+	}
+	
+	public MergeType getMergeType() {
+		return mergeType;
+	}
+
+	public void setMergeType(MergeType mergeType) {
+		this.mergeType = mergeType;
 	}
 
 	public Object getInitialValue(String initial) {

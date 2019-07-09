@@ -6,6 +6,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import com.linkedlogics.bio.dictionary.MergeType;
+
 /**
  * Bio Remote tag definition
  * @author rdavudov
@@ -31,4 +33,6 @@ public @interface BioRemoteTag {
 	String useKey() default "" ;
 	String sortKey() default "" ;
 	Class javaClass() default void.class;
+	MergeType mergeBy() default MergeType.Replace ;
+	String mergeWhen() default "" ;
 }

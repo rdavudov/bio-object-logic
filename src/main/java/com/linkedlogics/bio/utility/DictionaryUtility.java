@@ -17,6 +17,7 @@ import com.linkedlogics.bio.dictionary.BioFunc;
 import com.linkedlogics.bio.dictionary.BioObj;
 import com.linkedlogics.bio.dictionary.BioTag;
 import com.linkedlogics.bio.dictionary.BioType;
+import com.linkedlogics.bio.dictionary.MergeType;
 import com.linkedlogics.bio.expression.GenericFunction;
 import com.linkedlogics.bio.stream.BiFastStream;
 import com.linkedlogics.bio.stream.BoFastStream;
@@ -76,9 +77,7 @@ public class DictionaryUtility {
 		if (obj.getName() != null) {
 			xml.append(" name=\"").append(obj.getName()).append("\"") ;
 		}
-//		if (!obj.isCodeGenerated()) {
-			xml.append(" code=\"").append(obj.getCode()).append("\"");
-//		}
+		xml.append(" code=\"").append(obj.getCode()).append("\"");
 		xml.append(" version=\"").append(obj.getVersion()).append("\"") ;
 		if (obj.getBioClass() != null) {
 			xml.append(" class=\"").append(obj.getBioClass().getName()).append("\"") ;
@@ -99,9 +98,7 @@ public class DictionaryUtility {
 	 */
 	private static void enumToXml(BioEnumObj enumObj, StringBuilder xml) {
     	xml.append("\t<enum type=\"").append(enumObj.getType()).append("\"") ;
-//    	if (!enumObj.isCodeGenerated()) {
-			xml.append(" code=\"").append(enumObj.getCode()).append("\"");
-//		}
+		xml.append(" code=\"").append(enumObj.getCode()).append("\"");
     	xml.append(" version=\"").append(enumObj.getVersion()).append("\"") ;
     	if (enumObj.getBioClass() != null) {
 			xml.append(" class=\"").append(enumObj.getBioClass().getName()).append("\"") ;
@@ -123,9 +120,7 @@ public class DictionaryUtility {
     private static void tagToXml(BioTag tag, StringBuilder xml, String firstTag) {
     	xml.append(firstTag) ;
     	xml.append(" name=\"").append(tag.getName()).append("\"") ;
-//    	if (!tag.isCodeGenerated()) {
-			xml.append(" code=\"").append(tag.getCode()).append("\"");
-//		}
+		xml.append(" code=\"").append(tag.getCode()).append("\"");
 		if (tag.getObj() != null) {
 			xml.append(" type=\"").append(tag.getObj().getType()).append("\"") ;
 		} else if (tag.getEnumObj() != null) {
@@ -171,6 +166,9 @@ public class DictionaryUtility {
 		}
 		if (tag.getExpression() != null) {
 			xml.append(" expression=\"").append(tag.getExpression()).append("\"") ;
+		}
+		if (tag.getMergeType() != MergeType.Replace) {
+			xml.append(" merge-by=\"").append(tag.getMergeType().toString()).append("\"") ;
 		}
 		xml.append("/>\n") ;
     }

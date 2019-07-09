@@ -23,6 +23,7 @@ import com.linkedlogics.bio.dictionary.BioFunc;
 import com.linkedlogics.bio.dictionary.BioObj;
 import com.linkedlogics.bio.dictionary.BioTag;
 import com.linkedlogics.bio.dictionary.BioType;
+import com.linkedlogics.bio.dictionary.MergeType;
 import com.linkedlogics.bio.exception.DictionaryException;
 import com.linkedlogics.bio.exception.ParserException;
 import com.linkedlogics.bio.expression.GenericFunction;
@@ -304,6 +305,7 @@ public class XmlReader implements DictionaryReader {
     	String inverseTrimKeys = null ;
     	String useKey = null ;
     	String sortKey = null ;
+    	MergeType mergeType = MergeType.Replace ;
     	
     	for (int i = 0; i < atts.getLength(); i++) {
     		Node node = atts.item(i);
@@ -339,6 +341,8 @@ public class XmlReader implements DictionaryReader {
     			useKey = node.getNodeValue() ;
     		} else if ("sort-key".contentEquals(node.getNodeName())) {
     			sortKey = node.getNodeValue() ;
+    		} else if ("merge-by".contentEquals(node.getNodeName())) {
+    			mergeType = Enum.valueOf(MergeType.class, node.getNodeValue()) ;
     		}  
     	}
     	

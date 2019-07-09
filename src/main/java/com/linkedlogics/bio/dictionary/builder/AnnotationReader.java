@@ -15,6 +15,7 @@ import com.linkedlogics.bio.dictionary.BioFunc;
 import com.linkedlogics.bio.dictionary.BioObj;
 import com.linkedlogics.bio.dictionary.BioTag;
 import com.linkedlogics.bio.dictionary.BioType;
+import com.linkedlogics.bio.dictionary.MergeType;
 import com.linkedlogics.bio.exception.DictionaryException;
 import com.linkedlogics.bio.exception.ExpressionException;
 import com.linkedlogics.bio.utility.POJOUtility;
@@ -336,7 +337,7 @@ public class AnnotationReader implements DictionaryReader {
 				annotation.isMandatory(), annotation.isEncodable(), annotation.isExportable(), 
 				annotation.isArray(), annotation.isList(), annotation.isInheritable(), annotation.javaClass(), annotation.useKey(), 
 				annotation.sortKey(), annotation.trimKeys(), annotation.inverseTrimKeys(), 
-				annotation.initial(), annotation.expression()) ;
+				annotation.initial(), annotation.expression(), annotation.mergeBy()) ;
 	}
 
 	/**
@@ -352,7 +353,7 @@ public class AnnotationReader implements DictionaryReader {
 				annotation.isMandatory(), annotation.isEncodable(), annotation.isExportable(), 
 				annotation.isArray(), annotation.isList(), false, annotation.javaClass(), annotation.useKey(), 
 				annotation.sortKey(), annotation.trimKeys(), annotation.inverseTrimKeys(), 
-				annotation.initial(), annotation.expression()) ;
+				annotation.initial(), annotation.expression(), annotation.mergeBy()) ;
 	}
 
 	/**
@@ -366,7 +367,7 @@ public class AnnotationReader implements DictionaryReader {
 				annotation.isMandatory(), annotation.isEncodable(), annotation.isExportable(), 
 				annotation.isArray(), annotation.isList(), annotation.isInheritable(), annotation.javaClass(), annotation.useKey(), 
 				annotation.sortKey(), annotation.trimKeys(), annotation.inverseTrimKeys(), 
-				annotation.initial(), annotation.expression()) ;
+				annotation.initial(), annotation.expression(), annotation.mergeBy()) ;
 	}
 	
 	/**
@@ -389,7 +390,7 @@ public class AnnotationReader implements DictionaryReader {
 	 * @return
 	 */
 	private static BioTag createTag(String name, String type, int code, boolean isMandatory, boolean isEncodable, boolean isExportable, boolean isArray, boolean isList, boolean isInheritable, 
-			Class javaClass, String useKey, String sortKey, String[] trimKeys, String[] inverseTrimKeys, String initial, String expression) {
+			Class javaClass, String useKey, String sortKey, String[] trimKeys, String[] inverseTrimKeys, String initial, String expression, MergeType mergeType) {
 		BioType bioType = BioType.BioObject;
 		try {
 			bioType = Enum.valueOf(BioType.class, type);
@@ -421,10 +422,13 @@ public class AnnotationReader implements DictionaryReader {
 
 		if (initial != null && initial.length() > 0) {
 			tag.setInitial(initial);
-		} 
+		}
+		
 		if (expression != null && expression.length() > 0) {
 			tag.setExpression(expression);
 		}
+		
+		tag.setMergeType(mergeType);
 
 		return tag;
 	}

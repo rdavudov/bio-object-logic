@@ -15,10 +15,12 @@ import org.json.JSONObject;
 import com.linkedlogics.bio.dictionary.BioObj;
 import com.linkedlogics.bio.dictionary.BioTag;
 import com.linkedlogics.bio.dictionary.BioType;
+import com.linkedlogics.bio.dictionary.MergeType;
 import com.linkedlogics.bio.exception.DictionaryException;
 import com.linkedlogics.bio.exception.ImmutableException;
 import com.linkedlogics.bio.utility.ConversionUtility;
 import com.linkedlogics.bio.utility.JSONUtility;
+import com.linkedlogics.bio.utility.NumberUtility;
 import com.linkedlogics.bio.utility.POJOUtility;
 import com.linkedlogics.bio.utility.XMLUtility;
 
@@ -251,7 +253,37 @@ public class BioObject implements Cloneable, BioObjectHolder {
 			throw new ImmutableException();
 		}
 		if (map != null) {
-			this.map.putAll(map);
+			map.entrySet().forEach(e -> {
+				if (e.getValue() instanceof Map) {
+					BioObject bio = new BioObject() ;
+					bio.putAll((Map) e.getValue()) ;
+					this.map.put(e.getKey(), bio) ;
+				} else if (e.getValue() instanceof List) {
+					List list = new ArrayList<Object>() ;
+					((List) e.getValue()).stream().forEach(o -> {
+						if (e.getValue() instanceof Map) {
+							BioObject bio = new BioObject() ;
+							bio.putAll((Map) e.getValue()) ;
+							list.add(bio) ;
+						} else {
+							list.add(e.getValue()) ;
+						}
+					});
+					this.map.put(e.getKey(), list) ;
+				} else if (e.getValue() instanceof Object[]) {
+					Object[] array = (Object[]) e.getValue() ;
+					for (int i = 0; i < array.length; i++) {
+						if (array[i] instanceof Map) {
+							BioObject bio = new BioObject() ;
+							bio.putAll((Map) array[i]) ;
+							array[i] = bio ;
+						}
+					}
+					this.map.put(e.getKey(), array) ;
+				} else {
+					this.map.put(e.getKey(), e.getValue()) ;
+				}
+			});
 		}
 		return this ;
 	}
@@ -319,11 +351,105 @@ public class BioObject implements Cloneable, BioObjectHolder {
 	 * @param object
 	 */
 	public BioObject merge(BioObject object) {
-		for(Entry<String, Object> e : object.entries()) {
-			if (e.getValue() instanceof BioObject && has(e.getKey()) && get(e.getKey()) instanceof BioObject) {
-				((BioObject) get(e.getKey())).merge((BioObject) e.getValue());
-			} else {
-				set(e.getKey(), e.getValue()) ;
+		BioObj obj = BioDictionary.getDictionary(dictionary).getObjByCode(code);
+		if (obj != null) {
+			for(Entry<String, Object> e : object.entries()) {
+				BioTag tag = obj.getTag(e.getKey()) ;
+				if (tag != null) {
+					if (tag.getMergeType() == MergeType.Replace) {
+						if (e.getValue() instanceof BioObject && has(e.getKey()) && get(e.getKey()) instanceof BioObject) {
+							((BioObject) get(e.getKey())).merge((BioObject) e.getValue());
+						} else {
+							set(e.getKey(), e.getValue()) ;
+						}
+					} else if (tag.getMergeType() == MergeType.ReplaceWithMax) {
+						if (get(e.getKey()) instanceof Number && e.getValue() instanceof Number) {
+							if (NumberUtility.smaller(get(e.getKey()), e.getValue())) {
+								set(e.getKey(), e.getValue()) ;
+							}
+						}
+					} else if (tag.getMergeType() == MergeType.ReplaceWithMin) {
+						if (get(e.getKey()) instanceof Number && e.getValue() instanceof Number) {
+							if (NumberUtility.greater(get(e.getKey()), e.getValue())) {
+								set(e.getKey(), e.getValue()) ;
+							}
+						}
+					} else if (tag.getMergeType() == MergeType.ReplaceWithNew) {
+						Object o1 = get(e.getKey()) ;
+						Object o2 = e.getValue() ;
+						if (get(e.getKey()) instanceof Number && e.getValue() instanceof Number) {
+							if (NumberUtility.smaller(get(e.getKey()), e.getValue())) {
+								set(e.getKey(), e.getValue()) ;
+							}
+						}
+					} else if (tag.getMergeType() == MergeType.ReplaceWithOld) {
+						if (get(e.getKey()) instanceof Number && e.getValue() instanceof Number) {
+							if (NumberUtility.greater(get(e.getKey()), e.getValue())) {
+								set(e.getKey(), e.getValue()) ;
+							}
+						}
+					} else if (tag.getMergeType() == MergeType.ReplaceByAdd) {
+						if (get(e.getKey()) instanceof Number && e.getValue() instanceof Number) {
+							set(e.getKey(), NumberUtility.plus(get(e.getKey()), e.getValue())) ;
+						} else if (get(e.getKey()) instanceof String || e.getValue() instanceof String) {
+							set(e.getKey(), get(e.getKey()).toString() + e.getValue().toString()) ;
+						} else if (get(e.getKey()) instanceof List && e.getValue() instanceof List) {
+							((List) get(e.getKey())).addAll((List) e.getValue()) ;
+						} else if (get(e.getKey()) instanceof Object[] && e.getValue() instanceof Object[]) {
+							Object[] left = (Object[]) get(e.getKey()) ;
+							Object[] right = (Object[]) e.getValue() ;
+
+							Object[] merged = (Object[]) Array.newInstance(left.getClass().getComponentType(), left.length + right.length) ;
+							int j = 0 ;
+							for (int i = 0; i < left.length; i++) {
+								merged[j++] = left[i] ;
+							}
+							for (int i = 0; i < right.length; i++) {
+								merged[j++] = right[i] ;
+							}
+
+							set(e.getKey(), merged) ;
+						}
+					} else if (tag.getMergeType() == MergeType.ReplaceBySubtract) {
+						if (get(e.getKey()) instanceof Number && e.getValue() instanceof Number) {
+							set(e.getKey(), NumberUtility.minus(get(e.getKey()), e.getValue())) ;
+						}
+					} else if (tag.getMergeType() == MergeType.ReplaceByMultiply) {
+						if (get(e.getKey()) instanceof Number && e.getValue() instanceof Number) {
+							set(e.getKey(), NumberUtility.multiply(get(e.getKey()), e.getValue())) ;
+						}
+					} else if (tag.getMergeType() == MergeType.ReplaceByDivide) {
+						if (get(e.getKey()) instanceof Number && e.getValue() instanceof Number) {
+							set(e.getKey(), NumberUtility.divide(get(e.getKey()), e.getValue())) ;
+						}
+					} else if (tag.getMergeType() == MergeType.ReplaceByAnd) {
+						if (get(e.getKey()) instanceof Boolean && e.getValue() instanceof Boolean) {
+							set(e.getKey(), ((Boolean)get(e.getKey()) && ((Boolean)e.getValue()))) ;
+						} else if (get(e.getKey()) instanceof Number && e.getValue() instanceof Number) {
+							set(e.getKey(), NumberUtility.and(get(e.getKey()), e.getValue())) ;
+						}
+					} else if (tag.getMergeType() == MergeType.ReplaceByOr) {
+						if (get(e.getKey()) instanceof Boolean && e.getValue() instanceof Boolean) {
+							set(e.getKey(), ((Boolean)get(e.getKey()) || ((Boolean)e.getValue()))) ;
+						} else if (get(e.getKey()) instanceof Number && e.getValue() instanceof Number) {
+							set(e.getKey(), NumberUtility.or(get(e.getKey()), e.getValue())) ;
+						}
+					}
+				} else {
+					if (e.getValue() instanceof BioObject && has(e.getKey()) && get(e.getKey()) instanceof BioObject) {
+						((BioObject) get(e.getKey())).merge((BioObject) e.getValue());
+					} else {
+						set(e.getKey(), e.getValue()) ;
+					}
+				}
+			}
+		} else {
+			for(Entry<String, Object> e : object.entries()) {
+				if (e.getValue() instanceof BioObject && has(e.getKey()) && get(e.getKey()) instanceof BioObject) {
+					((BioObject) get(e.getKey())).merge((BioObject) e.getValue());
+				} else {
+					set(e.getKey(), e.getValue()) ;
+				}
 			}
 		}
 		

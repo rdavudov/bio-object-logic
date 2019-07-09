@@ -69,8 +69,4 @@ public enum BioType {
         }
         return BioType.Unknown;
     }
-
-    public enum MergedType {
-        Max, Min, New, Old, And, Or, Append, Sum, Mix;
-    }
 }

@@ -5,6 +5,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import com.linkedlogics.bio.dictionary.MergeType;
+
 /**
  * Annotation for defining properties of a Tag and all needed information during serialization/deserialization
  *
@@ -29,4 +31,6 @@ public @interface BioTag {
 	String useKey() default "" ;
 	String sortKey() default "" ;
 	Class javaClass() default void.class;
+	MergeType mergeBy() default MergeType.Replace ;
+	String mergeWhen() default "" ;
 }
