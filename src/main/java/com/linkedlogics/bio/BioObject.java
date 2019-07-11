@@ -206,8 +206,20 @@ public class BioObject implements Cloneable, BioObjectHolder {
 	}
 	
 	public BioObject setAlias(String aliasKey, String key) {
-		put(aliasKey, BioExpression.parse(key)) ;
+		// why Alias class ? not a BioExpression because if it is BioExpression it will go recursion and end up in stack overflow
+		put(aliasKey, new Alias(key)) ;
 		return this ;
+	}
+	
+	private class Alias {
+		private BioExpression expression ;
+		public Alias(String expression) {
+			this.expression = BioExpression.parse(expression) ;
+		}
+		
+		public BioExpression getExpression() {
+			return expression ;
+		}
 	}
 	
 	/**
@@ -392,7 +404,7 @@ public class BioObject implements Cloneable, BioObjectHolder {
 						if (get(e.getKey()) instanceof Number && e.getValue() instanceof Number) {
 							set(e.getKey(), NumberUtility.plus(get(e.getKey()), e.getValue())) ;
 						} else if (get(e.getKey()) instanceof String || e.getValue() instanceof String) {
-							set(e.getKey(), get(e.getKey()).toString() + e.getValue().toString()) ;
+							set(e.getKey(), get(e.getKey()).toString() + " " + e.getValue().toString()) ;
 						} else if (get(e.getKey()) instanceof List && e.getValue() instanceof List) {
 							((List) get(e.getKey())).addAll((List) e.getValue()) ;
 						} else if (get(e.getKey()) instanceof Object[] && e.getValue() instanceof Object[]) {
@@ -409,6 +421,8 @@ public class BioObject implements Cloneable, BioObjectHolder {
 							}
 
 							set(e.getKey(), merged) ;
+						} else {
+							set(e.getKey(), get(e.getKey()).toString() + " " + e.getValue().toString()) ;
 						}
 					} else if (tag.getMergeType() == MergeType.ReplaceBySubtract) {
 						if (get(e.getKey()) instanceof Number && e.getValue() instanceof Number) {
@@ -460,8 +474,8 @@ public class BioObject implements Cloneable, BioObjectHolder {
 	
 	public Object get(String key) {
 		Object object = map.get(key) ;
-		if (object instanceof BioExpression) {
-			return ((BioExpression) object).getValue(this) ;
+		if (object instanceof Alias) {
+			return ((Alias) object).getExpression().getValue(this) ;
 		}
 		return object ;
 	}
