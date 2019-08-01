@@ -9,7 +9,7 @@ module com.linkedlogics.bio {
 	exports com.linkedlogics.bio.parser;
 	exports com.linkedlogics.bio.utility;
 	exports com.linkedlogics.bio.dictionary;
-	exports com.linkedlogics.bio.expression to com.linkedlogics.bio.sql ;
+	exports com.linkedlogics.bio.expression;
 	exports com.linkedlogics.bio.dictionary.builder to com.linkedlogics.bio.sql ;
 	exports com.linkedlogics.bio.stream to com.linkedlogics ;
 	

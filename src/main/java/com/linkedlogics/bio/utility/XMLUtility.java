@@ -41,7 +41,7 @@ public class XMLUtility {
 	 * @param tag
 	 * @param object
 	 */
-	private static void toXml(StringBuilder xml, String tab, String tag, BioObject object) {
+	public static void toXml(StringBuilder xml, String tab, String tag, BioObject object) {
 		if (tag == null) {
 			tag = "bio";
 		}
