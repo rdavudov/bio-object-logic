@@ -718,11 +718,12 @@ public class BioObject implements Cloneable, BioObjectHolder {
 	/**
 	 * Clears contents of map
 	 */
-	public void clear() {
+	public BioObject clear() {
 		if (isImmutable()) {
 			throw new ImmutableException();
 		}
 		map.clear();
+		return this ;
 	}
 	
 	/**
