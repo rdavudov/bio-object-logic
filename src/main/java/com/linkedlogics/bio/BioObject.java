@@ -1181,6 +1181,15 @@ public class BioObject implements Cloneable, BioObjectHolder {
 	public static BioObject fromJson(JSONObject json) {
 		return JSONUtility.fromJson(json);
 	}
+	
+	/**
+	 * Parses json to bio object
+	 * @param json
+	 * @return
+	 */
+	public static BioObject fromJson(String json) {
+		return JSONUtility.fromJson(new JSONObject(json));
+	}
 	/**
 	 * Creates bio object using map entries
 	 * @param map
