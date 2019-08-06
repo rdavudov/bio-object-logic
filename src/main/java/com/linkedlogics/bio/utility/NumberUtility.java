@@ -401,8 +401,8 @@ public class NumberUtility {
 		}
 	}
 	
-	private static Pattern intPattern = Pattern.compile("[+-]?\\d*") ;
-	private static Pattern doublePattern = Pattern.compile("[+-]?\\d*(\\.\\d+)?") ;
+	private static Pattern intPattern = Pattern.compile("[+-]?\\d+") ;
+	private static Pattern doublePattern = Pattern.compile("[+-]?\\d+(\\.\\d+)?") ;
 	
 	public static Number convertAndCheck(Object value) {
 		Number number = convert(value) ;
@@ -416,10 +416,11 @@ public class NumberUtility {
 		String strValue = value.toString() ;
 		
 		if (intPattern.matcher(strValue).matches()) {
-			if (strValue.length() <= 10) {
-				return Integer.parseInt(strValue);
+			long matched = Long.parseLong(strValue) ;
+			if (matched >= Integer.MIN_VALUE && matched <= Integer.MAX_VALUE) {
+				return (int) matched ;
 			}
-			return Long.parseLong(strValue);
+			return matched ;
 		} else if (doublePattern.matcher(strValue).matches()) {
 			return Double.parseDouble(strValue);
 		}
