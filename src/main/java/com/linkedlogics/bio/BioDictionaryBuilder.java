@@ -1,7 +1,9 @@
 package com.linkedlogics.bio;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -47,20 +49,15 @@ public class BioDictionaryBuilder {
 	 * @return
 	 */
 	public BioDictionaryBuilder addFile(String xmlFile) {
-		try {
-			readers.add(new XmlReader(new FileInputStream(xmlFile))) ;
-			return this ;
-		} catch (FileNotFoundException e) {
-			throw new DictionaryException(e) ;
+		File f = new File(xmlFile) ;
+		if (f.exists()) {
+			try {
+				readers.add(new XmlReader(new FileInputStream(xmlFile))) ;
+			} catch (FileNotFoundException e) { }
+		} else {
+			readers.add(new XmlReader(this.getClass().getClassLoader().getResourceAsStream(xmlFile))) ;
 		}
-	}
-	/**
-	 * Adding xml resource name for gathering bio obj info from xml
-	 * @param resource
-	 * @return
-	 */
-	public BioDictionaryBuilder addResource(String resource) {
-		readers.add(new XmlReader(this.getClass().getClassLoader().getResourceAsStream(resource))) ;
+			
 		return this ;
 	}
 	/**
