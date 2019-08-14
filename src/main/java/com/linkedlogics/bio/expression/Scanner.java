@@ -157,7 +157,7 @@ public class Scanner implements Operands {
 		} while (Character.isWhitespace(c));
 		prev = next - 1;
 		tok = c;
-		if (Character.isLetter(c))
+		if (Character.isLetter(c) || (c == '_'))
 			getIdent();
 		else if (Character.isDigit(c))
 			getNumber();
