@@ -421,6 +421,13 @@ public class BioObjectBinaryParser {
 			stream.write(ByteUtility.shortToBytes((short) bio.getBioCode()));
 			stream.write(ByteUtility.shortToBytes((short) bio.getBioVersion()));
 			
+			if (bio.getBioName() != null) {
+				stream.writeBoolean(true);
+				stream.writeAsciiString(bio.getBioName());
+			} else {
+				stream.writeBoolean(false);
+			}
+			
 			for (Entry<String, Object> e : bio.entries()) {
 				writeValue(stream, e.getKey(), e.getValue());
 			}
@@ -928,6 +935,11 @@ public class BioObjectBinaryParser {
 			
 			if (objCode == 0 && objVersion == 0) {
 				BioObject bio = new BioObject();
+				
+				boolean isBioNameEncoded = stream.readBoolean();
+				if (isBioNameEncoded) {
+					bio.setBioName(stream.readAsciiString());
+				}
 				
 				BioTag tag = null;
 				while (stream.available() > 0) {
