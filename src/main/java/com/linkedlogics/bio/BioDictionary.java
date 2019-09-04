@@ -77,6 +77,11 @@ public class BioDictionary {
 	};
 	
 	private static Set<String> supportedDateFormats = new HashSet<String>() ;
+	static BioTagHasher tagHasher = new BioTagHasher() ;
+	
+	public static BioTagHasher getTagHasher() {
+		return tagHasher ;
+	}
     
     public BioDictionary() {
 

@@ -138,7 +138,7 @@ public class XMLUtility {
 				// it will same as array but only xml attribute will is-list="true"
 				if (tag.getObj() != null) {
 					xml.append(tab).append(TAB).append("<").append(key)
-					.append(" type=\"").append(tag.getObj().getName())
+					.append(" type=\"").append(tag.getObj().getType())
 					.append("\" is-list=\"true\">\n");
 					for (int i = 0; i < list.size(); i++) {
 						toXml(xml, tab + TAB + TAB, ((BioObject)list.get(i)).getBioName(), (BioObject) list.get(i));

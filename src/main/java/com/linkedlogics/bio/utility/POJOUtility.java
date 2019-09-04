@@ -2,11 +2,16 @@ package com.linkedlogics.bio.utility;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import java.util.Map.Entry;
 
 import com.linkedlogics.bio.BioDictionary;
 import com.linkedlogics.bio.BioEnum;
 import com.linkedlogics.bio.BioObject;
+import com.linkedlogics.bio.annotation.BioPojoIgnore;
 import com.linkedlogics.bio.dictionary.BioObj;
 import com.linkedlogics.bio.dictionary.BioTag;
 import com.linkedlogics.bio.dictionary.BioType;
@@ -29,8 +34,8 @@ public class POJOUtility {
 		BioObj obj = BioDictionary.getDictionary().getObjByCode(code) ;
 		if (obj == null) {
 			obj = createObj(pojo.getClass()) ;
+			BioDictionary.getDictionary().addObj(obj);
 		}
-		
 		if (obj != null) {
 			BioObject object = new BioObject(obj.getCode(), obj.getName()) ;
 			for (Entry<String, BioTag> t : obj.getNameMap().entrySet()) {
@@ -38,7 +43,22 @@ public class POJOUtility {
 				
 				if (value != null) {
 					if (t.getValue().getType() == BioType.BioObject) {
-						object.set(t.getKey(), fromPojo(value)) ;
+						if (t.getValue().isList()) {
+							List<BioObject> target = new ArrayList<BioObject>() ;
+							List<Object> source = (List<Object>) value ;
+							for (int i = 0; i < source.size(); i++) {
+								obj = createObj(source.get(i).getClass()) ;
+								BioDictionary.getDictionary().addObj(obj);
+								t.getValue().setObj(obj);
+								target.add(fromPojo(source.get(i))) ;
+							}
+							object.set(t.getKey(), target) ;
+						} else {
+							obj = createObj(value.getClass()) ;
+							BioDictionary.getDictionary().addObj(obj);
+							t.getValue().setObj(obj);
+							object.set(t.getKey(), fromPojo(value)) ;
+						}
 					} else if (t.getValue().getType() == BioType.BioEnum) {
 						if (value instanceof Object[]) {
 							Object[] array = (Object[]) value ;
@@ -54,7 +74,11 @@ public class POJOUtility {
 						if (value.getClass().isArray() && !(value instanceof Object[])) {
 							object.set(t.getKey(), getBoxedArray(value)) ;
 						} else {
-							object.set(t.getKey(), value) ;
+							if (value instanceof Date) {
+								object.set(t.getKey(), ((Date) value).getTime()) ;
+							} else {
+								object.set(t.getKey(), value) ;
+							}
 						}
 					}
 				}
@@ -73,15 +97,18 @@ public class POJOUtility {
 
 		BioObj obj = new BioObj(0, code, objectClass.getSimpleName(), name, 0);
 		obj.setBioClass(objectClass);
+		
 
 		while (objectClass != null) {
 			Field[] fields = objectClass.getDeclaredFields();
 			for (int j = 0; j < fields.length; j++) {
-				try {
-					BioTag tag = createPojoTag(fields[j]);
-					obj.addTag(tag);
-				} catch (Throwable e) {
-					throw new DictionaryException("error in adding tag for " + objectClass.getName(), e) ;
+				if (!Modifier.isTransient(fields[j].getModifiers()) && !fields[j].isAnnotationPresent(BioPojoIgnore.class)) {
+					try {
+						BioTag tag = createPojoTag(fields[j]);
+						obj.addTag(tag);
+					} catch (Throwable e) {
+						throw new DictionaryException("error in adding tag for " + objectClass.getName(), e) ;
+					}
 				}
 			}
 			
@@ -110,14 +137,20 @@ public class POJOUtility {
 		try {
 			type = Enum.valueOf(BioType.class, typeStr);
 		} catch (Exception e) {
-
+			if (typeStr.equals("Date")) {
+				type = BioType.Time ;
+			}
 		}
 		BioTag tag = new BioTag(code, name, type);
 		if (tag.getType() == BioType.BioObject) {
 			tag.setObjName(typeStr);
 		}
 
-		tag.setArray(field.getType().isArray());
+		if (List.class.isAssignableFrom(field.getType())) {
+			tag.setList(true);
+		} else {
+			tag.setArray(field.getType().isArray());
+		}
 		tag.setEncodable(true);
 		tag.setExportable(true);
 
@@ -250,11 +283,7 @@ public class POJOUtility {
 	 * @return
 	 */
 	public static int getCode(String name) {
-		int code = name.hashCode() ;
-		if (code < 0) {
-			return -code ;
-		}
-		return code ;
+		return BioDictionary.getTagHasher().hash(name) ;
 	}
 	
 	/**

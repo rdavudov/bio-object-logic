@@ -176,9 +176,13 @@ public class AnnotationReader implements DictionaryReader {
 				if (!checkProfile(classInfo.getName(), builder.getProfiles(), builder.isOnlyProfiles())) {
 					continue ;
 				}
-				BioObj obj = createPojoObj(classInfo.getName());
-				if (obj != null) {
-					BioDictionary.getOrCreateDictionary(obj.getDictionary()).addObj(obj);
+				try {
+					BioObj obj = POJOUtility.createObj(Class.forName(classInfo.getName()));
+					if (obj != null) {
+						BioDictionary.getOrCreateDictionary(obj.getDictionary()).addObj(obj);
+					}
+				} catch (ClassNotFoundException e) {
+					throw new DictionaryException(e) ;
 				}
 			}
 			
@@ -546,7 +550,7 @@ public class AnnotationReader implements DictionaryReader {
 	 * @param objClassName
 	 * @return
 	 */
-	private BioObj createPojoObj(String objClassName) {
+	private BioObj createPojoObj3(String objClassName) {
 		try {
 			Class bioClass = Class.forName(objClassName);
 			com.linkedlogics.bio.annotation.BioPojo annotation = (com.linkedlogics.bio.annotation.BioPojo) bioClass.getAnnotation(com.linkedlogics.bio.annotation.BioPojo.class);

@@ -165,20 +165,30 @@ public class XmlReader implements DictionaryReader {
 			} catch (ClassNotFoundException ex) {
 				return null ;
 			}
-    		
-    		if (code == 0) {
-        		obj.setCode(builder.getTagHasher().hash(obj.getBioClass().getName()));
+    	}
+    	
+    	if (type == null) {
+			obj.setType(obj.getBioClass().getSimpleName());
+		}
+    	
+    	if (code == 0) {
+    		if (obj.getBioClass() != null) {
+    			obj.setCode(builder.getTagHasher().hash(obj.getBioClass().getName()));
         		obj.setCodeGenerated(true);
-        	}
-    		
-    		if (type == null) {
-    			obj.setType(obj.getBioClass().getSimpleName());
-    		}
-    		
-    		if (name == null) {
-    			obj.setName(obj.getBioClass().getSimpleName().replaceAll("([^_A-Z])([A-Z])", "$1_$2").toLowerCase());
+    		} else {
+    			obj.setCode(builder.getTagHasher().hash(obj.getType()));
+        		obj.setCodeGenerated(true);
     		}
     	}
+		
+		
+		if (name == null) { 
+			if (obj.getBioClass() != null) {
+				obj.setName(obj.getBioClass().getSimpleName().replaceAll("([^_A-Z])([A-Z])", "$1_$2").toLowerCase());
+			} else {
+				obj.setName(obj.getType().replaceAll("([^_A-Z])([A-Z])", "$1_$2").toLowerCase());
+			}
+		}
     	
     	NodeList nodes = e.getChildNodes() ;
         for (int i = 0; i < nodes.getLength(); i++) {
