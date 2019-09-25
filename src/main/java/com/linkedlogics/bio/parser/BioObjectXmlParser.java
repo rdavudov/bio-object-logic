@@ -136,6 +136,8 @@ public class BioObjectXmlParser {
         	
         	if (obj != null && obj.getBioClass() != null) {
         		object = BioDictionary.getDictionary(dictionary).getFactory().newBioObject(obj.getCode()).empty() ;
+        	} else if (obj != null) {
+        		object = new BioObject(obj.getCode(), obj.getName()) ;
         	} else {
         		object = new BioObject(0, e.getNodeName()) ;
         	}

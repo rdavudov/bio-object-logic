@@ -136,7 +136,7 @@ public class XMLUtility {
 			if (tag != null) {
 				// If list bio type is another bio object then we can't join them with commas
 				// it will same as array but only xml attribute will is-list="true"
-				if (tag.getObj() != null) {
+				if (tag.getObj() != null && list.size() > 0 && list.get(0) instanceof BioObject) {
 					xml.append(tab).append(TAB).append("<").append(key)
 					.append(" type=\"").append(tag.getObj().getType())
 					.append("\" is-list=\"true\">\n");

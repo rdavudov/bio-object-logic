@@ -615,8 +615,10 @@ public class AnnotationReader implements DictionaryReader {
 			Field[] fields = bioClass.getDeclaredFields() ;
 			try {
 				for (int i = 0; i < fields.length; i++) {
-					BioEnum e = new BioEnum(((Enum) fields[i].get(null)).ordinal(), ((Enum) fields[i].get(null)).name(), code) ;
-					bioEnum.addValue(e) ;
+					if (fields[i].isEnumConstant()) {
+						BioEnum e = new BioEnum(((Enum) fields[i].get(null)).ordinal(), ((Enum) fields[i].get(null)).name(), code) ;
+						bioEnum.addValue(e) ;
+					}
 				}
 			} catch (IllegalArgumentException e) {
 				

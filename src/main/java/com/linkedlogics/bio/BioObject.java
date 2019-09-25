@@ -152,8 +152,9 @@ public class BioObject implements Cloneable, BioObjectHolder {
 	/**
 	 * Makes object immutable no further puts,removes or clear will not work will throw ImmutabilityException
 	 */
-	public void setImmutable() {
+	public BioObject setImmutable() {
 		this.isImmutable = true;
+		return this ;
 	}
 	
 	/**

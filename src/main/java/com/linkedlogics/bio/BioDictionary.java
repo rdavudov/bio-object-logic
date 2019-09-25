@@ -111,27 +111,33 @@ public class BioDictionary {
 
         setBioObj(obj.getBioClass(), obj.getDictionary(), obj.getCode());
         
-        if (objByCode == null && objByName == null) {
-            codeMap.put(obj.getCode(), obj);
-            typeMap.put(obj.getType(), obj);
-            nameMap.put(obj.getName(), obj) ;
-        } else if (objByCode != objByName) {
-            if (objByCode == null) {
-                throw new DictionaryException("already existing name " + obj.getType() + " in dictionary with different code " + objByName.getCode());
-            } else if (objByName == null) {
-                throw new DictionaryException(obj.getBioClass() + "already existing code " + obj.getCode() + " in dictionary with different name " + objByCode.getType());
-            } else if (objByCode.getCode() != obj.getCode()) {
-                throw new DictionaryException("already existing name " + obj.getType() + " in dictionary with different code " + objByCode.getCode());
-            } else if (!objByName.getType().equals(obj.getType())) {
-                throw new DictionaryException("already existing code " + obj.getCode() + " in dictionary with different name " + objByName.getCode());
-            }
-        } else if (objByCode.getBioClass().isAssignableFrom(obj.getBioClass()) || objByCode.getBioClass() == obj.getBioClass()) {
-            codeMap.put(obj.getCode(), obj);
-            typeMap.put(obj.getType(), obj);
-            nameMap.put(obj.getName(), obj);
-        }
-        
-       
+        try {
+			if (objByCode == null && objByName == null) {
+			    codeMap.put(obj.getCode(), obj);
+			    typeMap.put(obj.getType(), obj);
+			    nameMap.put(obj.getName(), obj) ;
+			} else if (objByCode != objByName) {
+			    if (objByCode == null) {
+			        throw new DictionaryException("already existing name " + obj.getType() + " in dictionary with different code " + objByName.getCode());
+			    } else if (objByName == null) {
+			        throw new DictionaryException(obj.getBioClass() + "already existing code " + obj.getCode() + " in dictionary with different name " + objByCode.getType());
+			    } else if (objByCode.getCode() != obj.getCode()) {
+			        throw new DictionaryException("already existing name " + obj.getType() + " in dictionary with different code " + objByCode.getCode());
+			    } else if (!objByName.getType().equals(obj.getType())) {
+			        throw new DictionaryException("already existing code " + obj.getCode() + " in dictionary with different name " + objByName.getCode());
+			    }
+			} else if (objByCode.getBioClass() == null || objByCode.getBioClass().isAssignableFrom(obj.getBioClass()) || objByCode.getBioClass() == obj.getBioClass()) {
+			    codeMap.put(obj.getCode(), obj);
+			    typeMap.put(obj.getType(), obj);
+			    nameMap.put(obj.getName(), obj);
+			}
+		} catch (Exception e) {
+			System.out.println(objByCode);
+			System.out.println(objByCode.getBioClass());
+			System.out.println(obj);
+			System.out.println(obj.getBioClass());
+			throw new RuntimeException(obj.getType(), e) ;
+		}
     }
     
     /**
@@ -187,7 +193,7 @@ public class BioDictionary {
             } else if (!enumByType.getType().equals(enumObj.getType())) {
                 throw new DictionaryException("already existing code " + enumObj.getCode() + " in dictionary with different name " + enumByType.getCode());
             }
-        } else if (enumByCode.getBioClass().isAssignableFrom(enumObj.getBioClass()) || enumByCode.getBioClass() == enumObj.getBioClass()) {
+        } else if (enumByCode.getBioClass() == null || enumByCode.getBioClass().isAssignableFrom(enumObj.getBioClass()) || enumByCode.getBioClass() == enumObj.getBioClass()) {
             enumCodeMap.put(enumObj.getCode(), enumObj);
             enumTypeMap.put(enumObj.getType(), enumObj);
         }

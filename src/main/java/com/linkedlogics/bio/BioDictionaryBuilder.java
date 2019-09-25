@@ -3,7 +3,6 @@ package com.linkedlogics.bio;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.InputStream;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -21,7 +20,6 @@ import com.linkedlogics.bio.dictionary.builder.AnnotationReader;
 import com.linkedlogics.bio.dictionary.builder.DictionaryReader;
 import com.linkedlogics.bio.dictionary.builder.XmlReader;
 import com.linkedlogics.bio.exception.DictionaryException;
-import com.linkedlogics.bio.utility.DictionaryUtility;
 
 /**
  * This is dictionary builder must be called at the beginning of application in order to setup all dictionary information
@@ -32,7 +30,7 @@ public class BioDictionaryBuilder {
 	protected List<DictionaryReader> readers = new ArrayList<DictionaryReader>();
 	protected HashSet<String> profiles = new HashSet<String>();
 	protected boolean isOnlyProfiles ;
-	
+
 	/**
 	 * Adding a package name for gathering bio obj info from annotations
 	 * @param packageName
@@ -56,7 +54,7 @@ public class BioDictionaryBuilder {
 		} else {
 			readers.add(new XmlReader(this.getClass().getClassLoader().getResourceAsStream(xmlFile))) ;
 		}
-			
+
 		return this ;
 	}
 	/**
@@ -116,7 +114,7 @@ public class BioDictionaryBuilder {
 		BioDictionary.setEncrypterInitializer(encrypterInitializer);
 		return this ;
 	}
-	
+
 	/**
 	 * Sets map object class
 	 * @param mapObjectClass
@@ -126,7 +124,7 @@ public class BioDictionaryBuilder {
 		BioDictionary.setMapObjectClass(mapObjectClass);
 		return this ;
 	}
-	
+
 	/**
 	 * This format is used while exporting time values
 	 * @param format
@@ -137,7 +135,7 @@ public class BioDictionaryBuilder {
 		BioTime.DATE_FORMAT = format ;
 		return this ;
 	}
-	
+
 	/**
 	 * This format is used while exporting time values
 	 * @param format
@@ -148,7 +146,7 @@ public class BioDictionaryBuilder {
 		BioTime.DATETIME_FORMAT = format ;
 		return this ;
 	}
-	
+
 	/**
 	 * Adds supported date format used in parsing date strings
 	 * @param format
@@ -163,7 +161,7 @@ public class BioDictionaryBuilder {
 		}
 		return this ;
 	}
-	
+
 	/**
 	 * This format is used while exporting time values
 	 * @param timeZone
@@ -173,11 +171,11 @@ public class BioDictionaryBuilder {
 		TimeZone.setDefault(TimeZone.getTimeZone(timeZone)) ;
 		return this ;
 	}
-	
+
 	public BioTagHasher getTagHasher() {
 		return BioDictionary.tagHasher;
 	}
-	
+
 	public void setTagHasher(BioTagHasher tagHasher) {
 		BioDictionary.tagHasher = tagHasher;
 	}
@@ -196,83 +194,90 @@ public class BioDictionaryBuilder {
 	public boolean isOnlyProfiles() {
 		return isOnlyProfiles;
 	}
-	
+
 	/**
 	 * Must be called at first because it constructs all dictionary can be found in class path, URL path etc.
 	 */
 	public void build() {
 		BioDictionary.getOrCreateDictionary(0) ;
-		
+
 		if (readers.size() == 0) {
 			readers.add(new AnnotationReader()) ;
 		}
-		
+
 		for (DictionaryReader reader : readers) {
 			reader.read(this); 
 		}
-		
+
 		for (Entry<Integer, BioDictionary> d : BioDictionary.getDictionaryMap().entrySet()) {
 			validate(d.getValue());
 		}
 	}
-	
+
 	/**
 	 * Validates all dictionary and sets references to bio objs or bio enum objs in tags
 	 * @param dictionary
 	 */
-	 public void validate(BioDictionary dictionary) {
-	        // Checking dependency types and validating
-	        for (Entry<Integer, BioObj> objEntry : dictionary.getCodeMap().entrySet()) {
-	            BioObj obj = objEntry.getValue();
-	            // if we have a tag with type but Obj with that type doesn't exist in dictionary we remove those tags
-	            ArrayList<BioTag> missingObjectTags = new ArrayList<BioTag>() ;
-	            for (Entry<Integer, BioTag> entry : obj.getCodeMap().entrySet()) {
-	                BioTag tag = entry.getValue();
-	                if (tag.getType() == BioType.BioObject && tag.getObjName() != null && !tag.getObjName().equals(BioType.BioObject.toString())) {
-	                    BioObj bioObj = null;
-	                    String objName = tag.getObjName();
-	                    if (objName != null) {
-	                        bioObj = dictionary.getObjByType(objName);
-	                        if (bioObj == null) {
-	                            BioEnumObj enumObj;
-	                            enumObj = dictionary.getBioEnumObj(objName);
-	                            if (enumObj == null) {
-//	                            	Logger.log(LoggerLevel.WARN, "bio object %s is not found in dictionary belonging to %s for tag %s", objName, obj.getType(), tag.getName()) ;
-	                            	missingObjectTags.add(tag) ;
-	                            } else {
-	                                tag.setType(BioType.BioEnum);
-	                                tag.setEnumObj(enumObj);
-	                            }
-	                        } else {
-	                            tag.setObj(bioObj);
-	                        }
-	                    }
-	                }
-	            }
-	            
-	            for (BioTag bioTag : missingObjectTags) {
-					obj.removeTag(bioTag);
+	public void validate(BioDictionary dictionary) {
+		// Checking dependency types and validating
+		for (Entry<Integer, BioObj> objEntry : dictionary.getCodeMap().entrySet()) {
+			BioObj obj = objEntry.getValue();
+			// if we have a tag with type but Obj with that type doesn't exist in dictionary we remove those tags
+			ArrayList<BioTag> missingObjectTags = new ArrayList<BioTag>() ;
+			for (Entry<Integer, BioTag> entry : obj.getCodeMap().entrySet()) {
+				BioTag tag = entry.getValue();
+				if (tag.getType() == BioType.BioObject && tag.getObjName() != null && !tag.getObjName().equals(BioType.BioObject.toString())) {
+					BioObj bioObj = null;
+					String objName = tag.getObjName();
+					if (objName != null) {
+						bioObj = dictionary.getObjByType(objName);
+						if (bioObj == null) {
+							BioEnumObj enumObj;
+							enumObj = dictionary.getBioEnumObj(objName);
+							if (enumObj == null) {
+								//	                            	Logger.log(LoggerLevel.WARN, "bio object %s is not found in dictionary belonging to %s for tag %s", objName, obj.getType(), tag.getName()) ;
+//								missingObjectTags.add(tag) ;
+							} else {
+								tag.setType(BioType.BioEnum);
+								tag.setEnumObj(enumObj);
+							}
+						} else {
+							tag.setObj(bioObj);
+						}
+					}
 				}
-	        }
-	        // if we have a super tag with type but Obj with that type doesn't exist in dictionary we remove those tags
-	        ArrayList<BioTag> missingObjectSuperTags = new ArrayList<BioTag>() ;
-	        for (BioTag superTag : dictionary.getSuperTagCodeMap().values()) {
-	            if (superTag.getType() == BioType.BioObject && superTag.getObjName() != null && !superTag.getObjName().equals(BioType.BioObject.toString())) {
-	                BioObj bioObj = null;
-	                String objName = superTag.getObjName();
-	                if (objName != null) {
-	                    bioObj = dictionary.getObjByType(objName);
-	                    if (bioObj == null) {
-	                    	missingObjectSuperTags.add(superTag) ;
-	                    } else {
-	                        superTag.setObj(bioObj);
-	                    }
-	                }
-	            }
-	        }
-	        
-	        for (BioTag bioTag : missingObjectSuperTags) {
-	        	dictionary.removeSuperTag(bioTag);
 			}
-	    }
+
+			for (BioTag bioTag : missingObjectTags) {
+				obj.removeTag(bioTag);
+			}
+		}
+		// if we have a super tag with type but Obj with that type doesn't exist in dictionary we remove those tags
+		ArrayList<BioTag> missingObjectSuperTags = new ArrayList<BioTag>() ;
+		for (BioTag superTag : dictionary.getSuperTagCodeMap().values()) {
+			if (superTag.getType() == BioType.BioObject && superTag.getObjName() != null && !superTag.getObjName().equals(BioType.BioObject.toString())) {
+				BioObj bioObj = null;
+				String objName = superTag.getObjName();
+				if (objName != null) {
+					bioObj = dictionary.getObjByType(objName);
+					if (bioObj == null) {
+						missingObjectSuperTags.add(superTag) ;
+					} else {
+						superTag.setObj(bioObj);
+					}
+				}
+			}
+		}
+
+		for (BioTag bioTag : missingObjectSuperTags) {
+			dictionary.removeSuperTag(bioTag);
+		}
+
+		for (Entry<Integer, BioObj> objEntry : dictionary.getCodeMap().entrySet()) {
+			BioObj obj = objEntry.getValue();
+			if (obj.getParentName() != null && obj.getParent() == null) {
+				obj.setParent(dictionary.getTypeMap().get(obj.getParentName()));
+			}
+		}
+	}
 }

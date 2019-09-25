@@ -44,13 +44,17 @@ public class POJOUtility {
 				if (value != null) {
 					if (t.getValue().getType() == BioType.BioObject) {
 						if (t.getValue().isList()) {
-							List<BioObject> target = new ArrayList<BioObject>() ;
+							List<Object> target = new ArrayList<Object>() ;
 							List<Object> source = (List<Object>) value ;
 							for (int i = 0; i < source.size(); i++) {
 								obj = createObj(source.get(i).getClass()) ;
 								BioDictionary.getDictionary().addObj(obj);
 								t.getValue().setObj(obj);
-								target.add(fromPojo(source.get(i))) ;
+								if (source.get(i) instanceof Number || source.get(i) instanceof String || source.get(i) instanceof Boolean) {
+									target.add(source.get(i)) ;
+								} else {
+									target.add(fromPojo(source.get(i))) ;
+								}
 							}
 							object.set(t.getKey(), target) ;
 						} else {
@@ -211,15 +215,18 @@ public class POJOUtility {
 			String key = getMethod(tag.getName()) ;
 			String getter = null ;
 			if (tag.getType() == BioType.Boolean && !tag.isArray()) {
-				getter = "is" + key.substring(0, 1).toUpperCase() + key.substring(1);
+				if (!key.startsWith("is")) {
+					getter = "is" + key.substring(0, 1).toUpperCase() + key.substring(1);
+				} else {
+					getter = key ;
+				}
 			} else {
 				getter = "get" + key.substring(0, 1).toUpperCase() + key.substring(1);
 			}
 			return object.getClass().getMethod(getter).invoke(object) ;
 		} catch (Throwable e) {
-			e.printStackTrace();
+			throw new RuntimeException("exception for tag " + tag.getName(), e) ;
 		}
-		return null ;
 	}
 	
 	/**

@@ -2,6 +2,7 @@ package com.linkedlogics.bio.dictionary;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import com.linkedlogics.bio.BioDictionary;
 import com.linkedlogics.bio.BioObject;
@@ -17,6 +18,10 @@ public class BioObj {
 	 * Parent bio obj instance
 	 */
 	private BioObj parent ;
+	/**
+	 * Parent bio obj name
+	 */
+	private String parentName ;
 	/**
 	 * Parent obj type
 	 */
@@ -234,6 +239,22 @@ public class BioObj {
 		return bioClass ;
 	}
 	
+	public BioObj getParent() {
+		return parent;
+	}
+
+	public void setParent(BioObj parent) {
+		this.parent = parent;
+	}
+
+	public String getParentName() {
+		return parentName;
+	}
+
+	public void setParentName(String parentName) {
+		this.parentName = parentName;
+	}
+
 	public String getClassName() {
 		return className;
 	}
@@ -255,5 +276,17 @@ public class BioObj {
 
 	public String toString() {
 		return type ;
+	}
+	
+	public List<BioTag> getTagList() {
+		ArrayList<BioTag> list = new ArrayList<BioTag>(nameMap.values()) ;
+		if (parent != null) {
+			parent.getTagList().forEach(t -> {
+				if (!nameMap.containsKey(t.getName())) {
+					list.add(t) ;
+				}
+			});
+		}
+		return list ;
 	}
 }

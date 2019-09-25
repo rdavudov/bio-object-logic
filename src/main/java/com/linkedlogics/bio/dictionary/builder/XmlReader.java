@@ -143,6 +143,7 @@ public class XmlReader implements DictionaryReader {
     	String name = null ;
     	String type = null ;
     	String bioClass = null ;
+    	String parentName = null ;
     	for (int i = 0; i < atts.getLength(); i++) {
     		Node node = atts.item(i);
     		if ("code".contentEquals(node.getNodeName())) {
@@ -155,6 +156,8 @@ public class XmlReader implements DictionaryReader {
     			type = node.getNodeValue() ;
     		} else if ("class".contentEquals(node.getNodeName())) {
     			bioClass = node.getNodeValue() ;
+    		} else if ("parent".contentEquals(node.getNodeName())) {
+    			parentName = node.getNodeValue() ;
     		}  
     	}
     	
@@ -189,6 +192,8 @@ public class XmlReader implements DictionaryReader {
 				obj.setName(obj.getType().replaceAll("([^_A-Z])([A-Z])", "$1_$2").toLowerCase());
 			}
 		}
+		
+		obj.setParentName(parentName);
     	
     	NodeList nodes = e.getChildNodes() ;
         for (int i = 0; i < nodes.getLength(); i++) {
@@ -235,16 +240,22 @@ public class XmlReader implements DictionaryReader {
 			} catch (ClassNotFoundException ex) {
 				return null ;
 			}
-    		
-    		if (code == 0) {
-    			enumObj.setCode(builder.getTagHasher().hash(enumObj.getBioClass().getName()));
-    			enumObj.setCodeGenerated(true);
-        	}
-    		
-    		if (type == null) {
-    			enumObj.setType(enumObj.getBioClass().getSimpleName());
-    		}
     	}
+    	
+    	if (type == null) {
+			enumObj.setType(enumObj.getBioClass().getSimpleName());
+		}
+    	
+    	if (code == 0) {
+    		if (enumObj.getBioClass() != null) {
+    			enumObj.setCode(builder.getTagHasher().hash(enumObj.getBioClass().getName()));
+    		} else {
+    			enumObj.setCode(builder.getTagHasher().hash(enumObj.getType()));
+    		}
+    		enumObj.setCodeGenerated(true);
+    	}
+		
+    	
     	NodeList nodes = e.getChildNodes() ;
         for (int i = 0; i < nodes.getLength(); i++) {
         	Node node = nodes.item(i);
@@ -281,7 +292,7 @@ public class XmlReader implements DictionaryReader {
     		}  
     	}
     	
-    	if (BioEnum.class.isAssignableFrom(enumClass)) {
+    	if (enumClass != null && BioEnum.class.isAssignableFrom(enumClass)) {
     		try {
 				return (BioEnum) enumClass.getConstructor(int.class, String.class).newInstance(code, name) ;
 			} catch (Throwable ex) {
